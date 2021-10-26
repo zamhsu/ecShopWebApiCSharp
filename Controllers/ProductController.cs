@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Dtos;
+using WebApi.Dtos.Products;
 using WebApi.Models;
 using WebApi.Models.Products;
 
@@ -76,8 +78,29 @@ namespace WebApi.Controllers
         // POST: api/Product
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        public async Task<ActionResult<Product>> PostProduct(BaseRequest<CreateProductDTO> baseRequest)
         {
+            var startOffset = new DateTimeOffset(baseRequest.Data.StartDisplay, baseRequest.UserTimeZone);
+            var endOffset = new DateTimeOffset(baseRequest.Data.EndDisplay, baseRequest.UserTimeZone);
+
+            Product product = new Product()
+            {
+                Guid = Guid.NewGuid().ToString(),
+                Title = baseRequest.Data.Title,
+                CategoryId = baseRequest.Data.CategoryId,
+                UnitId = baseRequest.Data.UnitId,
+                Quantity = baseRequest.Data.Quantity,
+                OriginPrice = baseRequest.Data.OriginPrice,
+                Price = baseRequest.Data.Price,
+                Description = baseRequest.Data.Description,
+                StartDisplay = startOffset.ToUniversalTime(),
+                EndDisplay = endOffset.ToUniversalTime(),
+                ImageUrl = baseRequest.Data.ImageUrl,
+                Memo = baseRequest.Data.Memo,
+                StatusId = baseRequest.Data.StatusId,
+                CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime()
+            };
+
             _context.Product.Add(product);
             await _context.SaveChangesAsync();
 
