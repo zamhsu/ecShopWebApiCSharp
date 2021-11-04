@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Base.IServices.Products;
 using WebApi.Dtos;
 using WebApi.Dtos.Products;
 using WebApi.Models;
@@ -12,120 +13,130 @@ using WebApi.Models.Products;
 
 namespace WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly EcShopContext _context;
+        private readonly IProductService _productService;
 
-        public ProductController(EcShopContext context)
+        public ProductController(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
-        // GET: api/Product
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
+        public ActionResult<BaseResponse<List<Product>>> GetProduct()
         {
-            return await _context.Product.ToListAsync();
+            BaseResponse<List<Product>> baseResponse = new BaseResponse<List<Product>>();
+
+            baseResponse.IsSuccess = true;
+            baseResponse.Data = _productService.GetAllUsable();
+
+            return baseResponse;
         }
 
-        // GET: api/Product/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        [HttpGet("{guid}")]
+        public async Task<ActionResult<BaseResponse<Product>>> GetProduct(string guid)
         {
-            var product = await _context.Product.FindAsync(id);
+            BaseResponse<Product> baseResponse = new BaseResponse<Product>();
+
+            Product product = await _productService.GetByGuidAsync(guid);
 
             if (product == null)
             {
-                return NotFound();
+                baseResponse.IsSuccess = false;
+                baseResponse.Message = "沒有資料";
+
+                return baseResponse;
             }
 
-            return product;
+            baseResponse.IsSuccess = true;
+            baseResponse.Data = product;
+
+            return baseResponse;
         }
 
         // PUT: api/Product/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, Product product)
+        [HttpPut("{guid}")]
+        public async Task<ActionResult<BaseResponse<Product>>> PutProduct(string guid, BaseRequest<UpdateProductModel> baseRequest)
         {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
+            BaseResponse<Product> baseResponse = new BaseResponse<Product>();
 
-            _context.Entry(product).State = EntityState.Modified;
+            Product product = await _productService.GetByGuidAsync(guid);
+            if (product == null)
+            {
+                baseResponse.IsSuccess = false;
+                baseResponse.Message = "找不到資料";
+
+                return baseResponse;
+            }
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _productService.UpdateAsync(guid, baseRequest.Data, baseRequest.UserTimeZone);
+
+                baseResponse.IsSuccess = true;
+                baseResponse.Message = "修改成功";
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                baseResponse.IsSuccess = false;
+                baseResponse.Message = "修改失敗";
             }
 
-            return NoContent();
+            return baseResponse;
         }
 
-        // POST: api/Product
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(BaseRequest<CreateProductModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<Product>>> PostProduct(BaseRequest<CreateProductModel> baseRequest)
         {
-            var startOffset = new DateTimeOffset(baseRequest.Data.StartDisplay, baseRequest.UserTimeZone);
-            var endOffset = new DateTimeOffset(baseRequest.Data.EndDisplay, baseRequest.UserTimeZone);
+            BaseResponse<Product> baseResponse = new BaseResponse<Product>();
 
-            Product product = new Product()
+            try
             {
-                Guid = Guid.NewGuid().ToString(),
-                Title = baseRequest.Data.Title,
-                CategoryId = baseRequest.Data.CategoryId,
-                UnitId = baseRequest.Data.UnitId,
-                Quantity = baseRequest.Data.Quantity,
-                OriginPrice = baseRequest.Data.OriginPrice,
-                Price = baseRequest.Data.Price,
-                Description = baseRequest.Data.Description,
-                StartDisplay = startOffset.ToUniversalTime(),
-                EndDisplay = endOffset.ToUniversalTime(),
-                ImageUrl = baseRequest.Data.ImageUrl,
-                Memo = baseRequest.Data.Memo,
-                StatusId = (int)ProductStatusPara.OK,
-                CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime()
-            };
+                await _productService.CreateAsync(baseRequest.Data, baseRequest.UserTimeZone);
 
-            _context.Product.Add(product);
-            await _context.SaveChangesAsync();
+                baseResponse.IsSuccess = true;
+                baseResponse.Message = "建立成功";
+            }
+            catch
+            {
+                baseResponse.IsSuccess = false;
+                baseResponse.Message = "建立失敗";
+            }
 
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+            return baseResponse;
         }
 
-        // DELETE: api/Product/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        [HttpDelete("{guid}")]
+        public async Task<ActionResult<BaseResponse<Product>>> DeleteProduct(string guid)
         {
-            var product = await _context.Product.FindAsync(id);
+            BaseResponse<Product> baseResponse = new BaseResponse<Product>();
+
+            Product product = await _productService.GetByGuidAsync(guid);
             if (product == null)
             {
-                return NotFound();
+                baseResponse.IsSuccess = false;
+                baseResponse.Message = "找不到資料";
+
+                return baseResponse;
             }
 
-            _context.Product.Remove(product);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _productService.DeleteByGuidAsync(guid);
 
-            return NoContent();
-        }
+                baseResponse.IsSuccess = true;
+                baseResponse.Message = "刪除成功";
+            }
+            catch
+            {
+                baseResponse.IsSuccess = false;
+                baseResponse.Message = "刪除失敗";
+            }
 
-        private bool ProductExists(int id)
-        {
-            return _context.Product.Any(e => e.Id == id);
+            return baseResponse;
         }
     }
 }

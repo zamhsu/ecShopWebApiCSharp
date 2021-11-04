@@ -124,6 +124,7 @@ namespace WebApi.Base.Services.Products
             product.EndDisplay = endOffset.ToUniversalTime();
             product.ImageUrl = updateProductModel.ImageUrl;
             product.Memo = updateProductModel.Memo;
+            product.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             try
             {
