@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using WebApi.Base.IRepositories;
+using WebApi.Base.Repositories;
 using WebApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<EcShopContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

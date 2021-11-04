@@ -4,11 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using WebApi.Base.IRepositories;
 using WebApi.Models;
 
-namespace WebApi.Base
+namespace WebApi.Base.Repositories
 {
-    public abstract class EfRepository<T> : IRepository<T> where T : class
+    public class EfRepository<T> : IRepository<T> where T : class
     {
         private readonly EcShopContext _context;
 
