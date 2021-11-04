@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WebApi.Base.IRepositories
@@ -13,7 +14,7 @@ namespace WebApi.Base.IRepositories
         /// </summary>
         /// <param name="whereLambda">Lambda</param>
         /// <returns></returns>
-        T Get(Expression<Func<T, bool>> whereLambda);
+        Task<T> GetAsync(Expression<Func<T, bool>> whereLambda);
 
         /// <summary>
         /// 取得所有資料
@@ -31,36 +32,36 @@ namespace WebApi.Base.IRepositories
         /// 新增一筆資料
         /// </summary>
         /// <param name="entity">Entity</param>
-        void Create(T entity);
+        Task CreateAsync(T entity);
 
         /// <summary>
         /// 新增多筆資料
         /// </summary>
         /// <param name="entities">Entities</param>
-        void Create(IEnumerable<T> entities);
+        Task CreateAsync(IEnumerable<T> entities);
 
         /// <summary>
         /// 更新一筆資料
         /// </summary>
         /// <param name="entity">Entity</param>
-        void Update(T entity);
+        Task UpdateAsync(T entity);
 
         /// <summary>
         /// 更新多筆資料
         /// </summary>
         /// <param name="entities">Entities</param>
-        void Update(IEnumerable<T> entities);
+        Task UpdateAsync(IEnumerable<T> entities);
 
         /// <summary>
         /// 刪除一筆資料
         /// </summary>
         /// <param name="entity">Entity</param>
-        void Delete(T entity);
+        Task DeleteAsync(T entity);
 
         /// <summary>
         /// 儲存變更
         /// </summary>
         /// <returns></returns>
-        int SaveChanges();
+        Task<int> SaveChangesAsync();
     }
 }

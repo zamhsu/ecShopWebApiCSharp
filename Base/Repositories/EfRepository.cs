@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using WebApi.Base.IRepositories;
 using WebApi.Models;
@@ -32,9 +33,9 @@ namespace WebApi.Base.Repositories
         /// </summary>
         /// <param name="whereLambda">Lambda</param>
         /// <returns></returns>
-        public virtual T Get(Expression<Func<T, bool>> whereLambda)
+        public virtual async Task<T> GetAsync(Expression<Func<T, bool>> whereLambda)
         {
-            return _context.Set<T>().FirstOrDefault(whereLambda);
+            return await _context.Set<T>().FirstOrDefaultAsync(whereLambda);
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace WebApi.Base.Repositories
         /// 新增一筆資料
         /// </summary>
         /// <param name="entity">Entity</param>
-        public virtual void Create(T entity)
+        public virtual async Task CreateAsync(T entity)
         {
             try
             {
@@ -67,6 +68,8 @@ namespace WebApi.Base.Repositories
                     throw new ArgumentNullException(nameof(entity));
 
                 _context.Add(entity);
+
+                await _context.SaveChangesAsync();
             }
             catch
             {
@@ -78,7 +81,7 @@ namespace WebApi.Base.Repositories
         /// 新增多筆資料
         /// </summary>
         /// <param name="entities">Entities</param>
-        public virtual void Create(IEnumerable<T> entities)
+        public virtual async Task CreateAsync(IEnumerable<T> entities)
         {
             try
             {
@@ -87,6 +90,8 @@ namespace WebApi.Base.Repositories
 
                 foreach(var entity in entities)
                     _context.Add(entity);
+
+                await _context.SaveChangesAsync();
             }
             catch
             {
@@ -98,7 +103,7 @@ namespace WebApi.Base.Repositories
         /// 更新一筆資料
         /// </summary>
         /// <param name="entity">Entity</param>
-        public virtual void Update(T entity)
+        public virtual async Task UpdateAsync(T entity)
         {
             try
             {
@@ -107,7 +112,7 @@ namespace WebApi.Base.Repositories
 
                 _context.Update(entity);
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch
             {
@@ -119,7 +124,7 @@ namespace WebApi.Base.Repositories
         /// 更新多筆資料
         /// </summary>
         /// /// <param name="entities">Entities</param>
-        public virtual void Update(IEnumerable<T> entities)
+        public virtual async Task UpdateAsync(IEnumerable<T> entities)
         {
             try
             {
@@ -129,7 +134,7 @@ namespace WebApi.Base.Repositories
                 foreach (var entity in entities)
                     _context.Update(entity);
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch
             {
@@ -141,7 +146,7 @@ namespace WebApi.Base.Repositories
         /// 刪除一筆資料
         /// </summary>
         /// <param name="entity">Entity</param>
-        public virtual void Delete(T entity)
+        public virtual async Task DeleteAsync(T entity)
         {
             try
             {
@@ -150,7 +155,7 @@ namespace WebApi.Base.Repositories
 
                 _context.Remove(entity);
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch
             {
@@ -162,7 +167,7 @@ namespace WebApi.Base.Repositories
         /// 刪除多筆資料
         /// </summary>
         /// <param name="entities">Entities</param>
-        public virtual void Delete(IEnumerable<T> entities)
+        public virtual async Task DeleteAsync(IEnumerable<T> entities)
         {
             try
             {
@@ -172,7 +177,7 @@ namespace WebApi.Base.Repositories
                 foreach (var entity in entities)
                     _context.Remove(entity);
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch
             {
@@ -184,9 +189,9 @@ namespace WebApi.Base.Repositories
         /// 儲存變更
         /// </summary>
         /// <returns></returns>
-        public virtual int SaveChanges()
+        public virtual async Task<int> SaveChangesAsync()
         {
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
     }
 }

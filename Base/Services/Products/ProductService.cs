@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Products;
 using WebApi.Dtos.Products;
@@ -27,10 +29,10 @@ namespace WebApi.Base.Services.Products
         /// </summary>
         /// <param name="guid">產品GUID</param>
         /// <returns></returns>
-        public Product GetByGuid(string guid)
+        public async Task<Product> GetByGuidAsync(string guid)
         {
             int okStatus = (int)ProductStatusPara.OK;
-            Product product = _productRepository.Get(q => q.Guid == guid && q.StatusId == okStatus);
+            Product product = await _productRepository.GetAsync(q => q.Guid == guid && q.StatusId == okStatus);
 
             return product;
         }
@@ -53,7 +55,7 @@ namespace WebApi.Base.Services.Products
         /// </summary>
         /// <param name="createProductModel">新增產品的資料</param>
         /// <param name="userTimeZone">使用者時區</param>
-        public void Create(CreateProductModel createProductModel, TimeSpan userTimeZone)
+        public async Task CreateAsync(CreateProductModel createProductModel, TimeSpan userTimeZone)
         {
             if (createProductModel == null)
             {
@@ -84,7 +86,7 @@ namespace WebApi.Base.Services.Products
 
             try
             {
-                _productRepository.Create(product);
+                await _productRepository.CreateAsync(product);
             }
             catch
             {
@@ -98,9 +100,9 @@ namespace WebApi.Base.Services.Products
         /// <param name="guid">產品GUID</param>
         /// <param name="updateProductModel">修改產品的資料</param>
         /// <param name="userTimeZone">使用者時區</param>
-        public void Update(string guid, UpdateProductModel updateProductModel, TimeSpan userTimeZone)
+        public async Task UpdateAsync(string guid, UpdateProductModel updateProductModel, TimeSpan userTimeZone)
         {
-            Product product = GetByGuid(guid);
+            Product product = await GetByGuidAsync(guid);
 
             if (product == null)
             {
@@ -125,7 +127,7 @@ namespace WebApi.Base.Services.Products
 
             try
             {
-                _productRepository.Update(product);
+                await _productRepository.UpdateAsync(product);
             }
             catch
             {
@@ -137,9 +139,9 @@ namespace WebApi.Base.Services.Products
         /// 使用Guid刪除一筆產品
         /// </summary>
         /// <param name="guid">產品GUID</param>
-        public void DeleteByGuid(string guid)
+        public async Task DeleteByGuidAsync(string guid)
         {
-            Product product = GetByGuid(guid);
+            Product product = await GetByGuidAsync(guid);
 
             if (product == null)
             {
@@ -152,7 +154,7 @@ namespace WebApi.Base.Services.Products
 
             try
             {
-                _productRepository.Update(product);
+                await _productRepository.UpdateAsync(product);
             }
             catch
             {
