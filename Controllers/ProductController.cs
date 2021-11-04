@@ -78,7 +78,7 @@ namespace WebApi.Controllers
         // POST: api/Product
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(BaseRequest<CreateProductDTO> baseRequest)
+        public async Task<ActionResult<Product>> PostProduct(BaseRequest<CreateProductModel> baseRequest)
         {
             var startOffset = new DateTimeOffset(baseRequest.Data.StartDisplay, baseRequest.UserTimeZone);
             var endOffset = new DateTimeOffset(baseRequest.Data.EndDisplay, baseRequest.UserTimeZone);
@@ -97,7 +97,7 @@ namespace WebApi.Controllers
                 EndDisplay = endOffset.ToUniversalTime(),
                 ImageUrl = baseRequest.Data.ImageUrl,
                 Memo = baseRequest.Data.Memo,
-                StatusId = baseRequest.Data.StatusId,
+                StatusId = (int)ProductStatusPara.OK,
                 CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime()
             };
 

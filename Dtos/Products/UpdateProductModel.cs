@@ -1,6 +1,6 @@
 namespace WebApi.Dtos.Products
 {
-    public class CreateProductDTO
+    public class UpdateProductModel
     {
         public string Title { get; set; }
         public int CategoryId { get; set; }
@@ -13,6 +13,5 @@ namespace WebApi.Dtos.Products
         public DateTime EndDisplay { get; set; }
         public string? ImageUrl { get; set; }
         public string? Memo { get; set; }
-        public int StatusId { get; set; }
     }
 }
