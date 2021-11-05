@@ -22,6 +22,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 // Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductCategoryTypeService, ProductCategoryTypeService>();
+builder.Services.AddScoped<IProductUnitTypeService, ProductUnitTypeService>();
 
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
 
