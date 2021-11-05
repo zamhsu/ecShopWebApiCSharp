@@ -20,6 +20,7 @@ builder.Services.AddDbContext<EcShopContext>(opt =>
 
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<ServicesProfile>();
+    cfg.AddProfile<ControllersProfile>();
 });
 
 // Repositories
