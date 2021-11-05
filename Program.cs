@@ -1,7 +1,9 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base;
 using WebApi.Base.IRepositories;
 using WebApi.Base.Repositories;
+using WebApi.Base.Mappings;
 using WebApi.Base.IServices.Products;
 using WebApi.Base.Services.Products;
 using WebApi.Models;
@@ -15,6 +17,10 @@ builder.Logging.AddConsole();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<EcShopContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
+
+builder.Services.AddAutoMapper(cfg => {
+    cfg.AddProfile<ServicesProfile>();
+});
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
