@@ -95,5 +95,31 @@ namespace WebApi.Base.Services.Products
                 throw;
             }
         }
+
+        /// <summary>
+        /// 使用產品分類編號刪除一筆產品分類
+        /// </summary>
+        /// <param name="id">產品分類編號</param>
+        public async Task DeleteByIdAsync(int id)
+        {
+            ProductCategoryType productCategoryType = await GetByIdAsync(id);
+
+            if (productCategoryType == null)
+            {
+                _logger.LogInformation($"[Delete] ProductCategoryType is not existed (Id:{id})");
+                throw new ArgumentNullException(nameof(productCategoryType));
+            }
+
+            productCategoryType.Deleted = true;
+
+            try
+            {
+                await _productCategoryTypeRepository.UpdateAsync(productCategoryType);
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

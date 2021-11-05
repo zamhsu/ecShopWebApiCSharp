@@ -29,5 +29,11 @@ namespace WebApi.Base.IServices.Products
         /// <param name="id">產品分類編號</param>
         /// <param name="productCategoryType">修改產品分類的資料</param>
         Task UpdateAsync(int id, ProductCategoryType productCategoryType);
+
+        /// <summary>
+        /// 使用產品分類編號刪除一筆產品分類
+        /// </summary>
+        /// <param name="id">產品分類編號</param>
+        Task DeleteByIdAsync(int id);
     }
 }
