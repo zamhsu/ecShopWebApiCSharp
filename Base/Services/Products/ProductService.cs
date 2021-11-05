@@ -1,3 +1,4 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,15 @@ namespace WebApi.Base.Services.Products
     public class ProductService : IProductService
     {
         private readonly IRepository<Product> _productRepository;
+        private readonly IMapper _mapper;
         private readonly IAppLogger<Product> _logger;
 
         public ProductService(IRepository<Product> productRepository,
+            IMapper mapper,
             IAppLogger<Product> logger)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -66,23 +70,12 @@ namespace WebApi.Base.Services.Products
             var startOffset = new DateTimeOffset(createProductModel.StartDisplay, userTimeZone);
             var endOffset = new DateTimeOffset(createProductModel.EndDisplay, userTimeZone);
 
-            Product product = new Product()
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Title = createProductModel.Title,
-                CategoryId = createProductModel.CategoryId,
-                UnitId = createProductModel.UnitId,
-                Quantity = createProductModel.Quantity,
-                OriginPrice = createProductModel.OriginPrice,
-                Price = createProductModel.Price,
-                Description = createProductModel.Description,
-                StartDisplay = startOffset.ToUniversalTime(),
-                EndDisplay = endOffset.ToUniversalTime(),
-                ImageUrl = createProductModel.ImageUrl,
-                Memo = createProductModel.Memo,
-                StatusId = (int)ProductStatusPara.OK,
-                CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime()
-            };
+            Product product = _mapper.Map<Product>(createProductModel);
+            product.Guid = Guid.NewGuid().ToString();
+            product.StartDisplay = startOffset.ToUniversalTime();
+            product.EndDisplay = endOffset.ToUniversalTime();
+            product.StatusId = (int)ProductStatusPara.OK;
+            product.CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             try
             {

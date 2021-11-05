@@ -8,6 +8,12 @@ namespace WebApi.Base.Mappings
     {
         public ServicesProfile()
         {
+            // Product
+            CreateMap<CreateProductModel, Product>()
+                .ForMember(dest => dest.Guid, mo => mo.Ignore())
+                .ForMember(dest => dest.StartDisplay, mo => mo.Ignore())
+                .ForMember(dest => dest.EndDisplay, mo => mo.Ignore());
+
             // ProductCategoryType
             CreateMap<CreateProductCategoryTypeModel, ProductCategoryType>();
 
