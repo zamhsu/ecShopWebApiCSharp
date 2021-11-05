@@ -13,7 +13,6 @@ using WebApi.Models.Products;
 
 namespace WebApi.Controllers
 {
-    [Route("api/admin/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -24,7 +23,7 @@ namespace WebApi.Controllers
             _productService = productService;
         }
 
-        [HttpGet]
+        [HttpGet("api/product")]
         public ActionResult<BaseResponse<List<Product>>> GetProduct()
         {
             BaseResponse<List<Product>> baseResponse = new BaseResponse<List<Product>>();
@@ -35,7 +34,7 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
-        [HttpGet("{guid}")]
+        [HttpGet("api/product/{guid}")]
         public async Task<ActionResult<BaseResponse<Product>>> GetProduct(string guid)
         {
             BaseResponse<Product> baseResponse = new BaseResponse<Product>();
@@ -56,9 +55,7 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
-        // PUT: api/Product/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{guid}")]
+        [HttpPut("api/admin/product/{guid}")]
         public async Task<ActionResult<BaseResponse<Product>>> PutProduct(string guid, BaseRequest<UpdateProductModel> baseRequest)
         {
             BaseResponse<Product> baseResponse = new BaseResponse<Product>();
@@ -88,7 +85,7 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
-        [HttpPost]
+        [HttpPost("api/admin/product")]
         public async Task<ActionResult<BaseResponse<Product>>> PostProduct(BaseRequest<CreateProductModel> baseRequest)
         {
             BaseResponse<Product> baseResponse = new BaseResponse<Product>();
@@ -109,7 +106,7 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
-        [HttpDelete("{guid}")]
+        [HttpDelete("api/admin/product/{guid}")]
         public async Task<ActionResult<BaseResponse<Product>>> DeleteProduct(string guid)
         {
             BaseResponse<Product> baseResponse = new BaseResponse<Product>();
