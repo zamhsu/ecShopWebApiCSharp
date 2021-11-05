@@ -32,13 +32,27 @@ namespace WebApi.Models
                     .OnDelete(DeleteBehavior.ClientNoAction)
                     .HasConstraintName("FK_Product_UnitId_To_ProductUnitType_Id");
 
-                e.HasOne(b=>b.ProductStatus)
+                e.HasOne(b => b.ProductStatus)
                     .WithMany(p => p.Product)
                     .HasForeignKey(b => b.StatusId)
                     .OnDelete(DeleteBehavior.ClientNoAction)
                     .HasConstraintName("FK_Product_StatusId_To_ProductStatus_Id");
 
                 e.ToTable("Product");
+            });
+
+            modelBuilder.Entity<ProductCategoryType>(e =>
+            {
+                e.Property(p => p.Deleted)
+                    .HasDefaultValue(false)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<ProductUnitType>(e =>
+            {
+                e.Property(p => p.Deleted)
+                    .HasDefaultValue(false)
+                    .IsRequired();
             });
         }
     }
