@@ -10,6 +10,9 @@ namespace WebApi.Base.Mappings
         {
             // ProductCategoryType
             CreateMap<CreateProductCategoryTypeModel, ProductCategoryType>();
+
+            // ProductUnitType
+            CreateMap<CreateProductUnitTypeModel, ProductUnitType>();
         }
     }
 }

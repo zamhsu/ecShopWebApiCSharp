@@ -1,3 +1,4 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,15 @@ namespace WebApi.Base.Services.Products
     public class ProductUnitTypeService : IProductUnitTypeService
     {
         private readonly IRepository<ProductUnitType> _productUnitTypeRepository;
+        private readonly IMapper _mapper;
         private readonly IAppLogger<ProductUnitType> _logger;
 
         public ProductUnitTypeService(IRepository<ProductUnitType> productUnitTypeRepository,
+            IMapper mapper,
             IAppLogger<ProductUnitType> logger)
         {
             _productUnitTypeRepository = productUnitTypeRepository;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -60,10 +64,7 @@ namespace WebApi.Base.Services.Products
                 new ArgumentNullException(nameof(createProductUnitType));
             }
 
-            ProductUnitType productUnitType = new ProductUnitType()
-            {
-                Name = createProductUnitType.Name
-            };
+            ProductUnitType productUnitType = _mapper.Map<ProductUnitType>(createProductUnitType);
 
             try
             {
