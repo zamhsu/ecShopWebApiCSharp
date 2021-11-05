@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Products;
+using WebApi.Dtos.Products;
 using WebApi.Models;
 using WebApi.Models.Products;
 
@@ -51,13 +52,18 @@ namespace WebApi.Base.Services.Products
         /// 新增一筆產品分類資料
         /// </summary>
         /// <param name="productCategoryType">新增產品分類的資料</param>
-        public async Task CreateAsync(ProductCategoryType productCategoryType)
+        public async Task CreateAsync(CreateProductCategoryTypeModel createProductCategoryType)
         {
-            if (productCategoryType == null)
+            if (createProductCategoryType == null)
             {
                 _logger.LogInformation("[Create] ProductCategoryType can not be null");
-                new ArgumentNullException(nameof(productCategoryType));
+                new ArgumentNullException(nameof(createProductCategoryType));
             }
+
+            ProductCategoryType productCategoryType = new ProductCategoryType()
+            {
+                Name = createProductCategoryType.Name
+            };
 
             try
             {
@@ -73,18 +79,18 @@ namespace WebApi.Base.Services.Products
         /// 修改一筆產品分類資料
         /// </summary>
         /// <param name="id">產品分類編號</param>
-        /// <param name="productCategoryType">修改產品分類的資料</param>
-        public async Task UpdateAsync(int id, ProductCategoryType productCategoryType)
+        /// <param name="updateProductCategoryType">修改產品分類的資料</param>
+        public async Task UpdateAsync(int id, UpdateProductCategoryTypeModel updateProductCategoryType)
         {
             ProductCategoryType entity = await GetByIdAsync(id);
 
             if (entity == null)
             {
                 _logger.LogInformation($"[Update] ProductCategoryType is not existed (Id:{id})");
-                throw new ArgumentNullException(nameof(productCategoryType));
+                throw new ArgumentNullException(nameof(updateProductCategoryType));
             }
 
-            entity.Name = productCategoryType.Name;
+            entity.Name = updateProductCategoryType.Name;
 
             try
             {
