@@ -25,13 +25,13 @@ namespace WebApi.Base.IServices.Products
         /// 取得所有產品
         /// </summary>
         /// <returns></returns>
-        List<Product> GetAllUsable();
+        Task<List<Product>> GetAllUsableAsync();
 
         /// <summary>
         /// 取得包含關聯性資料的所有產品
         /// </summary>
         /// <returns></returns>
-        List<Product> GetDetailAllUsable();
+        Task<List<Product>> GetDetailAllUsableAsync();
 
         /// <summary>
         /// 新增一筆產品資料

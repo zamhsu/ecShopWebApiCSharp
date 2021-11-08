@@ -28,11 +28,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/product")]
-        public ActionResult<BaseResponse<List<ProductDisplayModel>>> GetProduct()
+        public async Task<ActionResult<BaseResponse<List<ProductDisplayModel>>>> GetProduct()
         {
             BaseResponse<List<ProductDisplayModel>> baseResponse = new BaseResponse<List<ProductDisplayModel>>();
 
-            List<Product> products = _productService.GetDetailAllUsable();
+            List<Product> products = await _productService.GetDetailAllUsableAsync();
             List<ProductDisplayModel> productDisplays = _mapper.Map<List<ProductDisplayModel>>(products);
 
             baseResponse.IsSuccess = true;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Products;
 using WebApi.Dtos.Products;
@@ -44,10 +45,10 @@ namespace WebApi.Base.Services.Products
         /// 取得所有產品單位
         /// </summary>
         /// <returns></returns>
-        public List<ProductUnitType> GetAll()
+        public async Task<List<ProductUnitType>> GetAllAsync()
         {
             IQueryable<ProductUnitType> query = _productUnitTypeRepository.GetAll();
-            List<ProductUnitType> productUnitTypes = query.ToList();
+            List<ProductUnitType> productUnitTypes = await query.ToListAsync();
 
             return productUnitTypes;
         }

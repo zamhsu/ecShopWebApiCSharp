@@ -28,12 +28,12 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/productUnitType")]
-        public ActionResult<BaseResponse<List<ProductUnitType>>> GetProductUnitType()
+        public async Task<ActionResult<BaseResponse<List<ProductUnitType>>>> GetProductUnitType()
         {
             BaseResponse<List<ProductUnitType>> baseResponse = new BaseResponse<List<ProductUnitType>>();
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = _productUnitTypeService.GetAll();
+            baseResponse.Data = await _productUnitTypeService.GetAllAsync();
 
             return baseResponse;
         }

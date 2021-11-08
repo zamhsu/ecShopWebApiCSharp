@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Products;
 using WebApi.Dtos.Products;
@@ -58,11 +59,11 @@ namespace WebApi.Base.Services.Products
         /// 取得所有產品
         /// </summary>
         /// <returns></returns>
-        public List<Product> GetAllUsable()
+        public async Task<List<Product>> GetAllUsableAsync()
         {
             int okStatus = (int)ProductStatusPara.OK;
             IQueryable<Product> query = _productRepository.GetAll().Where(q => q.StatusId == okStatus);
-            List<Product> products = query.ToList();
+            List<Product> products = await query.ToListAsync();
 
             return products;
         }
@@ -71,11 +72,11 @@ namespace WebApi.Base.Services.Products
         /// 取得包含關聯性資料的所有產品
         /// </summary>
         /// <returns></returns>
-        public List<Product> GetDetailAllUsable()
+        public async Task<List<Product>> GetDetailAllUsableAsync()
         {
             int okStatus = (int)ProductStatusPara.OK;
             IQueryable<Product> query = _productRepository.GetDetailAll().Where(q => q.StatusId == okStatus);
-            List<Product> products = query.ToList();
+            List<Product> products = await query.ToListAsync();
 
             return products;
         }
@@ -160,12 +161,12 @@ namespace WebApi.Base.Services.Products
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            product.StatusId = (int)ProductStatusPara.Delete;
-            product.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+            entity.StatusId = (int)ProductStatusPara.Delete;
+            entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             try
             {
-                await _productRepository.UpdateAsync(product);
+                await _productRepository.UpdateAsync(entity);
             }
             catch
             {

@@ -16,7 +16,7 @@ namespace WebApi.Base.IServices.Products
         /// 取得所有產品單位
         /// </summary>
         /// <returns></returns>
-        List<ProductUnitType> GetAll();
+        Task<List<ProductUnitType>> GetAllAsync();
 
         /// <summary>
         /// 新增一筆產品單位資料

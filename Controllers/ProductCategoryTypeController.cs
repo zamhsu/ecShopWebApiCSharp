@@ -28,12 +28,12 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/productCategoryType")]
-        public ActionResult<BaseResponse<List<ProductCategoryType>>> GetProductCategoryType()
+        public async Task<ActionResult<BaseResponse<List<ProductCategoryType>>>> GetProductCategoryType()
         {
             BaseResponse<List<ProductCategoryType>> baseResponse = new BaseResponse<List<ProductCategoryType>>();
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = _productCategoryTypeService.GetAll();
+            baseResponse.Data = await _productCategoryTypeService.GetAllAsync();
 
             return baseResponse;
         }

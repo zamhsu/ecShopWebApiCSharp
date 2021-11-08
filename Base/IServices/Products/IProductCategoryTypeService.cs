@@ -16,7 +16,7 @@ namespace WebApi.Base.IServices.Products
         /// 取得所有產品分類
         /// </summary>
         /// <returns></returns>
-        List<ProductCategoryType> GetAll();
+        Task<List<ProductCategoryType>> GetAllAsync();
 
         /// <summary>
         /// 新增一筆產品分類資料
