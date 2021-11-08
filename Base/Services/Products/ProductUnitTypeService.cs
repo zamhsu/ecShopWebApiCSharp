@@ -56,15 +56,13 @@ namespace WebApi.Base.Services.Products
         /// 新增一筆產品單位資料
         /// </summary>
         /// <param name="productUnitType">新增產品單位的資料</param>
-        public async Task CreateAsync(CreateProductUnitTypeModel createProductUnitType)
+        public async Task CreateAsync(ProductUnitType productUnitType)
         {
-            if (createProductUnitType == null)
+            if (productUnitType == null)
             {
                 _logger.LogInformation("[Create] ProductUnitType can not be null");
-                new ArgumentNullException(nameof(createProductUnitType));
+                new ArgumentNullException(nameof(productUnitType));
             }
-
-            ProductUnitType productUnitType = _mapper.Map<ProductUnitType>(createProductUnitType);
 
             try
             {
@@ -80,8 +78,8 @@ namespace WebApi.Base.Services.Products
         /// 修改一筆產品單位資料
         /// </summary>
         /// <param name="id">產品單位編號</param>
-        /// <param name="updateProductUnitType">修改產品單位的資料</param>
-        public async Task UpdateAsync(int id, UpdateProductUnitTypeModel updateProductUnitType)
+        /// <param name="productUnitType">修改產品單位的資料</param>
+        public async Task UpdateAsync(int id, ProductUnitType updateProductUnitType)
         {
             ProductUnitType entity = await GetByIdAsync(id);
 
@@ -109,19 +107,19 @@ namespace WebApi.Base.Services.Products
         /// <param name="id">產品單位編號</param>
         public async Task DeleteByIdAsync(int id)
         {
-            ProductUnitType productUnitType = await GetByIdAsync(id);
+            ProductUnitType entity = await GetByIdAsync(id);
 
-            if (productUnitType == null)
+            if (entity == null)
             {
                 _logger.LogInformation($"[Delete] ProductUnitType is not existed (Id:{id})");
-                throw new ArgumentNullException(nameof(productUnitType));
+                throw new ArgumentNullException(nameof(entity));
             }
 
-            productUnitType.Deleted = true;
+            entity.Deleted = true;
 
             try
             {
-                await _productUnitTypeRepository.UpdateAsync(productUnitType);
+                await _productUnitTypeRepository.UpdateAsync(entity);
             }
             catch
             {

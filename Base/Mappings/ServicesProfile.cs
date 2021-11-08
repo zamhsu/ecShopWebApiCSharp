@@ -8,11 +8,7 @@ namespace WebApi.Base.Mappings
     {
         public ServicesProfile()
         {
-            // ProductCategoryType
-            CreateMap<CreateProductCategoryTypeModel, ProductCategoryType>();
-
-            // ProductUnitType
-            CreateMap<CreateProductUnitTypeModel, ProductUnitType>();
+            
         }
     }
 }

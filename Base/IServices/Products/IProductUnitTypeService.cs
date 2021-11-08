@@ -21,15 +21,15 @@ namespace WebApi.Base.IServices.Products
         /// <summary>
         /// 新增一筆產品單位資料
         /// </summary>
-        /// <param name="createProductUnitType">新增產品單位的資料</param>
-        Task CreateAsync(CreateProductUnitTypeModel createProductUnitType);
+        /// <param name="productUnitType">新增產品單位的資料</param>
+        Task CreateAsync(ProductUnitType createProductUnitType);
 
         /// <summary>
         /// 修改一筆產品單位資料
         /// </summary>
         /// <param name="id">產品單位編號</param>
-        /// <param name="updateProductUnitType">修改產品單位的資料</param>
-        Task UpdateAsync(int id, UpdateProductUnitTypeModel updateProductUnitType);
+        /// <param name="productUnitType">修改產品單位的資料</param>
+        Task UpdateAsync(int id, ProductUnitType updateProductUnitType);
 
         /// <summary>
         /// 使用產品單位編號刪除一筆產品單位

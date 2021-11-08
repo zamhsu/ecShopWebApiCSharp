@@ -1,3 +1,4 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,13 @@ namespace WebApi.Controllers
     public class ProductCategoryTypeController : ControllerBase
     {
         private readonly IProductCategoryTypeService _productCategoryTypeService;
+        private readonly IMapper _mapper;
 
-        public ProductCategoryTypeController(IProductCategoryTypeService productCategoryTypeService)
+        public ProductCategoryTypeController(IProductCategoryTypeService productCategoryTypeService,
+            IMapper mapper)
         {
             _productCategoryTypeService = productCategoryTypeService;
+            _mapper = mapper;
         }
 
         [HttpGet("api/productCategoryType")]
@@ -60,8 +64,8 @@ namespace WebApi.Controllers
         {
             BaseResponse<ProductCategoryType> baseResponse = new BaseResponse<ProductCategoryType>();
 
-            ProductCategoryType productCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
-            if (productCategoryType == null)
+            ProductCategoryType existedProductCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
+            if (existedProductCategoryType == null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -69,9 +73,11 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
+            ProductCategoryType productCategoryType = _mapper.Map<ProductCategoryType>(baseRequest.Data);
+
             try
             {
-                await _productCategoryTypeService.UpdateAsync(id, baseRequest.Data);
+                await _productCategoryTypeService.UpdateAsync(id, productCategoryType);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "修改成功";
@@ -90,9 +96,11 @@ namespace WebApi.Controllers
         {
             BaseResponse<ProductCategoryType> baseResponse = new BaseResponse<ProductCategoryType>();
 
+            ProductCategoryType productCategoryType = _mapper.Map<ProductCategoryType>(baseRequest.Data);
+
             try
             {
-                await _productCategoryTypeService.CreateAsync(baseRequest.Data);
+                await _productCategoryTypeService.CreateAsync(productCategoryType);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";

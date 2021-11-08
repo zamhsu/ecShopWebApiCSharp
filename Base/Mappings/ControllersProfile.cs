@@ -21,6 +21,16 @@ namespace WebApi.Base.Mappings
             CreateMap<UpdateProductModel, Product>()
                 .ForMember(dest => dest.StartDisplay, mo => mo.Ignore())
                 .ForMember(dest => dest.EndDisplay, mo => mo.Ignore());
+
+            // ProductCategoryType
+            CreateMap<CreateProductCategoryTypeModel, ProductCategoryType>();
+
+            CreateMap<UpdateProductCategoryTypeModel, ProductCategoryType>();
+
+            // ProductUnitType
+            CreateMap<CreateProductUnitTypeModel, ProductUnitType>();
+
+            CreateMap<UpdateProductUnitTypeModel, ProductUnitType>();
         }
     }
 }

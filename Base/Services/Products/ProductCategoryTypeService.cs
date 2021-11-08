@@ -56,15 +56,13 @@ namespace WebApi.Base.Services.Products
         /// 新增一筆產品分類資料
         /// </summary>
         /// <param name="productCategoryType">新增產品分類的資料</param>
-        public async Task CreateAsync(CreateProductCategoryTypeModel createProductCategoryType)
+        public async Task CreateAsync(ProductCategoryType productCategoryType)
         {
-            if (createProductCategoryType == null)
+            if (productCategoryType == null)
             {
                 _logger.LogInformation("[Create] ProductCategoryType can not be null");
-                new ArgumentNullException(nameof(createProductCategoryType));
+                new ArgumentNullException(nameof(productCategoryType));
             }
-
-            ProductCategoryType productCategoryType = _mapper.Map<ProductCategoryType>(createProductCategoryType);
 
             try
             {
@@ -80,18 +78,18 @@ namespace WebApi.Base.Services.Products
         /// 修改一筆產品分類資料
         /// </summary>
         /// <param name="id">產品分類編號</param>
-        /// <param name="updateProductCategoryType">修改產品分類的資料</param>
-        public async Task UpdateAsync(int id, UpdateProductCategoryTypeModel updateProductCategoryType)
+        /// <param name="productCategoryType">修改產品分類的資料</param>
+        public async Task UpdateAsync(int id, ProductCategoryType productCategoryType)
         {
             ProductCategoryType entity = await GetByIdAsync(id);
 
             if (entity == null)
             {
                 _logger.LogInformation($"[Update] ProductCategoryType is not existed (Id:{id})");
-                throw new ArgumentNullException(nameof(updateProductCategoryType));
+                throw new ArgumentNullException(nameof(productCategoryType));
             }
 
-            entity.Name = updateProductCategoryType.Name;
+            entity.Name = productCategoryType.Name;
 
             try
             {
@@ -109,19 +107,19 @@ namespace WebApi.Base.Services.Products
         /// <param name="id">產品分類編號</param>
         public async Task DeleteByIdAsync(int id)
         {
-            ProductCategoryType productCategoryType = await GetByIdAsync(id);
+            ProductCategoryType entity = await GetByIdAsync(id);
 
-            if (productCategoryType == null)
+            if (entity == null)
             {
                 _logger.LogInformation($"[Delete] ProductCategoryType is not existed (Id:{id})");
-                throw new ArgumentNullException(nameof(productCategoryType));
+                throw new ArgumentNullException(nameof(entity));
             }
 
-            productCategoryType.Deleted = true;
+            entity.Deleted = true;
 
             try
             {
-                await _productCategoryTypeRepository.UpdateAsync(productCategoryType);
+                await _productCategoryTypeRepository.UpdateAsync(entity);
             }
             catch
             {

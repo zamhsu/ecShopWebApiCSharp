@@ -1,3 +1,4 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,13 @@ namespace WebApi.Controllers
     public class ProductUnitTypeController : ControllerBase
     {
         private readonly IProductUnitTypeService _productUnitTypeService;
+        private readonly IMapper _mapper;
 
-        public ProductUnitTypeController(IProductUnitTypeService productUnitTypeService)
+        public ProductUnitTypeController(IProductUnitTypeService productUnitTypeService,
+            IMapper mapper)
         {
             _productUnitTypeService = productUnitTypeService;
+            _mapper = mapper;
         }
 
         [HttpGet("api/productUnitType")]
@@ -60,8 +64,8 @@ namespace WebApi.Controllers
         {
             BaseResponse<ProductUnitType> baseResponse = new BaseResponse<ProductUnitType>();
 
-            ProductUnitType productUnitType = await _productUnitTypeService.GetByIdAsync(id);
-            if (productUnitType == null)
+            ProductUnitType existedProductUnitType = await _productUnitTypeService.GetByIdAsync(id);
+            if (existedProductUnitType == null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -69,9 +73,11 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
+            ProductUnitType productUnitType = _mapper.Map<ProductUnitType>(baseRequest.Data);
+
             try
             {
-                await _productUnitTypeService.UpdateAsync(id, baseRequest.Data);
+                await _productUnitTypeService.UpdateAsync(id, productUnitType);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "修改成功";
@@ -90,9 +96,11 @@ namespace WebApi.Controllers
         {
             BaseResponse<ProductUnitType> baseResponse = new BaseResponse<ProductUnitType>();
 
+            ProductUnitType productUnitType = _mapper.Map<ProductUnitType>(baseRequest.Data);
+
             try
             {
-                await _productUnitTypeService.CreateAsync(baseRequest.Data);
+                await _productUnitTypeService.CreateAsync(productUnitType);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";
