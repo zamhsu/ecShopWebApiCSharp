@@ -12,6 +12,9 @@ namespace WebApi.Models
         }
 
         public DbSet<Product> Product { get; set; } = null!;
+        public DbSet<ProductCategoryType> ProductCategoryType { get; set; } = null!;
+        public DbSet<ProductUnitType> ProductUnitType { get; set; } = null!;
+        public DbSet<ProductStatus> ProductStatus { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
