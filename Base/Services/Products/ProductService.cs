@@ -152,12 +152,12 @@ namespace WebApi.Base.Services.Products
         /// <param name="guid">產品GUID</param>
         public async Task DeleteByGuidAsync(string guid)
         {
-            Product product = await GetByGuidAsync(guid);
+            Product entity = await GetByGuidAsync(guid);
 
-            if (product == null)
+            if (entity == null)
             {
                 _logger.LogInformation($"[Delete] Product is not existed (Guid:{guid})");
-                throw new ArgumentNullException(nameof(product));
+                throw new ArgumentNullException(nameof(entity));
             }
 
             product.StatusId = (int)ProductStatusPara.Delete;
