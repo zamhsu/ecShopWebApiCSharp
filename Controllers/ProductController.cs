@@ -1,3 +1,4 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,29 +18,36 @@ namespace WebApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IMapper _mapper;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService,
+            IMapper mapper)
         {
             _productService = productService;
+            _mapper = mapper;
         }
 
         [HttpGet("api/product")]
-        public ActionResult<BaseResponse<List<Product>>> GetProduct()
+        public ActionResult<BaseResponse<List<ProductDisplayModel>>> GetProduct()
         {
-            BaseResponse<List<Product>> baseResponse = new BaseResponse<List<Product>>();
+            BaseResponse<List<ProductDisplayModel>> baseResponse = new BaseResponse<List<ProductDisplayModel>>();
+
+            List<Product> products = _productService.GetDetailAllUsable();
+            List<ProductDisplayModel> productDisplays = _mapper.Map<List<ProductDisplayModel>>(products);
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = _productService.GetAllUsable();
+            baseResponse.Data = productDisplays;
 
             return baseResponse;
         }
 
         [HttpGet("api/product/{guid}")]
-        public async Task<ActionResult<BaseResponse<Product>>> GetProduct(string guid)
+        public async Task<ActionResult<BaseResponse<ProductDisplayModel>>> GetProduct(string guid)
         {
-            BaseResponse<Product> baseResponse = new BaseResponse<Product>();
+            BaseResponse<ProductDisplayModel> baseResponse = new BaseResponse<ProductDisplayModel>();
 
-            Product product = await _productService.GetByGuidAsync(guid);
+            Product product = await _productService.GetDetailByGuidAsync(guid);
+            ProductDisplayModel productDisplay = _mapper.Map<ProductDisplayModel>(product);
 
             if (product == null)
             {
@@ -50,7 +58,7 @@ namespace WebApi.Controllers
             }
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = product;
+            baseResponse.Data = productDisplay;
 
             return baseResponse;
         }
@@ -60,8 +68,8 @@ namespace WebApi.Controllers
         {
             BaseResponse<Product> baseResponse = new BaseResponse<Product>();
 
-            Product product = await _productService.GetByGuidAsync(guid);
-            if (product == null)
+            Product existedProduct = await _productService.GetByGuidAsync(guid);
+            if (existedProduct == null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -69,9 +77,16 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
+            var startOffset = new DateTimeOffset(baseRequest.Data.StartDisplay, baseRequest.UserTimeZone);
+            var endOffset = new DateTimeOffset(baseRequest.Data.EndDisplay, baseRequest.UserTimeZone);
+
+            Product product = _mapper.Map<Product>(baseRequest.Data);
+            product.StartDisplay = startOffset;
+            product.EndDisplay = endOffset;
+
             try
             {
-                await _productService.UpdateAsync(guid, baseRequest.Data, baseRequest.UserTimeZone);
+                await _productService.UpdateAsync(guid, product);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "修改成功";
@@ -90,9 +105,16 @@ namespace WebApi.Controllers
         {
             BaseResponse<Product> baseResponse = new BaseResponse<Product>();
 
+            var startOffset = new DateTimeOffset(baseRequest.Data.StartDisplay, baseRequest.UserTimeZone);
+            var endOffset = new DateTimeOffset(baseRequest.Data.EndDisplay, baseRequest.UserTimeZone);
+
+            Product product = _mapper.Map<Product>(baseRequest.Data);
+            product.StartDisplay = startOffset;
+            product.EndDisplay = endOffset;
+
             try
             {
-                await _productService.CreateAsync(baseRequest.Data, baseRequest.UserTimeZone);
+                await _productService.CreateAsync(product);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";

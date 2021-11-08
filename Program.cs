@@ -25,6 +25,7 @@ builder.Services.AddAutoMapper(cfg => {
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // Services
 builder.Services.AddScoped<IProductService, ProductService>();
