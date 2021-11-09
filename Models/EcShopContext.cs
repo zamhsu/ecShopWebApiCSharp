@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using WebApi.Models.Members;
 using WebApi.Models.Products;
 
 namespace WebApi.Models
@@ -11,13 +12,19 @@ namespace WebApi.Models
         {
         }
 
+        // Products
         public DbSet<Product> Product { get; set; } = null!;
         public DbSet<ProductCategoryType> ProductCategoryType { get; set; } = null!;
         public DbSet<ProductUnitType> ProductUnitType { get; set; } = null!;
         public DbSet<ProductStatus> ProductStatus { get; set; } = null!;
 
+        // Members
+        public DbSet<AdminMember> AdminMember { get; set; } = null!;
+        public DbSet<AdminMemberStatus> AdminMemberStatus { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Products
             modelBuilder.Entity<Product>(e =>
             {
                 e.HasIndex(b => b.Guid)
@@ -56,6 +63,25 @@ namespace WebApi.Models
                 e.Property(p => p.Deleted)
                     .HasDefaultValue(false)
                     .IsRequired();
+            });
+
+            // Members
+            modelBuilder.Entity<AdminMember>(e =>
+            {
+                e.HasIndex(b => b.Guid)
+                    .IsUnique();
+
+                e.HasOne(b => b.AdminMemberStatus)
+                    .WithMany(p => p.AdminMember)
+                    .HasForeignKey(b => b.StatusId)
+                    .OnDelete(DeleteBehavior.ClientNoAction)
+                    .HasConstraintName("FK_AdminMember_StatusId_To_AdminMemberStatus_Id");
+
+                e.Property(p => p.IsMaster)
+                    .HasDefaultValue(false)
+                    .IsRequired();
+
+                e.ToTable("AdminMember");
             });
         }
     }

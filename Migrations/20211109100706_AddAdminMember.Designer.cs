@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.Models;
@@ -11,9 +12,10 @@ using WebApi.Models;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(EcShopContext))]
-    partial class EcShopContextModelSnapshot : ModelSnapshot
+    [Migration("20211109100706_AddAdminMember")]
+    partial class AddAdminMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
