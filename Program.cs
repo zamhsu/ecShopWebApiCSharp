@@ -4,7 +4,9 @@ using WebApi.Base;
 using WebApi.Base.IRepositories;
 using WebApi.Base.Repositories;
 using WebApi.Base.Mappings;
+using WebApi.Base.IServices.Members;
 using WebApi.Base.IServices.Products;
+using WebApi.Base.Services.Members;
 using WebApi.Base.Services.Products;
 using WebApi.Models;
 
@@ -28,6 +30,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // Services
+builder.Services.AddScoped<IAdminMemberService, AdminMemberService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductCategoryTypeService, ProductCategoryTypeService>();
 builder.Services.AddScoped<IProductUnitTypeService, ProductUnitTypeService>();
