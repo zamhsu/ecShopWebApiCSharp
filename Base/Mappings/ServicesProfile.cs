@@ -1,6 +1,6 @@
 using AutoMapper;
-using WebApi.Dtos.Products;
-using WebApi.Models.Products;
+using WebApi.Dtos.Members;
+using WebApi.Models.Members;
 
 namespace WebApi.Base.Mappings
 {
@@ -8,7 +8,8 @@ namespace WebApi.Base.Mappings
     {
         public ServicesProfile()
         {
-            
+            // AdminMember
+            CreateMap<AdminMember, AdminMemberInfoModel>();
         }
     }
 }

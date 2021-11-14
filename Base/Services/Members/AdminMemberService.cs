@@ -35,6 +35,18 @@ namespace WebApi.Base.Services.Members
         }
 
         /// <summary>
+        /// 使用帳號取得一筆管理員資料
+        /// </summary>
+        /// <param name="account">帳號</param>
+        /// <returns></returns>
+        public async Task<AdminMember> GetByAccountAsync(string account)
+        {
+            AdminMember adminMember = await _adminMemberRepository.GetAsync(q => q.Account == account);
+
+            return adminMember;
+        }
+
+        /// <summary>
         /// 取得所有管理員
         /// </summary>
         /// <returns></returns>

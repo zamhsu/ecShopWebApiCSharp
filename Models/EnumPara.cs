@@ -19,4 +19,13 @@ namespace WebApi.Models
         Delete = 3,
         Lock = 4
     }
+
+    /// <summary>
+    /// 雜湊演算法參數
+    /// </summary>
+    public enum HashAlgorithmPara
+    {
+        SHA256,
+        SHA512
+    }
 }

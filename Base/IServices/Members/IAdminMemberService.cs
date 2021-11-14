@@ -12,6 +12,13 @@ namespace WebApi.Base.IServices.Members
         Task<AdminMember> GetByGuidAsync(string guid);
 
         /// <summary>
+        /// 使用帳號取得一筆管理員資料
+        /// </summary>
+        /// <param name="account">帳號</param>
+        /// <returns></returns>
+        Task<AdminMember> GetByAccountAsync(string account);
+
+        /// <summary>
         /// 取得所有管理員
         /// </summary>
         /// <returns></returns>
