@@ -9,6 +9,8 @@ using WebApi.Base.IServices.Products;
 using WebApi.Base.Services.Members;
 using WebApi.Base.Services.Products;
 using WebApi.Models;
+using WebApi.Base.IServices.Security;
+using WebApi.Base.Services.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -27,13 +29,16 @@ builder.Services.AddAutoMapper(cfg => {
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+builder.Services.AddScoped<IAdminMemberRepository, AdminMemberRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // Services
 builder.Services.AddScoped<IAdminMemberService, AdminMemberService>();
+builder.Services.AddScoped<IAdminMemberAccountService, AdminMemberAccountService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductCategoryTypeService, ProductCategoryTypeService>();
 builder.Services.AddScoped<IProductUnitTypeService, ProductUnitTypeService>();
+builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
 

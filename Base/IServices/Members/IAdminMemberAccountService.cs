@@ -1,5 +1,6 @@
 using WebApi.Dtos.Members;
 using WebApi.Models;
+using WebApi.Models.Members;
 
 namespace WebApi.Base.IServices.Members
 {
@@ -19,6 +20,13 @@ namespace WebApi.Base.IServices.Members
         /// <param name="guid">管理員GUID</param>
         /// <returns></returns>
         Task LogoutAsync(string guid);
+
+        /// <summary>
+        /// 註冊帳號
+        /// </summary>
+        /// <param name="adminMember">管理員資料</param>
+        /// <returns></returns>
+        Task RegisterAsync(AdminMember adminMember);
 
         /// <summary>
         /// 更新Token過期時間

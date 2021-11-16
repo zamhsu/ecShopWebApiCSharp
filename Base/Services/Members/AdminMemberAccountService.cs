@@ -90,6 +90,28 @@ namespace WebApi.Base.Services.Members
         }
 
         /// <summary>
+        /// 註冊帳號
+        /// </summary>
+        /// <param name="adminMember">管理員資料</param>
+        /// <returns></returns>
+        public async Task RegisterAsync(AdminMember adminMember)
+        {
+            string hashSalt = Guid.NewGuid().ToString();
+
+            adminMember.Pwd = HashPassword(adminMember.Pwd, hashSalt);
+            adminMember.HashSalt = hashSalt;
+
+            try
+            {
+                await _adminMemberService.CreateAsync(adminMember);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 更新Token過期時間
         /// </summary>
         /// <param name="account">帳號</param>

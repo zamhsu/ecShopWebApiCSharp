@@ -12,6 +12,13 @@ namespace WebApi.Base.IServices.Members
         Task<AdminMember> GetByGuidAsync(string guid);
 
         /// <summary>
+        /// 使用Guid取得一筆包含關聯性資料的管理員
+        /// </summary>
+        /// <param name="guid">管理員GUID</param>
+        /// <returns></returns>
+        Task<AdminMember> GetDetailByGuidAsync(string guid);
+
+        /// <summary>
         /// 使用帳號取得一筆管理員資料
         /// </summary>
         /// <param name="account">帳號</param>
@@ -23,6 +30,12 @@ namespace WebApi.Base.IServices.Members
         /// </summary>
         /// <returns></returns>
         Task<List<AdminMember>> GetAllAsync();
+
+        /// <summary>
+        /// 取得包含關聯性資料的所有管理員
+        /// </summary>
+        /// <returns></returns>
+        Task<List<AdminMember>> GetDetailAllAsync();
 
         /// <summary>
         /// 新增一筆管理員資料
@@ -52,6 +65,6 @@ namespace WebApi.Base.IServices.Members
         /// </summary>
         /// <param name="guid">管理員GUID</param>
         /// <returns></returns>
-        Task DeleteAsync(string guid);
+        Task DeleteByGuidAsync(string guid);
     }
 }

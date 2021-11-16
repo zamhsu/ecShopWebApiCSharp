@@ -9,11 +9,11 @@ namespace WebApi.Base.Services.Members
 {
     public class AdminMemberService : IAdminMemberService
     {
-        private readonly IRepository<AdminMember> _adminMemberRepository;
+        private readonly IAdminMemberRepository _adminMemberRepository;
         private readonly IMapper _mapper;
         private readonly IAppLogger<AdminMember> _logger;
 
-        public AdminMemberService(IRepository<AdminMember> adminMemberRepository,
+        public AdminMemberService(IAdminMemberRepository adminMemberRepository,
             IMapper mapper,
             IAppLogger<AdminMember> logger)
         {
@@ -30,6 +30,18 @@ namespace WebApi.Base.Services.Members
         public async Task<AdminMember> GetByGuidAsync(string guid)
         {
             AdminMember adminMember = await _adminMemberRepository.GetAsync(q => q.Guid == guid);
+
+            return adminMember;
+        }
+
+        /// <summary>
+        /// 使用Guid取得一筆包含關聯性資料的管理員
+        /// </summary>
+        /// <param name="guid">管理員GUID</param>
+        /// <returns></returns>
+        public async Task<AdminMember> GetDetailByGuidAsync(string guid)
+        {
+            AdminMember adminMember = await _adminMemberRepository.GetDetailAsync(q => q.Guid == guid);
 
             return adminMember;
         }
@@ -59,6 +71,18 @@ namespace WebApi.Base.Services.Members
         }
 
         /// <summary>
+        /// 取得包含關聯性資料的所有管理員
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<AdminMember>> GetDetailAllAsync()
+        {
+            IQueryable<AdminMember> query = _adminMemberRepository.GetDetailAll();
+            List<AdminMember> adminMembers = await query.ToListAsync();
+
+            return adminMembers;
+        }
+
+        /// <summary>
         /// 新增一筆管理員資料
         /// </summary>
         /// <param name="adminMember">新增管理員的資料</param>
@@ -72,7 +96,6 @@ namespace WebApi.Base.Services.Members
             }
 
             adminMember.Guid = Guid.NewGuid().ToString();
-            adminMember.HashSalt = Guid.NewGuid().ToString();
             adminMember.StatusId = (int)AdminMemberStatusPara.OK;
             adminMember.CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
@@ -157,7 +180,7 @@ namespace WebApi.Base.Services.Members
         /// </summary>
         /// <param name="guid">管理員GUID</param>
         /// <returns></returns>
-        public async Task DeleteAsync(string guid)
+        public async Task DeleteByGuidAsync(string guid)
         {
             AdminMember entity = await GetByGuidAsync(guid);
 

@@ -1,5 +1,7 @@
 using AutoMapper;
+using WebApi.Dtos.Members;
 using WebApi.Dtos.Products;
+using WebApi.Models.Members;
 using WebApi.Models.Products;
 
 namespace WebApi.Base.Mappings
@@ -8,6 +10,14 @@ namespace WebApi.Base.Mappings
     {
         public ControllersProfile()
         {
+            // AdminMember
+            CreateMap<AdminMember, AdminMemberDisplayModel>()
+                .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.AdminMemberStatus.Name));
+
+            CreateMap<CreateAdminMemberModel, AdminMember>();
+
+            CreateMap<UpdateAdminMemberInfoModel, AdminMember>();
+
             // Product
             CreateMap<Product, ProductDisplayModel>()
                 .ForMember(dest => dest.CategoryString, mo => mo.MapFrom(q => q.ProductCategoryType.Name))
