@@ -1,3 +1,5 @@
+using WebApi.Models;
+
 namespace WebApi.Base.IServices.Security
 {
     public interface IEncryptionService
@@ -9,6 +11,6 @@ namespace WebApi.Base.IServices.Security
         /// <param name="saltKey">雜湊鹽</param>
         /// <param name="hashAlgorithm">計算雜湊的演算法</param>
         /// <returns>Password hash</returns>
-        string CreatePasswordHash(string password, string saltKey, string hashAlgorithm);
+        string CreatePasswordHash(string password, string saltKey, GeneralHashAlgorithmPara hashAlgorithm);
     }
 }

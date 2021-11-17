@@ -21,9 +21,9 @@ namespace WebApi.Models
     }
 
     /// <summary>
-    /// 雜湊演算法參數
+    /// 常用的雜湊演算法參數
     /// </summary>
-    public enum HashAlgorithmPara
+    public enum GeneralHashAlgorithmPara
     {
         SHA256,
         SHA512

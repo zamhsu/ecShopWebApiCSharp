@@ -275,8 +275,7 @@ namespace WebApi.Base.Services.Members
         /// <returns></returns>
         private string HashPassword(string rawPassword, string saltKey)
         {
-            string hashAlgorithm = Enum.GetName(typeof(HashAlgorithmPara), HashAlgorithmPara.SHA256);
-            string hashedPassword = _encryptionService.CreatePasswordHash(rawPassword, saltKey, hashAlgorithm);
+            string hashedPassword = _encryptionService.CreatePasswordHash(rawPassword, saltKey, GeneralHashAlgorithmPara.SHA256);
 
             return hashedPassword;
         }

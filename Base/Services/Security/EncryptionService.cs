@@ -1,5 +1,6 @@
 using System.Text;
 using WebApi.Base.IServices.Security;
+using WebApi.Models;
 using WebApi.Utilities;
 
 namespace WebApi.Base.Services.Security
@@ -13,10 +14,10 @@ namespace WebApi.Base.Services.Security
         /// <param name="saltKey">雜湊鹽</param>
         /// <param name="hashAlgorithm">計算雜湊的演算法</param>
         /// <returns>Password hash</returns>
-        public string CreatePasswordHash(string password, string saltKey, string hashAlgorithm)
+        public string CreatePasswordHash(string password, string saltKey, GeneralHashAlgorithmPara hashAlgorithm)
         {
             byte[] encodedPassword = Encoding.UTF8.GetBytes($"{password}{saltKey}");
-            string result = HashUtility.CreateHash(encodedPassword, hashAlgorithm);
+            string result = HashUtility.CreateGeneralHash(encodedPassword, hashAlgorithm);
 
             return result;
         }
