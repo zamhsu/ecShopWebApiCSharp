@@ -11,6 +11,7 @@ using WebApi.Base.Services.Products;
 using WebApi.Models;
 using WebApi.Base.IServices.Security;
 using WebApi.Base.Services.Security;
+using WebApi.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -41,6 +42,7 @@ builder.Services.AddScoped<IProductUnitTypeService, ProductUnitTypeService>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
+builder.Services.AddSingleton<JwtHelper>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

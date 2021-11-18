@@ -21,6 +21,15 @@ namespace WebApi.Models
     }
 
     /// <summary>
+    /// 會員身份
+    /// </summary>
+    public enum MemberRolePara
+    {
+        AdminMember = 1,
+        Customer = 2
+    }
+
+    /// <summary>
     /// 常用的雜湊演算法參數
     /// </summary>
     public enum GeneralHashAlgorithmPara

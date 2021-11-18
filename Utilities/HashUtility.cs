@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using WebApi.Models;
 
 namespace WebApi.Utilities
@@ -27,6 +29,27 @@ namespace WebApi.Utilities
             string result = BitConverter.ToString(algorithm.ComputeHash(data)).Replace("-", string.Empty);
 
             return result;
+        }
+
+        /// <summary>
+        /// 建立HmacSha256簽章
+        /// </summary>
+        /// <param name="signKey">簽章金鑰</param>
+        /// <returns></returns>
+        public static SigningCredentials CreateHmacSha256Signature(string signKey)
+        {
+            if (signKey.Length < 16)
+            {
+                throw new ArgumentException("Must longer than 16 characters");
+            }
+
+            // 建立一組對稱式加密的金鑰
+            SecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signKey));
+
+            // 建立HmacSha256簽章
+            SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+            return signingCredentials;
         }
     }
 }
