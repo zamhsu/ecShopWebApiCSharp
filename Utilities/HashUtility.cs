@@ -44,7 +44,7 @@ namespace WebApi.Utilities
             }
 
             // 建立一組對稱式加密的金鑰
-            SecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signKey));
+            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signKey));
 
             // 建立HmacSha256簽章
             SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);

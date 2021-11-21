@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Base.IServices.Members;
 using WebApi.Dtos;
@@ -7,6 +8,7 @@ using WebApi.Models.Members;
 
 namespace WebApi.Controllers
 {
+    [Authorize]
     [ApiController]
     public class AdminMemberController : ControllerBase
     {

@@ -12,6 +12,9 @@ using WebApi.Models;
 using WebApi.Base.IServices.Security;
 using WebApi.Base.Services.Security;
 using WebApi.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -19,14 +22,47 @@ builder.Logging.AddConsole();
 
 // Add services to the container.
 
+// configuration
+var provider = builder.Services.BuildServiceProvider();
+var configuration = provider.GetRequiredService<IConfiguration>();
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<EcShopContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
 
-builder.Services.AddAutoMapper(cfg => {
+builder.Services.AddAutoMapper(cfg =>
+{
     cfg.AddProfile<ServicesProfile>();
     cfg.AddProfile<ControllersProfile>();
 });
+
+// JWT Auth
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt =>
+    {
+        // 當驗證失敗時，回應標頭會包含 WWW-Authenticate 標頭，這裡會顯示失敗的詳細錯誤原因
+        opt.IncludeErrorDetails = true;
+        opt.TokenValidationParameters = new TokenValidationParameters
+        {
+            NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+            RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+
+            // 驗證Issuer
+            ValidateIssuer = true,
+            ValidIssuer = configuration.GetValue<string>("JwtSettings:Issuer"),
+
+            // 不太驗證Audience
+            ValidateAudience = false,
+
+            // 驗證Token有效期
+            ValidateLifetime = true,
+
+            // 如果Token中包含key才需要驗證，一般都只有簽章而已
+            ValidateIssuerSigningKey = false,
+            // 從IConfiguration取得IssuerSigningKey
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("JwtSettings:SignKey")))
+        };
+    });
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
@@ -60,6 +96,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// 先驗證
+app.UseAuthentication();
+// 再授權
 app.UseAuthorization();
 
 app.MapControllers();
