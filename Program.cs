@@ -22,10 +22,6 @@ builder.Logging.AddConsole();
 
 // Add services to the container.
 
-// configuration
-var provider = builder.Services.BuildServiceProvider();
-var configuration = provider.GetRequiredService<IConfiguration>();
-
 builder.Services.AddControllers();
 builder.Services.AddDbContext<EcShopContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
@@ -49,7 +45,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             // 驗證Issuer
             ValidateIssuer = true,
-            ValidIssuer = configuration.GetValue<string>("JwtSettings:Issuer"),
+            ValidIssuer = builder.Configuration.GetValue<string>("JwtSettings:Issuer"),
 
             // 不太驗證Audience
             ValidateAudience = false,
@@ -60,7 +56,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // 如果Token中包含key才需要驗證，一般都只有簽章而已
             ValidateIssuerSigningKey = false,
             // 從IConfiguration取得IssuerSigningKey
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("JwtSettings:SignKey")))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtSettings:SignKey")))
         };
     });
 
