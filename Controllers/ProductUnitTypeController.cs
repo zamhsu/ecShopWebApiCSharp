@@ -11,9 +11,11 @@ using WebApi.Dtos;
 using WebApi.Dtos.Products;
 using WebApi.Models;
 using WebApi.Models.Products;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers
 {
+    [Authorize]
     [ApiController]
     public class ProductUnitTypeController : ControllerBase
     {
@@ -27,6 +29,7 @@ namespace WebApi.Controllers
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
         [HttpGet("api/productUnitType")]
         public async Task<ActionResult<BaseResponse<List<ProductUnitType>>>> GetProductUnitType()
         {
@@ -38,6 +41,7 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
+        [AllowAnonymous]
         [HttpGet("api/productUnitType/{id}")]
         public async Task<ActionResult<BaseResponse<ProductUnitType>>> GetProductUnitType(int id)
         {
