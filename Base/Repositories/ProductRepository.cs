@@ -12,7 +12,7 @@ namespace WebApi.Base.Repositories
 {
     public class ProductRepository : EfRepository<Product>, IProductRepository
     {
-        public ProductRepository(EcShopContext context) : base(context)
+        public ProductRepository(DbContext context) : base(context)
         {
 
         }

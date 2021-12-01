@@ -12,9 +12,9 @@ namespace WebApi.Base.Repositories
 {
     public class EfRepository<T> : IRepository<T> where T : class
     {
-        private readonly EcShopContext _context;
+        private readonly DbContext _context;
 
-        public EfRepository(EcShopContext context)
+        public EfRepository(DbContext context)
         {
             _context = context;
         }
@@ -23,7 +23,7 @@ namespace WebApi.Base.Repositories
         /// Database Context
         /// </summary>
         /// <value></value>
-        public EcShopContext Context
+        public DbContext Context
         {
             get { return _context; }
         }

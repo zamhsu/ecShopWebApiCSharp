@@ -8,7 +8,7 @@ namespace WebApi.Base.Repositories
 {
     public class AdminMemberRepository : EfRepository<AdminMember>, IAdminMemberRepository
     {
-        public AdminMemberRepository(EcShopContext context) : base(context)
+        public AdminMemberRepository(DbContext context) : base(context)
         {
 
         }

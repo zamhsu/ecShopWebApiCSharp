@@ -25,6 +25,7 @@ builder.Logging.AddConsole();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<EcShopContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
+builder.Services.AddScoped<DbContext, EcShopContext>();
 
 builder.Services.AddAutoMapper(cfg =>
 {
