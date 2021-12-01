@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base;
 using WebApi.Base.IRepositories;
@@ -63,8 +62,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-builder.Services.AddScoped<IAdminMemberRepository, AdminMemberRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Services
 builder.Services.AddScoped<IAdminMemberService, AdminMemberService>();

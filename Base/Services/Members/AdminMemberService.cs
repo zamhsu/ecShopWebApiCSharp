@@ -9,15 +9,18 @@ namespace WebApi.Base.Services.Members
 {
     public class AdminMemberService : IAdminMemberService
     {
-        private readonly IAdminMemberRepository _adminMemberRepository;
+        private readonly IRepository<AdminMember> _adminMemberRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAppLogger<AdminMember> _logger;
 
-        public AdminMemberService(IAdminMemberRepository adminMemberRepository,
+        public AdminMemberService(IRepository<AdminMember> adminMemberRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IAppLogger<AdminMember> logger)
         {
             _adminMemberRepository = adminMemberRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
@@ -41,7 +44,9 @@ namespace WebApi.Base.Services.Members
         /// <returns></returns>
         public async Task<AdminMember> GetDetailByGuidAsync(string guid)
         {
-            AdminMember adminMember = await _adminMemberRepository.GetDetailAsync(q => q.Guid == guid);
+            AdminMember adminMember = await _adminMemberRepository.GetAll()
+                .Include(q => q.AdminMemberStatus)
+                .FirstOrDefaultAsync(q => q.Guid == guid);
 
             return adminMember;
         }
@@ -76,7 +81,8 @@ namespace WebApi.Base.Services.Members
         /// <returns></returns>
         public async Task<List<AdminMember>> GetDetailAllAsync()
         {
-            IQueryable<AdminMember> query = _adminMemberRepository.GetDetailAll();
+            IQueryable<AdminMember> query = _adminMemberRepository.GetAll()
+                .Include(q => q.AdminMemberStatus);
             List<AdminMember> adminMembers = await query.ToListAsync();
 
             return adminMembers;
@@ -102,6 +108,7 @@ namespace WebApi.Base.Services.Members
             try
             {
                 await _adminMemberRepository.CreateAsync(adminMember);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {
@@ -131,7 +138,8 @@ namespace WebApi.Base.Services.Members
 
             try
             {
-                await _adminMemberRepository.UpdateAsync(enity);
+                _adminMemberRepository.Update(enity);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {
@@ -167,7 +175,8 @@ namespace WebApi.Base.Services.Members
 
             try
             {
-                await _adminMemberRepository.UpdateAsync(enity);
+                _adminMemberRepository.Update(enity);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {
@@ -195,7 +204,8 @@ namespace WebApi.Base.Services.Members
 
             try
             {
-                await _adminMemberRepository.UpdateAsync(entity);
+                _adminMemberRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {

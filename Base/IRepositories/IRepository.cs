@@ -44,24 +44,24 @@ namespace WebApi.Base.IRepositories
         /// 更新一筆資料
         /// </summary>
         /// <param name="entity">Entity</param>
-        Task UpdateAsync(T entity);
+        void Update(T entity);
 
         /// <summary>
         /// 更新多筆資料
         /// </summary>
         /// <param name="entities">Entities</param>
-        Task UpdateAsync(IEnumerable<T> entities);
+        void Update(IEnumerable<T> entities);
 
         /// <summary>
         /// 刪除一筆資料
         /// </summary>
         /// <param name="entity">Entity</param>
-        Task DeleteAsync(T entity);
+        void Delete(T entity);
 
         /// <summary>
-        /// 儲存變更
+        /// 刪除多筆資料
         /// </summary>
-        /// <returns></returns>
-        Task<int> SaveChangesAsync();
+        /// <param name="entities">Entities</param>
+        void Delete(IEnumerable<T> entities);
     }
 }

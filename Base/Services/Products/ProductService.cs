@@ -1,14 +1,7 @@
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Products;
-using WebApi.Dtos.Products;
 using WebApi.Models;
 using WebApi.Models.Products;
 
@@ -16,15 +9,18 @@ namespace WebApi.Base.Services.Products
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IRepository<Product> _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAppLogger<Product> _logger;
 
-        public ProductService(IProductRepository productRepository,
+        public ProductService(IRepository<Product> productRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IAppLogger<Product> logger)
         {
             _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
@@ -50,7 +46,11 @@ namespace WebApi.Base.Services.Products
         public async Task<Product> GetDetailByGuidAsync(string guid)
         {
             int okStatus = (int)ProductStatusPara.OK;
-            Product product = await _productRepository.GetDetailAsync(q => q.Guid == guid && q.StatusId == okStatus);
+            Product product = await _productRepository.GetAll()
+                .Include(q => q.ProductCategoryType)
+                .Include(q => q.ProductUnitType)
+                .Include(q => q.ProductStatus)
+                .FirstOrDefaultAsync(q => q.Guid == guid && q.StatusId == okStatus);
 
             return product;
         }
@@ -75,7 +75,12 @@ namespace WebApi.Base.Services.Products
         public async Task<List<Product>> GetDetailAllUsableAsync()
         {
             int okStatus = (int)ProductStatusPara.OK;
-            IQueryable<Product> query = _productRepository.GetDetailAll().Where(q => q.StatusId == okStatus);
+            IQueryable<Product> query = _productRepository.GetAll()
+                .Where(q => q.StatusId == okStatus)
+                .Include(q => q.ProductCategoryType)
+                .Include(q => q.ProductUnitType)
+                .Include(q => q.ProductStatus);
+            
             List<Product> products = await query.ToListAsync();
 
             return products;
@@ -102,6 +107,7 @@ namespace WebApi.Base.Services.Products
             try
             {
                 await _productRepository.CreateAsync(product);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {
@@ -139,7 +145,8 @@ namespace WebApi.Base.Services.Products
 
             try
             {
-                await _productRepository.UpdateAsync(enity);
+                _productRepository.Update(enity);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {
@@ -166,7 +173,8 @@ namespace WebApi.Base.Services.Products
 
             try
             {
-                await _productRepository.UpdateAsync(entity);
+                _productRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {

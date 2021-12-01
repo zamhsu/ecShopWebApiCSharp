@@ -1,15 +1,7 @@
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Products;
-using WebApi.Dtos.Products;
-using WebApi.Models;
 using WebApi.Models.Products;
 
 namespace WebApi.Base.Services.Products
@@ -17,14 +9,17 @@ namespace WebApi.Base.Services.Products
     public class ProductUnitTypeService : IProductUnitTypeService
     {
         private readonly IRepository<ProductUnitType> _productUnitTypeRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAppLogger<ProductUnitType> _logger;
 
         public ProductUnitTypeService(IRepository<ProductUnitType> productUnitTypeRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IAppLogger<ProductUnitType> logger)
         {
             _productUnitTypeRepository = productUnitTypeRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
@@ -68,6 +63,7 @@ namespace WebApi.Base.Services.Products
             try
             {
                 await _productUnitTypeRepository.CreateAsync(productUnitType);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {
@@ -94,7 +90,8 @@ namespace WebApi.Base.Services.Products
 
             try
             {
-                await _productUnitTypeRepository.UpdateAsync(entity);
+                _productUnitTypeRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {
@@ -120,7 +117,8 @@ namespace WebApi.Base.Services.Products
 
             try
             {
-                await _productUnitTypeRepository.UpdateAsync(entity);
+                _productUnitTypeRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
             }
             catch
             {
