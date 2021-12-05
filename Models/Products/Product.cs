@@ -1,7 +1,14 @@
+using WebApi.Models.Orders;
+
 namespace WebApi.Models.Products
 {
     public class Product
     {
+        public Product()
+        {
+            OrderDetail = new HashSet<OrderDetail>();
+        }
+
         public int Id { get; set; }
         public string Guid { get; set; }
         public string Title { get; set; }
@@ -22,5 +29,6 @@ namespace WebApi.Models.Products
         public ProductCategoryType ProductCategoryType { get; set; }
         public ProductUnitType ProductUnitType { get; set; }
         public ProductStatus ProductStatus { get; set; }
+        public ICollection<OrderDetail> OrderDetail { get; set; }
     }
 }

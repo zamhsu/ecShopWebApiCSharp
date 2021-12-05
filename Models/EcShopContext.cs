@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
 using WebApi.Models.Members;
+using WebApi.Models.Orders;
 using WebApi.Models.Products;
 
 namespace WebApi.Models
@@ -21,6 +22,13 @@ namespace WebApi.Models
         // Members
         public DbSet<AdminMember> AdminMember { get; set; } = null!;
         public DbSet<AdminMemberStatus> AdminMemberStatus { get; set; } = null!;
+
+        // Orders
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderStatus> OrderStatuse { get; set; }
+        public DbSet<Coupon> coupon { get; set; }
+        public DbSet<OrderDetail> orderDetail { get; set; }
+        public DbSet<PaymentMethod> PaymentMethod { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -82,6 +90,62 @@ namespace WebApi.Models
                     .IsRequired();
 
                 e.ToTable("AdminMember");
+            });
+
+            // Orders
+            modelBuilder.Entity<Order>(e =>
+            {
+                e.HasIndex(b => b.Guid)
+                    .IsUnique();
+
+                e.HasOne(b => b.PaymentMethod)
+                    .WithMany(p => p.Order)
+                    .HasForeignKey(b => b.PaymentMethodId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_Order_PaymentMethodId_To_PaymentMethod_Id");
+
+                e.HasOne(b => b.OrderStatus)
+                    .WithMany(p => p.Order)
+                    .HasForeignKey(b => b.StatusId)
+                    .OnDelete(DeleteBehavior.ClientNoAction)
+                    .HasConstraintName("FK_Order_StatusId_To_OrderStatus_Id");
+
+                e.ToTable("Order");
+            });
+
+            modelBuilder.Entity<OrderDetail>(e =>
+            {
+                e.HasKey(b => new { b.OrderId, b.ItemNo });
+
+                e.HasOne(b => b.Order)
+                    .WithMany(p => p.OrderDetail)
+                    .HasForeignKey(b => b.OrderId)
+                    .OnDelete(DeleteBehavior.ClientCascade)
+                    .HasConstraintName("FK_OrderDetail_OrderId_To_Order_Id");
+
+                e.HasOne(b => b.Product)
+                    .WithMany(p => p.OrderDetail)
+                    .HasForeignKey(b => b.ProductId)
+                    .OnDelete(DeleteBehavior.ClientNoAction)
+                    .HasConstraintName("FK_OrderDetail_ProductId_To_Product_Id");
+
+                e.HasOne(b => b.Coupon)
+                    .WithMany(p => p.OrderDetail)
+                    .HasForeignKey(b => b.CouponId)
+                    .OnDelete(DeleteBehavior.ClientCascade)
+                    .HasConstraintName("FK_OrderDetail_CouponId_To_Coupon_Id");
+
+                e.ToTable("OrderDetail");
+            });
+
+            modelBuilder.Entity<Coupon>(e =>
+            {
+                e.ToTable("Coupon");
+            });
+
+            modelBuilder.Entity<OrderStatus>(e =>
+            {
+                e.ToTable("OrderStatus");
             });
         }
     }
