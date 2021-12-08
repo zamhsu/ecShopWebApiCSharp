@@ -15,7 +15,9 @@ namespace WebApi.Models.Orders
         public int Quantity { get; set; }
         public int Used { get; set; }
         public int DiscountPercentage { get; set; }
+        public int StatusId { get; set; }
 
+        public virtual CouponStatus CouponStatus { get; set; }
         public virtual ICollection<OrderDetail> OrderDetail { get; set; }
     }
 }

@@ -140,6 +140,12 @@ namespace WebApi.Models
 
             modelBuilder.Entity<Coupon>(e =>
             {
+                e.HasOne(b => b.CouponStatus)
+                    .WithMany(p => p.Coupon)
+                    .HasForeignKey(b => b.StatusId)
+                    .OnDelete(DeleteBehavior.ClientNoAction)
+                    .HasConstraintName("FK_Coupon_StatusId_To_CouponStatus_Id");
+
                 e.ToTable("Coupon");
             });
 
