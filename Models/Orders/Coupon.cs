@@ -13,6 +13,7 @@ namespace WebApi.Models.Orders
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset ExpiredDate { get; set; }
         public int Quantity { get; set; }
+        public int Used { get; set; }
         public int DiscountPercentage { get; set; }
 
         public virtual ICollection<OrderDetail> OrderDetail { get; set; }
