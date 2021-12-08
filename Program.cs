@@ -14,6 +14,8 @@ using WebApi.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WebApi.Base.IServices;
+using WebApi.Base.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -71,6 +73,7 @@ builder.Services.AddScoped<IAdminMemberAccountService, AdminMemberAccountService
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductCategoryTypeService, ProductCategoryTypeService>();
 builder.Services.AddScoped<IProductUnitTypeService, ProductUnitTypeService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));

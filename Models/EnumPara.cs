@@ -10,6 +10,16 @@ namespace WebApi.Models
     }
 
     /// <summary>
+    /// 優惠券狀態參數
+    /// </summary>
+    public enum CouponStatusPara
+    {
+        OK = 1,
+        Full = 2,
+        Delete = 3
+    }
+
+    /// <summary>
     /// 管理員狀態參數
     /// </summary>
     public enum AdminMemberStatusPara
