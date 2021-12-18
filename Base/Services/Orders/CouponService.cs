@@ -125,21 +125,21 @@ namespace WebApi.Base.Services.Orders
         /// <param name="coupon">修改優惠券的資料</param>
         public async Task UpdateAsync(int id, Coupon coupon)
         {
-            Coupon enity = await GetByIdAsync(id);
+            Coupon entity = await GetByIdAsync(id);
 
-            if (enity == null)
+            if (entity == null)
             {
                 _logger.LogInformation($"[Update] Coupon is not existed (Id:{id})");
-                throw new ArgumentNullException(nameof(enity));
+                throw new ArgumentNullException(nameof(entity));
             }
 
-            enity.Title = coupon.Title;
-            enity.Used = coupon.Used;
-            enity.StatusId = coupon.StatusId;
+            entity.Title = coupon.Title;
+            entity.Used = coupon.Used;
+            entity.StatusId = coupon.StatusId;
 
             try
             {
-                _couponRepository.Update(enity);
+                _couponRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
             }
             catch

@@ -122,30 +122,30 @@ namespace WebApi.Base.Services.Products
         /// <param name="product">修改產品的資料</param>
         public async Task UpdateAsync(string guid, Product product)
         {
-            Product enity = await GetByGuidAsync(guid);
+            Product entity = await GetByGuidAsync(guid);
 
-            if (enity == null)
+            if (entity == null)
             {
                 _logger.LogInformation($"[Update] Product is not existed (Guid:{guid})");
-                throw new ArgumentNullException(nameof(enity));
+                throw new ArgumentNullException(nameof(entity));
             }
 
-            enity.Title = product.Title;
-            enity.CategoryId = product.CategoryId;
-            enity.UnitId = product.UnitId;
-            enity.Quantity = product.Quantity;
-            enity.OriginPrice = product.OriginPrice;
-            enity.Price = product.Price;
-            enity.Description = product.Description;
-            enity.StartDisplay = product.StartDisplay.ToUniversalTime();
-            enity.EndDisplay = product.EndDisplay.ToUniversalTime();
-            enity.ImageUrl = product.ImageUrl;
-            enity.Memo = product.Memo;
-            enity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+            entity.Title = product.Title;
+            entity.CategoryId = product.CategoryId;
+            entity.UnitId = product.UnitId;
+            entity.Quantity = product.Quantity;
+            entity.OriginPrice = product.OriginPrice;
+            entity.Price = product.Price;
+            entity.Description = product.Description;
+            entity.StartDisplay = product.StartDisplay.ToUniversalTime();
+            entity.EndDisplay = product.EndDisplay.ToUniversalTime();
+            entity.ImageUrl = product.ImageUrl;
+            entity.Memo = product.Memo;
+            entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             try
             {
-                _productRepository.Update(enity);
+                _productRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
             }
             catch

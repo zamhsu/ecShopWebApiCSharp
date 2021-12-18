@@ -124,21 +124,21 @@ namespace WebApi.Base.Services.Members
         /// <returns></returns>
         public async Task UpdateUserInfoAsync(string guid, AdminMember adminMember)
         {
-            AdminMember enity = await GetByGuidAsync(guid);
+            AdminMember entity = await GetByGuidAsync(guid);
 
-            if (enity == null)
+            if (entity == null)
             {
                 _logger.LogInformation($"[Update] AdminMember is not existed (Guid:{guid})");
                 throw new ArgumentNullException(nameof(AdminMember));
             }
 
-            enity.UserName = adminMember.UserName;
-            enity.Email = adminMember.Email;
-            enity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+            entity.UserName = adminMember.UserName;
+            entity.Email = adminMember.Email;
+            entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             try
             {
-                _adminMemberRepository.Update(enity);
+                _adminMemberRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
             }
             catch
@@ -155,27 +155,27 @@ namespace WebApi.Base.Services.Members
         /// <returns></returns>
         public async Task UpdateAsync(string guid, AdminMember adminMember)
         {
-            AdminMember enity = await GetByGuidAsync(guid);
+            AdminMember entity = await GetByGuidAsync(guid);
 
-            if (enity == null)
+            if (entity == null)
             {
                 _logger.LogInformation($"[Update] AdminMember is not existed (Guid:{guid})");
                 throw new ArgumentNullException(nameof(AdminMember));
             }
 
-            enity.UserName = adminMember.UserName;
-            enity.Email = adminMember.Email;
-            enity.Pwd = adminMember.Pwd;
-            enity.StatusId = adminMember.StatusId;
-            enity.ErrorTimes = adminMember.ErrorTimes;
-            enity.LastLoginDate = adminMember.LastLoginDate;
-            enity.ExpirationDate = adminMember.ExpirationDate;
-            enity.IsMaster = adminMember.IsMaster;
-            enity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+            entity.UserName = adminMember.UserName;
+            entity.Email = adminMember.Email;
+            entity.Pwd = adminMember.Pwd;
+            entity.StatusId = adminMember.StatusId;
+            entity.ErrorTimes = adminMember.ErrorTimes;
+            entity.LastLoginDate = adminMember.LastLoginDate;
+            entity.ExpirationDate = adminMember.ExpirationDate;
+            entity.IsMaster = adminMember.IsMaster;
+            entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             try
             {
-                _adminMemberRepository.Update(enity);
+                _adminMemberRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
             }
             catch
