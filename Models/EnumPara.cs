@@ -20,6 +20,16 @@ namespace WebApi.Models
     }
 
     /// <summary>
+    /// 訂單狀態參數
+    /// </summary>
+    public enum OrderStatusPara
+    {
+        PlaceOrder = 1,
+        PaymentSuccessful = 2,
+        PaymentFailed = 3
+    }
+
+    /// <summary>
     /// 管理員狀態參數
     /// </summary>
     public enum AdminMemberStatusPara

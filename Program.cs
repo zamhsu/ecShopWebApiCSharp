@@ -74,6 +74,8 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductCategoryTypeService, ProductCategoryTypeService>();
 builder.Services.AddScoped<IProductUnitTypeService, ProductUnitTypeService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IOrderService, OrderSerivce>();
+builder.Services.AddScoped<IOrderAmountService, OrderAmountService>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
