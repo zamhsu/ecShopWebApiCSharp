@@ -12,6 +12,13 @@ namespace WebApi.Base.IServices
         Task<Coupon> GetByIdAsync(int id);
 
         /// <summary>
+        /// 使用id取得一筆包含關聯性資料的優惠券
+        /// </summary>
+        /// <param name="id">優惠券id</param>
+        /// <returns></returns>
+        Task<Coupon?> GetDetailByIdAsync(int id);
+
+        /// <summary>
         /// 使用優惠券代碼取得一筆優惠券
         /// </summary>
         /// <param name="code">優惠券代碼</param>
@@ -23,6 +30,12 @@ namespace WebApi.Base.IServices
         /// </summary>
         /// <returns></returns>
         Task<List<Coupon>> GetAllAsync();
+
+        /// <summary>
+        /// 取得包含關聯性資料的所有優惠券
+        /// </summary>
+        /// <returns></returns>
+        Task<List<Coupon>> GetDetailAllAsync();
 
         /// <summary>
         /// 新增一筆優惠券資料
@@ -41,6 +54,6 @@ namespace WebApi.Base.IServices
         /// 使用id刪除一筆優惠券
         /// </summary>
         /// <param name="id">優惠券id</param>
-        Task DeleteByGuidAsync(int id);
+        Task DeleteByIdAsync(int id);
     }
 }

@@ -1,7 +1,9 @@
 using AutoMapper;
 using WebApi.Dtos.Members;
+using WebApi.Dtos.Orders;
 using WebApi.Dtos.Products;
 using WebApi.Models.Members;
+using WebApi.Models.Orders;
 using WebApi.Models.Products;
 
 namespace WebApi.Base.Mappings
@@ -41,6 +43,18 @@ namespace WebApi.Base.Mappings
             CreateMap<CreateProductUnitTypeModel, ProductUnitType>();
 
             CreateMap<UpdateProductUnitTypeModel, ProductUnitType>();
+
+            // Coupon
+            CreateMap<Coupon, CouponDisplayModel>()
+                .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.CouponStatus.Name));
+            
+            CreateMap<CreateCouponModel, Coupon>()
+                .ForMember(dest => dest.StartDate, mo => mo.Ignore())
+                .ForMember(dest => dest.ExpiredDate, mo => mo.Ignore());
+
+            CreateMap<UpdateCouponModel, Coupon>()
+                .ForMember(dest => dest.StartDate, mo => mo.Ignore())
+                .ForMember(dest => dest.ExpiredDate, mo => mo.Ignore());
         }
     }
 }

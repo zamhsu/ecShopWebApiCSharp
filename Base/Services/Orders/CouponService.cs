@@ -10,11 +10,11 @@ namespace WebApi.Base.Services
     {
         private readonly IRepository<Coupon> _couponRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly IAppLogger<Coupon> _logger;
 
         public CouponService(IRepository<Coupon> couponRepository,
             IUnitOfWork unitOfWork,
-            ILogger logger)
+            IAppLogger<Coupon> logger)
         {
             _couponRepository = couponRepository;
             _unitOfWork = unitOfWork;
@@ -30,6 +30,21 @@ namespace WebApi.Base.Services
         {
             int deleteStatus = (int)CouponStatusPara.Delete;
             Coupon coupon = await _couponRepository.GetAsync(q => q.Id == id && q.StatusId != deleteStatus);
+
+            return coupon;
+        }
+
+        /// <summary>
+        /// 使用id取得一筆包含關聯性資料的優惠券
+        /// </summary>
+        /// <param name="id">優惠券id</param>
+        /// <returns></returns>
+        public async Task<Coupon?> GetDetailByIdAsync(int id)
+        {
+            int deleteStatus = (int)CouponStatusPara.Delete;
+            Coupon? coupon = await _couponRepository.GetAll()
+                .Include(q => q.CouponStatus)
+                .FirstOrDefaultAsync(q => q.Id == id && q.StatusId != deleteStatus);
 
             return coupon;
         }
@@ -61,6 +76,22 @@ namespace WebApi.Base.Services
         }
 
         /// <summary>
+        /// 取得包含關聯性資料的所有優惠券
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<Coupon>> GetDetailAllAsync()
+        {
+            int okStatus = (int)ProductStatusPara.OK;
+            IQueryable<Coupon> query = _couponRepository.GetAll()
+                .Where(q => q.StatusId == okStatus)
+                .Include(q => q.CouponStatus);
+
+            List<Coupon> products = await query.ToListAsync();
+
+            return products;
+        }
+
+        /// <summary>
         /// 新增一筆優惠券資料
         /// </summary>
         /// <param name="coupon">新增優惠券的資料</param>
@@ -72,6 +103,8 @@ namespace WebApi.Base.Services
                 new ArgumentNullException(nameof(coupon));
             }
 
+            coupon.StartDate = coupon.StartDate.ToUniversalTime();
+            coupon.ExpiredDate = coupon.ExpiredDate.ToUniversalTime();
             coupon.StatusId = (int)CouponStatusPara.OK;
 
             try
@@ -102,7 +135,7 @@ namespace WebApi.Base.Services
 
             enity.Title = coupon.Title;
             enity.Used = coupon.Used;
-            enity.CouponStatus = coupon.CouponStatus;
+            enity.StatusId = coupon.StatusId;
 
             try
             {
@@ -119,7 +152,7 @@ namespace WebApi.Base.Services
         /// 使用id刪除一筆優惠券
         /// </summary>
         /// <param name="id">優惠券id</param>
-        public async Task DeleteByGuidAsync(int id)
+        public async Task DeleteByIdAsync(int id)
         {
             Coupon entity = await GetByIdAsync(id);
 
