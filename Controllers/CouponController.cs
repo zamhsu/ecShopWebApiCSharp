@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Base.IServices;
+using WebApi.Base.IServices.Orders;
 using WebApi.Dtos;
 using WebApi.Dtos.Orders;
 using WebApi.Models.Orders;

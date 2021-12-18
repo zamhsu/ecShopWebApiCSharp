@@ -1,6 +1,6 @@
 using WebApi.Models.Orders;
 
-namespace WebApi.Base.IServices
+namespace WebApi.Base.IServices.Orders
 {
     public interface ICouponService
     {

@@ -14,8 +14,8 @@ using WebApi.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using WebApi.Base.IServices;
-using WebApi.Base.Services;
+using WebApi.Base.IServices.Orders;
+using WebApi.Base.Services.Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();

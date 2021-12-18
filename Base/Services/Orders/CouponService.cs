@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
-using WebApi.Base.IServices;
+using WebApi.Base.IServices.Orders;
 using WebApi.Models;
 using WebApi.Models.Orders;
 
-namespace WebApi.Base.Services
+namespace WebApi.Base.Services.Orders
 {
     public class CouponService : ICouponService
     {
