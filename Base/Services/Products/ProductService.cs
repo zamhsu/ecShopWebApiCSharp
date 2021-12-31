@@ -80,7 +80,7 @@ namespace WebApi.Base.Services.Products
                 .Include(q => q.ProductCategoryType)
                 .Include(q => q.ProductUnitType)
                 .Include(q => q.ProductStatus);
-            
+
             List<Product> products = await query.ToListAsync();
 
             return products;

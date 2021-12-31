@@ -18,7 +18,7 @@ namespace WebApi.Base.IServices.Orders
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <returns></returns>
-        Task<Order?> GetDetailByGuidAsync(string guid);
+        Task<OrderDisplayModel?> GetDetailByGuidAsync(string guid);
 
         /// <summary>
         /// 取得所有訂單
@@ -40,6 +40,13 @@ namespace WebApi.Base.IServices.Orders
         /// <param name="coupon">優惠券</param>
         /// <returns></returns>
         Task PlaceOrderAsync(Order order, List<PlaceOrderDetailModel> placeOrderDetails, Coupon? coupon);
+
+        /// <summary>
+        /// 修改一筆訂單裡的消費者個人資料
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <param name="order">修改訂單的資料</param>
+        Task UpdateCustomerInfoAsync(string guid, Order order);
 
         /// <summary>
         /// 修改一筆訂單資料

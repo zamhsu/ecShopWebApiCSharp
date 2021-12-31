@@ -75,6 +75,7 @@ builder.Services.AddScoped<IProductCategoryTypeService, ProductCategoryTypeServi
 builder.Services.AddScoped<IProductUnitTypeService, ProductUnitTypeService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IOrderService, OrderSerivce>();
+builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderAmountService, OrderAmountService>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 

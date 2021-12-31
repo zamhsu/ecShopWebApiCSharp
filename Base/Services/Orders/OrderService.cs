@@ -1,9 +1,12 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Orders;
+using WebApi.Base.IServices.Products;
 using WebApi.Dtos.Orders;
 using WebApi.Models;
 using WebApi.Models.Orders;
+using WebApi.Models.Products;
 
 namespace WebApi.Base.Services.Orders
 {
@@ -14,6 +17,9 @@ namespace WebApi.Base.Services.Orders
         private readonly IRepository<Coupon> _couponRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOrderAmountService _orderAmountService;
+        private readonly IOrderDetailService _orderDetailService;
+        private readonly IProductService _productService;
+        private readonly IMapper _mapper;
         private readonly IAppLogger<Order> _logger;
 
         public OrderSerivce(IRepository<Order> orderRepository,
@@ -21,6 +27,9 @@ namespace WebApi.Base.Services.Orders
             IRepository<Coupon> couponRepository,
             IUnitOfWork unitOfWork,
             IOrderAmountService orderAmountService,
+            IOrderDetailService orderDetailService,
+            IProductService productService,
+            IMapper mapper,
             IAppLogger<Order> logger)
         {
             _orderRepository = orderRepository;
@@ -28,6 +37,9 @@ namespace WebApi.Base.Services.Orders
             _couponRepository = couponRepository;
             _unitOfWork = unitOfWork;
             _orderAmountService = orderAmountService;
+            _orderDetailService = orderDetailService;
+            _productService = productService;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -48,14 +60,30 @@ namespace WebApi.Base.Services.Orders
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <returns></returns>
-        public async Task<Order?> GetDetailByGuidAsync(string guid)
+        public async Task<OrderDisplayModel?> GetDetailByGuidAsync(string guid)
         {
             Order? order = await _orderRepository.GetAll()
                 .Include(q => q.PaymentMethod)
                 .Include(q => q.OrderStatus)
                 .FirstOrDefaultAsync(q => q.Guid == guid);
 
-            return order;
+            if (order == null)
+            {
+                return null;
+            }
+
+            List<OrderDetail> itemDetail = await _orderDetailService.GetAllItemDetailByOrderIdAsync(order.Id);
+            OrderDetail? couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
+
+            OrderDisplayModel displayModel = _mapper.Map<OrderDisplayModel>(order);
+            displayModel.OrderDetails = _mapper.Map<List<OrderItemDetailDisplayModel>>(itemDetail);
+
+            if (couponDetail != null)
+            {
+                displayModel.CouponDetail = _mapper.Map<OrderCouponDetailDisplayModel>(couponDetail);
+            }
+
+            return displayModel;
         }
 
         /// <summary>
@@ -108,9 +136,11 @@ namespace WebApi.Base.Services.Orders
                 orderDetail.ProductId = item.ProductId;
                 orderDetail.Quantity = item.Quantity;
                 orderDetail.Total = _orderAmountService.CalculateItemTotal(item);
+                orderDetail.Order = order;
+                orderDetail.Product = await _productService.GetByGuidAsync(item.ProductGuid);
 
                 orderDetails.Add(orderDetail);
-                
+
                 // 計算商品總額
                 itemTotalAmount += orderDetail.Total;
                 itemIndex++;
@@ -129,6 +159,8 @@ namespace WebApi.Base.Services.Orders
                 orderDetail.CouponId = coupon.Id;
                 orderDetail.Quantity = 1;
                 orderDetail.Total = discountAmount;
+                orderDetail.Order = order;
+                orderDetail.Coupon = coupon;
 
                 orderDetails.Add(orderDetail);
             }
@@ -151,6 +183,38 @@ namespace WebApi.Base.Services.Orders
                     _couponRepository.Update(coupon);
                 }
 
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 修改一筆訂單裡的消費者個人資料
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <param name="order">修改訂單的資料</param>
+        public async Task UpdateCustomerInfoAsync(string guid, Order order)
+        {
+            Order entity = await GetByGuidAsync(guid);
+
+            if (entity == null)
+            {
+                _logger.LogInformation($"[Update] Order is not existed (Guid:{guid})");
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            entity.Name = order.Name;
+            entity.Email = order.Email;
+            entity.Phone = order.Phone;
+            entity.Address = order.Address;
+            entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+
+            try
+            {
+                _orderRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
             }
             catch
@@ -185,6 +249,7 @@ namespace WebApi.Base.Services.Orders
             entity.Address = order.Address;
             entity.Total = order.Total;
             entity.PaymentMethodId = order.PaymentMethodId;
+            entity.PaidDate = order.PaidDate;
             entity.StatusId = order.StatusId;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
