@@ -1,6 +1,7 @@
 using AutoMapper;
 using WebApi.Dtos.Members;
 using WebApi.Dtos.Orders;
+using WebApi.Dtos.Payments;
 using WebApi.Dtos.Products;
 using WebApi.Models.Members;
 using WebApi.Models.Orders;
@@ -60,6 +61,9 @@ namespace WebApi.Base.Mappings
             CreateMap<PlaceOrderModel, Order>();
 
             CreateMap<UpdateOrderCustomerInfoModel, Order>();
+
+            // PaymentMethod
+            CreateMap<PaymentMethod, PaymentMethodDisplayModel>();
         }
     }
 }
