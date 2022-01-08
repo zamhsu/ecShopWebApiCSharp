@@ -224,6 +224,68 @@ namespace WebApi.Base.Services.Orders
         }
 
         /// <summary>
+        /// 修改一筆訂單狀態為完成付款
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <param name="paymentMethodPara">付款方式</param>
+        public async Task UpdateStatusToPaymentSuccessfulAsync(string guid, PaymentMethodPara paymentMethodPara)
+        {
+            Order entity = await GetByGuidAsync(guid);
+
+            if (entity == null)
+            {
+                _logger.LogInformation($"[Update] Order is not existed (Guid:{guid})");
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            entity.PaymentMethodId = (int)paymentMethodPara;
+            entity.PaidDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+            entity.StatusId = (int)OrderStatusPara.PaymentSuccessful;
+            entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+
+            try
+            {
+                _orderRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 修改一筆訂單狀態為付款失敗
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <param name="paymentMethodPara">付款方式</param>
+        public async Task UpdateStatusToPaymentFailedAsync(string guid, PaymentMethodPara paymentMethodPara)
+        {
+            Order entity = await GetByGuidAsync(guid);
+
+            if (entity == null)
+            {
+                _logger.LogInformation($"[Update] Order is not existed (Guid:{guid})");
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            entity.PaymentMethodId = (int)paymentMethodPara;
+            entity.PaidDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+            entity.StatusId = (int)OrderStatusPara.PaymentFailed;
+            entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+
+            try
+            {
+                _orderRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 修改一筆訂單資料
         /// </summary>
         /// <param name="guid">訂單GUID</param>
@@ -262,6 +324,18 @@ namespace WebApi.Base.Services.Orders
             {
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 訂單是否已經付款
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <returns></returns>
+        public async Task<bool> IsOrderPaidAsync(string guid)
+        {
+            Order order = await GetByGuidAsync(guid);
+
+            return order.StatusId > (int)OrderStatusPara.PlaceOrder;
         }
     }
 }

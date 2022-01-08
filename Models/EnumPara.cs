@@ -24,9 +24,27 @@ namespace WebApi.Models
     /// </summary>
     public enum OrderStatusPara
     {
+        /// <summary>
+        /// 建立訂單
+        /// </summary>
         PlaceOrder = 1,
+        /// <summary>
+        /// 完成付款
+        /// </summary>
         PaymentSuccessful = 2,
+        /// <summary>
+        /// 付款失敗
+        /// </summary>
         PaymentFailed = 3
+    }
+
+    /// <summary>
+    /// 付款方式
+    /// </summary>
+    public enum PaymentMethodPara
+    {
+        CreditCard = 1,
+        ATM = 2
     }
 
     /// <summary>

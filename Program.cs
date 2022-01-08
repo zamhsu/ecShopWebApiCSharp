@@ -16,6 +16,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebApi.Base.IServices.Orders;
 using WebApi.Base.Services.Orders;
+using WebApi.Base.IServices.Payments;
+using WebApi.Base.Services.Payments;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -77,6 +79,8 @@ builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IOrderService, OrderSerivce>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderAmountService, OrderAmountService>();
+builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));

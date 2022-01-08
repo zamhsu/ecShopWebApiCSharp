@@ -1,4 +1,5 @@
 using WebApi.Dtos.Orders;
+using WebApi.Models;
 using WebApi.Models.Orders;
 using WebApi.Models.Products;
 
@@ -49,10 +50,31 @@ namespace WebApi.Base.IServices.Orders
         Task UpdateCustomerInfoAsync(string guid, Order order);
 
         /// <summary>
+        /// 修改一筆訂單狀態為完成付款
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <param name="paymentMethodPara">付款方式</param>
+        Task UpdateStatusToPaymentSuccessfulAsync(string guid, PaymentMethodPara paymentMethodPara);
+
+        /// <summary>
+        /// 修改一筆訂單狀態為付款失敗
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <param name="paymentMethodPara">付款方式</param>
+        Task UpdateStatusToPaymentFailedAsync(string guid, PaymentMethodPara paymentMethodPara);
+
+        /// <summary>
         /// 修改一筆訂單資料
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <param name="order">修改訂單的資料</param>
         Task UpdateAsync(string guid, Order order);
+
+        /// <summary>
+        /// 訂單是否已經付款
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <returns></returns>
+        Task<bool> IsOrderPaidAsync(string guid);
     }
 }
