@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using WebApi.Dtos;
 using WebApi.Dtos.Products;
 using WebApi.Models.Products;
 
@@ -32,6 +33,12 @@ namespace WebApi.Base.IServices.Products
         /// </summary>
         /// <returns></returns>
         Task<List<Product>> GetDetailAllUsableAsync();
+
+        /// <summary>
+        /// 取得包含關聯性資料的所有產品
+        /// </summary>
+        /// <returns></returns>
+        PagedList<Product> GetPagedDetailAllUsable(int pageSize, int page);
 
         /// <summary>
         /// 新增一筆產品資料

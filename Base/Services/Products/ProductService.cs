@@ -2,6 +2,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Products;
+using WebApi.Dtos;
+using WebApi.Extensions;
 using WebApi.Models;
 using WebApi.Models.Products;
 
@@ -82,6 +84,26 @@ namespace WebApi.Base.Services.Products
                 .Include(q => q.ProductStatus);
 
             List<Product> products = await query.ToListAsync();
+
+            return products;
+        }
+
+        /// <summary>
+        /// 取得包含關聯性資料的所有產品
+        /// </summary>
+        /// <returns></returns>
+        public PagedList<Product> GetPagedDetailAllUsable(int pageSize, int page)
+        {
+            int okStatus = (int)ProductStatusPara.OK;
+            IQueryable<Product> query = _productRepository.GetAll()
+                .Where(q => q.StatusId == okStatus)
+                .Include(q => q.ProductCategoryType)
+                .Include(q => q.ProductUnitType)
+                .Include(q => q.ProductStatus);
+
+            query = query.OrderByDescending(q => q.Id);
+
+            PagedList<Product> products = query.ToPagedList(pageSize, page);
 
             return products;
         }

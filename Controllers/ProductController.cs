@@ -12,6 +12,7 @@ using WebApi.Dtos.Products;
 using WebApi.Models;
 using WebApi.Models.Products;
 using Microsoft.AspNetCore.Authorization;
+using WebApi.Dtos.ViewModel;
 
 namespace WebApi.Controllers
 {
@@ -31,15 +32,22 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("api/product")]
-        public async Task<ActionResult<BaseResponse<List<ProductDisplayModel>>>> GetProduct()
+        public ActionResult<BaseResponse<ProductGetPagedProductsViewModel>> GetPagedProducts([FromQuery] PageQueryString pageQueryString)
         {
-            BaseResponse<List<ProductDisplayModel>> baseResponse = new BaseResponse<List<ProductDisplayModel>>();
+            BaseResponse<ProductGetPagedProductsViewModel> baseResponse = new BaseResponse<ProductGetPagedProductsViewModel>();
 
-            List<Product> products = await _productService.GetDetailAllUsableAsync();
-            List<ProductDisplayModel> productDisplays = _mapper.Map<List<ProductDisplayModel>>(products);
+            PagedList<Product> products = _productService.GetPagedDetailAllUsable(pageQueryString.PageSize, pageQueryString.Page);
+            List<ProductDisplayModel> productDisplays = _mapper.Map<List<ProductDisplayModel>>(products.PagedData);
+            Pagination pagination = products.Pagination;
+
+            ProductGetPagedProductsViewModel viewModel = new ProductGetPagedProductsViewModel()
+            {
+                Products = productDisplays,
+                Pagination = pagination
+            };
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = productDisplays;
+            baseResponse.Data = viewModel;
 
             return baseResponse;
         }
