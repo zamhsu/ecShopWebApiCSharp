@@ -32,15 +32,22 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/admin/order")]
-        public async Task<ActionResult<BaseResponse<List<OrderDisplayModel>>>> GetOrder()
+        public ActionResult<BaseResponse<OrderGetOrderViewModel>> GetOrder([FromQuery] PageQueryString pageQueryString)
         {
-            BaseResponse<List<OrderDisplayModel>> baseResponse = new BaseResponse<List<OrderDisplayModel>>();
+            BaseResponse<OrderGetOrderViewModel> baseResponse = new BaseResponse<OrderGetOrderViewModel>();
 
-            List<Order> orders = await _orderService.GetDetailAllAsync();
-            List<OrderDisplayModel> orderDisplays = _mapper.Map<List<OrderDisplayModel>>(orders);
+            PagedList<Order> pagedList = _orderService.GetPagedDetailAll(pageQueryString.PageSize, pageQueryString.Page);
+            List<OrderDisplayModel> orderDisplays = _mapper.Map<List<OrderDisplayModel>>(pagedList.PagedData);
+            Pagination pagination = pagedList.Pagination;
+
+            OrderGetOrderViewModel viewModel = new OrderGetOrderViewModel()
+            {
+                OrderDisplays = orderDisplays,
+                Pagination = pagination
+            };
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = orderDisplays;
+            baseResponse.Data = viewModel;
 
             return baseResponse;
         }

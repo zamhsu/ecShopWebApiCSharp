@@ -1,3 +1,4 @@
+using WebApi.Dtos;
 using WebApi.Models.Orders;
 
 namespace WebApi.Base.IServices.Orders
@@ -36,6 +37,14 @@ namespace WebApi.Base.IServices.Orders
         /// </summary>
         /// <returns></returns>
         Task<List<Coupon>> GetDetailAllAsync();
+
+        /// <summary>
+        /// 取得分頁後包含關聯性資料的所有優惠券
+        /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
+        /// <returns></returns>
+        PagedList<Coupon> GetPagedDetailAll(int pageSize, int page);
 
         /// <summary>
         /// 新增一筆優惠券資料

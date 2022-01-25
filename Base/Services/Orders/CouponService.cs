@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Orders;
+using WebApi.Dtos;
+using WebApi.Extensions;
 using WebApi.Models;
 using WebApi.Models.Orders;
 
@@ -81,14 +83,34 @@ namespace WebApi.Base.Services.Orders
         /// <returns></returns>
         public async Task<List<Coupon>> GetDetailAllAsync()
         {
-            int okStatus = (int)ProductStatusPara.OK;
+            int okStatus = (int)CouponStatusPara.OK;
             IQueryable<Coupon> query = _couponRepository.GetAll()
                 .Where(q => q.StatusId == okStatus)
                 .Include(q => q.CouponStatus);
 
-            List<Coupon> products = await query.ToListAsync();
+            List<Coupon> coupons = await query.ToListAsync();
 
-            return products;
+            return coupons;
+        }
+
+        /// <summary>
+        /// 取得分頁後包含關聯性資料的所有優惠券
+        /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
+        /// <returns></returns>
+        public PagedList<Coupon> GetPagedDetailAll(int pageSize, int page)
+        {
+            int okStatus = (int)CouponStatusPara.OK;
+            IQueryable<Coupon> query = _couponRepository.GetAll()
+                .Where(q => q.StatusId == okStatus)
+                .Include(q => q.CouponStatus);
+
+            query = query.OrderByDescending(q => q.Id);
+
+            PagedList<Coupon> coupons = query.ToPagedList(pageSize, page);
+
+            return coupons;
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using WebApi.Dtos;
 using WebApi.Models.Members;
 
 namespace WebApi.Base.IServices.Members
@@ -36,6 +37,14 @@ namespace WebApi.Base.IServices.Members
         /// </summary>
         /// <returns></returns>
         Task<List<AdminMember>> GetDetailAllAsync();
+
+        /// <summary>
+        /// 取得分頁後包含關聯性資料的所有管理員
+        /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
+        /// <returns></returns>
+        PagedList<AdminMember> GetPagedDetailAll(int pageSize, int page);
 
         /// <summary>
         /// 新增一筆管理員資料

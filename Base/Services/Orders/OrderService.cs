@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Orders;
 using WebApi.Base.IServices.Products;
+using WebApi.Dtos;
 using WebApi.Dtos.Orders;
+using WebApi.Extensions;
 using WebApi.Models;
 using WebApi.Models.Orders;
 using WebApi.Models.Products;
@@ -107,6 +109,25 @@ namespace WebApi.Base.Services.Orders
                 .Include(q => q.PaymentMethod)
                 .Include(q => q.OrderStatus)
                 .ToListAsync();
+
+            return orders;
+        }
+
+        /// <summary>
+        /// 取得分頁後所有訂單詳細資料
+        /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
+        /// <returns></returns>
+        public PagedList<Order> GetPagedDetailAll(int pageSize, int page)
+        {
+            IQueryable<Order> query = _orderRepository.GetAll()
+                .Include(q => q.PaymentMethod)
+                .Include(q => q.OrderStatus);
+
+            query = query.OrderByDescending(q => q.Id);
+
+            PagedList<Order> orders = query.ToPagedList(pageSize, page);
 
             return orders;
         }

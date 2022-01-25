@@ -1,3 +1,4 @@
+using WebApi.Dtos;
 using WebApi.Dtos.Orders;
 using WebApi.Models;
 using WebApi.Models.Orders;
@@ -32,6 +33,14 @@ namespace WebApi.Base.IServices.Orders
         /// </summary>
         /// <returns></returns>
         Task<List<Order>> GetDetailAllAsync();
+
+        /// <summary>
+        /// 取得分頁後所有訂單詳細資料
+        /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
+        /// <returns></returns>
+        PagedList<Order> GetPagedDetailAll(int pageSize, int page);
 
         /// <summary>
         /// 下訂單

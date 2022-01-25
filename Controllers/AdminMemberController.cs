@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApi.Base.IServices.Members;
 using WebApi.Dtos;
 using WebApi.Dtos.Members;
+using WebApi.Dtos.ViewModel;
 using WebApi.Models.Members;
 
 namespace WebApi.Controllers
@@ -26,15 +27,22 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/admin/adminMember")]
-        public async Task<ActionResult<BaseResponse<List<AdminMemberDisplayModel>>>> GetAdminMember()
+        public ActionResult<BaseResponse<AdminMemberGetAdminMemberViewModel>> GetAdminMember([FromQuery] PageQueryString pageQueryString)
         {
-            BaseResponse<List<AdminMemberDisplayModel>> baseResponse = new BaseResponse<List<AdminMemberDisplayModel>>();
+            BaseResponse<AdminMemberGetAdminMemberViewModel> baseResponse = new BaseResponse<AdminMemberGetAdminMemberViewModel>();
 
-            List<AdminMember> adminMembers = await _adminMemberService.GetDetailAllAsync();
-            List<AdminMemberDisplayModel> adminMemberDisplays = _mapper.Map<List<AdminMemberDisplayModel>>(adminMembers);
+            PagedList<AdminMember> pagedList = _adminMemberService.GetPagedDetailAll(pageQueryString.PageSize, pageQueryString.Page);
+            List<AdminMemberDisplayModel> adminMemberDisplays = _mapper.Map<List<AdminMemberDisplayModel>>(pagedList.PagedData);
+            Pagination pagination = pagedList.Pagination;
+
+            AdminMemberGetAdminMemberViewModel viewModel = new AdminMemberGetAdminMemberViewModel()
+            {
+                AdminMemberDisplays = adminMemberDisplays,
+                Pagination = pagination
+            };
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = adminMemberDisplays;
+            baseResponse.Data = viewModel;
 
             return baseResponse;
         }

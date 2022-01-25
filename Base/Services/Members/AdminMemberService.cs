@@ -2,6 +2,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IRepositories;
 using WebApi.Base.IServices.Members;
+using WebApi.Dtos;
+using WebApi.Extensions;
 using WebApi.Models;
 using WebApi.Models.Members;
 
@@ -84,6 +86,24 @@ namespace WebApi.Base.Services.Members
             IQueryable<AdminMember> query = _adminMemberRepository.GetAll()
                 .Include(q => q.AdminMemberStatus);
             List<AdminMember> adminMembers = await query.ToListAsync();
+
+            return adminMembers;
+        }
+
+        /// <summary>
+        /// 取得分頁後包含關聯性資料的所有管理員
+        /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
+        /// <returns></returns>
+        public PagedList<AdminMember> GetPagedDetailAll(int pageSize, int page)
+        {
+            IQueryable<AdminMember> query = _adminMemberRepository.GetAll()
+                .Include(q => q.AdminMemberStatus);
+
+            query = query.OrderByDescending(q => q.Id);
+
+            PagedList<AdminMember> adminMembers = query.ToPagedList(pageSize, page);
 
             return adminMembers;
         }

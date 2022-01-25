@@ -89,8 +89,10 @@ namespace WebApi.Base.Services.Products
         }
 
         /// <summary>
-        /// 取得包含關聯性資料的所有產品
+        /// 取得分頁後包含關聯性資料的所有產品
         /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
         /// <returns></returns>
         public PagedList<Product> GetPagedDetailAllUsable(int pageSize, int page)
         {

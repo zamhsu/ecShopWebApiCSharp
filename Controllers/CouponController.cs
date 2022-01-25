@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApi.Base.IServices.Orders;
 using WebApi.Dtos;
 using WebApi.Dtos.Orders;
+using WebApi.Dtos.ViewModel;
 using WebApi.Models.Orders;
 
 namespace WebApi.Controllers
@@ -23,15 +24,22 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/admin/coupon")]
-        public async Task<ActionResult<BaseResponse<List<CouponDisplayModel>>>> GetCoupon()
+        public ActionResult<BaseResponse<CouponGetCouponViewModel>> GetCoupon([FromQuery] PageQueryString pageQueryString)
         {
-            BaseResponse<List<CouponDisplayModel>> baseResponse = new BaseResponse<List<CouponDisplayModel>>();
+            BaseResponse<CouponGetCouponViewModel> baseResponse = new BaseResponse<CouponGetCouponViewModel>();
 
-            List<Coupon> coupons = await _couponService.GetDetailAllAsync();
-            List<CouponDisplayModel> couponDisplays = _mapper.Map<List<CouponDisplayModel>>(coupons);
+            PagedList<Coupon> pagedList = _couponService.GetPagedDetailAll(pageQueryString.PageSize, pageQueryString.Page);
+            List<CouponDisplayModel> couponDisplays = _mapper.Map<List<CouponDisplayModel>>(pagedList.PagedData);
+            Pagination pagination = pagedList.Pagination;
+
+            CouponGetCouponViewModel viewModel = new CouponGetCouponViewModel()
+            {
+                CouponDisplays = couponDisplays,
+                Pagination = pagination
+            };
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = couponDisplays;
+            baseResponse.Data = viewModel;
 
             return baseResponse;
         }
