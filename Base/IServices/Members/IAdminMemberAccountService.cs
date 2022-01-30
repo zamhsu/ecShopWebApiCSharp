@@ -15,6 +15,13 @@ namespace WebApi.Base.IServices.Members
         Task<AdminMemberInfoModel?> LoginAsync(string account, string rawPassword);
 
         /// <summary>
+        /// 只使用Guid登入
+        /// </summary>
+        /// <param name="guid">使用者Guid</param>
+        /// <returns></returns>
+        Task<AdminMemberInfoModel?> LoginByOnlyGuidAsync(string guid);
+
+        /// <summary>
         /// 登出
         /// </summary>
         /// <param name="guid">管理員GUID</param>

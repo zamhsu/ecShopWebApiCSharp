@@ -71,6 +71,30 @@ namespace WebApi.Base.Services.Members
         }
 
         /// <summary>
+        /// 只使用Guid登入
+        /// </summary>
+        /// <param name="guid">使用者Guid</param>
+        /// <returns></returns>
+        public async Task<AdminMemberInfoModel?> LoginByOnlyGuidAsync(string guid)
+        {
+            AdminMember adminMember = await _adminMemberService.GetByGuidAsync(guid);
+            if (adminMember == null)
+            {
+                return null;
+            }
+
+            int errorTimes = 0;
+            DateTimeOffset expirationDate = new DateTimeOffset(DateTime.UtcNow.AddDays(1)).ToUniversalTime();
+            await UpdateExpirationDateAsync(adminMember.Account, expirationDate);
+            await UpdateErrorTimesAsync(adminMember.Account, errorTimes);
+            adminMember = await _adminMemberService.GetByAccountAsync(adminMember.Account);
+
+            AdminMemberInfoModel model = _mapper.Map<AdminMemberInfoModel>(adminMember);
+
+            return model;
+        }
+
+        /// <summary>
         /// 登出
         /// </summary>
         /// <param name="guid">管理員GUID</param>
