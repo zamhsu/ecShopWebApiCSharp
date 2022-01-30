@@ -19,9 +19,25 @@ using WebApi.Base.Services.Orders;
 using WebApi.Base.IServices.Payments;
 using WebApi.Base.Services.Payments;
 
+var allowSpecificOrigins = "_allowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+// CORS
+builder.Services.AddCors(opt =>
+{
+    // 從appsettings.json中取得允許的來源
+    string[] allowOrigins =  builder.Configuration.GetValue<string>("Cors:AllowOrigins").Split(',',  StringSplitOptions.RemoveEmptyEntries);
+    opt.AddPolicy(name: allowSpecificOrigins,
+                  b =>
+                  {
+                      b.WithOrigins(allowOrigins)
+                       .AllowAnyHeader()
+                       .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+                  });
+});
 
 // Add services to the container.
 
@@ -101,6 +117,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// 在app.UseRouting()後，app.UseAuthentication()前
+app.UseCors(allowSpecificOrigins);
 
 // 先驗證
 app.UseAuthentication();
