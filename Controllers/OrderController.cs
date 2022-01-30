@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Base.IServices.Orders;
 using WebApi.Base.IServices.Products;
+using WebApi.Core;
 using WebApi.Dtos;
 using WebApi.Dtos.Orders;
 using WebApi.Dtos.ViewModel;
@@ -13,7 +14,7 @@ namespace WebApi.Controllers
 {
     [Authorize]
     [ApiController]
-    public class OrderController : ControllerBase
+    public class OrderController : CustomBaseController
     {
         private readonly IOrderService _orderService;
         private readonly ICouponService _couponService;

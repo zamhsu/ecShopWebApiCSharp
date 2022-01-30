@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Base.IServices.Orders;
 using WebApi.Base.IServices.Payments;
+using WebApi.Core;
 using WebApi.Dtos;
 using WebApi.Dtos.Payments;
 using WebApi.Models;
@@ -10,7 +11,7 @@ using WebApi.Models.Orders;
 namespace WebApi.Controllers
 {
     [ApiController]
-    public class PaymentController : ControllerBase
+    public class PaymentController : CustomBaseController
     {
         private readonly IOrderService _orderService;
         private readonly IPaymentMethodService _paymentMethodService;

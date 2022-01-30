@@ -12,12 +12,13 @@ using WebApi.Dtos.Products;
 using WebApi.Models;
 using WebApi.Models.Products;
 using Microsoft.AspNetCore.Authorization;
+using WebApi.Core;
 
 namespace WebApi.Controllers
 {
     [Authorize]
     [ApiController]
-    public class ProductUnitTypeController : ControllerBase
+    public class ProductUnitTypeController : CustomBaseController
     {
         private readonly IProductUnitTypeService _productUnitTypeService;
         private readonly IMapper _mapper;

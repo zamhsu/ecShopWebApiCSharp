@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Base.IServices.Members;
+using WebApi.Core;
 using WebApi.Dtos;
 using WebApi.Dtos.Members;
 using WebApi.Dtos.ViewModel;
@@ -11,7 +12,7 @@ namespace WebApi.Controllers
 {
     [Authorize]
     [ApiController]
-    public class AdminMemberController : ControllerBase
+    public class AdminMemberController : CustomBaseController
     {
         private readonly IAdminMemberService _adminMemberService;
         private readonly IAdminMemberAccountService _adminMemberAccountService;

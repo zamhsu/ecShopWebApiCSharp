@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Base.IServices.Orders;
+using WebApi.Core;
 using WebApi.Dtos;
 using WebApi.Dtos.Orders;
 using WebApi.Dtos.ViewModel;
@@ -11,7 +12,7 @@ namespace WebApi.Controllers
 {
     [Authorize]
     [ApiController]
-    public class CouponController : ControllerBase
+    public class CouponController : CustomBaseController
     {
         private readonly ICouponService _couponService;
         private readonly IMapper _mapper;
