@@ -36,7 +36,7 @@ namespace WebApi.Helpers
             // claims 加入jwt 的唯一識別碼
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             // 自行擴充claims
-            claims.Add(new Claim("guid", guid));
+            claims.Add(new Claim(CustomClaimTypes.Guid, guid));
             claims.Add(new Claim("role", memberRole.ToString("D")));
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims);
