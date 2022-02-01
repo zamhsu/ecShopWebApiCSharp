@@ -1,15 +1,8 @@
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApi.Base.IServices.Products;
 using WebApi.Dtos;
 using WebApi.Dtos.Products;
-using WebApi.Models;
 using WebApi.Models.Products;
 using Microsoft.AspNetCore.Authorization;
 using WebApi.Core;
@@ -32,21 +25,24 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("api/productCategoryType")]
-        public async Task<ActionResult<BaseResponse<List<ProductCategoryType>>>> GetProductCategoryType()
+        public async Task<ActionResult<BaseResponse<List<ProductCategoryTypeDisplayModel>>>> GetProductCategoryType()
         {
-            BaseResponse<List<ProductCategoryType>> baseResponse = new BaseResponse<List<ProductCategoryType>>();
+            BaseResponse<List<ProductCategoryTypeDisplayModel>> baseResponse = new BaseResponse<List<ProductCategoryTypeDisplayModel>>();
+
+            List<ProductCategoryType> categoryTypes = await _productCategoryTypeService.GetAllAsync();
+            List<ProductCategoryTypeDisplayModel> displayModels = _mapper.Map<List<ProductCategoryTypeDisplayModel>>(categoryTypes);
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = await _productCategoryTypeService.GetAllAsync();
+            baseResponse.Data = displayModels;
 
             return baseResponse;
         }
 
         [AllowAnonymous]
         [HttpGet("api/productCategoryType/{id}")]
-        public async Task<ActionResult<BaseResponse<ProductCategoryType>>> GetProductCategoryType(int id)
+        public async Task<ActionResult<BaseResponse<ProductCategoryTypeDisplayModel>>> GetProductCategoryType(int id)
         {
-            BaseResponse<ProductCategoryType> baseResponse = new BaseResponse<ProductCategoryType>();
+            BaseResponse<ProductCategoryTypeDisplayModel> baseResponse = new BaseResponse<ProductCategoryTypeDisplayModel>();
 
             ProductCategoryType productCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
 
@@ -58,16 +54,18 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
+            ProductCategoryTypeDisplayModel displayModel = _mapper.Map<ProductCategoryTypeDisplayModel>(productCategoryType);
+
             baseResponse.IsSuccess = true;
-            baseResponse.Data = productCategoryType;
+            baseResponse.Data = displayModel;
 
             return baseResponse;
         }
 
         [HttpPut("api/admin/productCategoryType/{id}")]
-        public async Task<ActionResult<BaseResponse<ProductCategoryType>>> PutProductCategoryType(int id, BaseRequest<UpdateProductCategoryTypeModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PutProductCategoryType(int id, BaseRequest<UpdateProductCategoryTypeModel> baseRequest)
         {
-            BaseResponse<ProductCategoryType> baseResponse = new BaseResponse<ProductCategoryType>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             ProductCategoryType existedProductCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
             if (existedProductCategoryType == null)
@@ -97,9 +95,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/admin/productCategoryType")]
-        public async Task<ActionResult<BaseResponse<ProductCategoryType>>> PostProductCategoryType(BaseRequest<CreateProductCategoryTypeModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PostProductCategoryType(BaseRequest<CreateProductCategoryTypeModel> baseRequest)
         {
-            BaseResponse<ProductCategoryType> baseResponse = new BaseResponse<ProductCategoryType>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             ProductCategoryType productCategoryType = _mapper.Map<ProductCategoryType>(baseRequest.Data);
 
@@ -120,9 +118,9 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("api/admin/productCategoryType/{id}")]
-        public async Task<ActionResult<BaseResponse<ProductCategoryType>>> DeleteProductCategoryType(int id)
+        public async Task<ActionResult<BaseResponse<bool>>> DeleteProductCategoryType(int id)
         {
-            BaseResponse<ProductCategoryType> baseResponse = new BaseResponse<ProductCategoryType>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             ProductCategoryType productCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
             if (productCategoryType == null)

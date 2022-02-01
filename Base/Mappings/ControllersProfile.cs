@@ -36,6 +36,8 @@ namespace WebApi.Base.Mappings
                 .ForMember(dest => dest.EndDisplay, mo => mo.Ignore());
 
             // ProductCategoryType
+            CreateMap<ProductCategoryType, ProductCategoryTypeDisplayModel>();
+
             CreateMap<CreateProductCategoryTypeModel, ProductCategoryType>();
 
             CreateMap<UpdateProductCategoryTypeModel, ProductCategoryType>();
