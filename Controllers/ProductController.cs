@@ -77,9 +77,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("api/admin/product/{guid}")]
-        public async Task<ActionResult<BaseResponse<Product>>> PutProduct(string guid, BaseRequest<UpdateProductModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PutProduct(string guid, BaseRequest<UpdateProductModel> baseRequest)
         {
-            BaseResponse<Product> baseResponse = new BaseResponse<Product>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             Product existedProduct = await _productService.GetByGuidAsync(guid);
             if (existedProduct == null)
@@ -114,9 +114,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/admin/product")]
-        public async Task<ActionResult<BaseResponse<Product>>> PostProduct(BaseRequest<CreateProductModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PostProduct(BaseRequest<CreateProductModel> baseRequest)
         {
-            BaseResponse<Product> baseResponse = new BaseResponse<Product>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             var startOffset = new DateTimeOffset(baseRequest.Data.StartDisplay, baseRequest.UserTimeZone);
             var endOffset = new DateTimeOffset(baseRequest.Data.EndDisplay, baseRequest.UserTimeZone);
@@ -142,9 +142,9 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("api/admin/product/{guid}")]
-        public async Task<ActionResult<BaseResponse<Product>>> DeleteProduct(string guid)
+        public async Task<ActionResult<BaseResponse<bool>>> DeleteProduct(string guid)
         {
-            BaseResponse<Product> baseResponse = new BaseResponse<Product>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             Product product = await _productService.GetByGuidAsync(guid);
             if (product == null)
