@@ -2,6 +2,6 @@ namespace WebApi.Dtos.Products
 {
     public class CreateProductCategoryTypeModel
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 }

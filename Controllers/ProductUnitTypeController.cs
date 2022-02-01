@@ -71,6 +71,14 @@ namespace WebApi.Controllers
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
+            if (id != baseRequest.Data.Id)
+            {
+                baseResponse.IsSuccess = false;
+                baseResponse.Message = "資料錯誤";
+
+                return baseResponse;
+            }
+
             ProductUnitType existedProductUnitType = await _productUnitTypeService.GetByIdAsync(id);
             if (existedProductUnitType == null)
             {
