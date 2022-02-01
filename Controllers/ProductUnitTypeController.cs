@@ -32,21 +32,23 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("api/productUnitType")]
-        public async Task<ActionResult<BaseResponse<List<ProductUnitType>>>> GetProductUnitType()
+        public async Task<ActionResult<BaseResponse<List<ProductUnitTypeDisplayModel>>>> GetProductUnitType()
         {
-            BaseResponse<List<ProductUnitType>> baseResponse = new BaseResponse<List<ProductUnitType>>();
+            BaseResponse<List<ProductUnitTypeDisplayModel>> baseResponse = new BaseResponse<List<ProductUnitTypeDisplayModel>>();
+
+            List<ProductUnitType> unitTypes = await _productUnitTypeService.GetAllAsync();
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = await _productUnitTypeService.GetAllAsync();
+            baseResponse.Data = _mapper.Map<List<ProductUnitTypeDisplayModel>>(unitTypes);
 
             return baseResponse;
         }
 
         [AllowAnonymous]
         [HttpGet("api/productUnitType/{id}")]
-        public async Task<ActionResult<BaseResponse<ProductUnitType>>> GetProductUnitType(int id)
+        public async Task<ActionResult<BaseResponse<ProductUnitTypeDisplayModel>>> GetProductUnitType(int id)
         {
-            BaseResponse<ProductUnitType> baseResponse = new BaseResponse<ProductUnitType>();
+            BaseResponse<ProductUnitTypeDisplayModel> baseResponse = new BaseResponse<ProductUnitTypeDisplayModel>();
 
             ProductUnitType productUnitType = await _productUnitTypeService.GetByIdAsync(id);
 
@@ -59,15 +61,15 @@ namespace WebApi.Controllers
             }
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = productUnitType;
+            baseResponse.Data = _mapper.Map<ProductUnitTypeDisplayModel>(productUnitType);
 
             return baseResponse;
         }
 
         [HttpPut("api/admin/productUnitType/{id}")]
-        public async Task<ActionResult<BaseResponse<ProductUnitType>>> PutProductUnitType(int id, BaseRequest<UpdateProductUnitTypeModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PutProductUnitType(int id, BaseRequest<UpdateProductUnitTypeModel> baseRequest)
         {
-            BaseResponse<ProductUnitType> baseResponse = new BaseResponse<ProductUnitType>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             ProductUnitType existedProductUnitType = await _productUnitTypeService.GetByIdAsync(id);
             if (existedProductUnitType == null)
@@ -97,9 +99,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/admin/productUnitType")]
-        public async Task<ActionResult<BaseResponse<ProductUnitType>>> PostProductUnitType(BaseRequest<CreateProductUnitTypeModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PostProductUnitType(BaseRequest<CreateProductUnitTypeModel> baseRequest)
         {
-            BaseResponse<ProductUnitType> baseResponse = new BaseResponse<ProductUnitType>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             ProductUnitType productUnitType = _mapper.Map<ProductUnitType>(baseRequest.Data);
 
@@ -120,9 +122,9 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("api/admin/productUnitType/{id}")]
-        public async Task<ActionResult<BaseResponse<ProductUnitType>>> DeleteProductUnitType(int id)
+        public async Task<ActionResult<BaseResponse<bool>>> DeleteProductUnitType(int id)
         {
-            BaseResponse<ProductUnitType> baseResponse = new BaseResponse<ProductUnitType>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             ProductUnitType productUnitType = await _productUnitTypeService.GetByIdAsync(id);
             if (productUnitType == null)

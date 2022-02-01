@@ -43,6 +43,8 @@ namespace WebApi.Base.Mappings
             CreateMap<UpdateProductCategoryTypeModel, ProductCategoryType>();
 
             // ProductUnitType
+            CreateMap<ProductUnitType, ProductUnitTypeDisplayModel>();
+
             CreateMap<CreateProductUnitTypeModel, ProductUnitType>();
 
             CreateMap<UpdateProductUnitTypeModel, ProductUnitType>();
