@@ -1,6 +1,6 @@
 namespace WebApi.Dtos.Orders
 {
-    public class OrderDisplayModel
+    public class OrderDisplayDetailModel
     {
         public string Guid { get; set; } = null!;
         public string Name { get; set; } = null!;
@@ -14,5 +14,9 @@ namespace WebApi.Dtos.Orders
         public int StatusId { get; set; }
         public string StatusString { get; set; } = null!;
         public DateTimeOffset CreateDate { get; set; }
+
+        public List<OrderItemDetailDisplayModel> OrderDetails { get; set; } = null!;
+
+        public OrderCouponDetailDisplayModel? CouponDetail { get; set; }
     }
 }

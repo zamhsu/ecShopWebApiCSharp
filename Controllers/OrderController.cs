@@ -55,11 +55,11 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("api/order/{guid}")]
-        public async Task<ActionResult<BaseResponse<OrderDisplayModel>>> GetOrder(string guid)
+        public async Task<ActionResult<BaseResponse<OrderDisplayDetailModel>>> GetOrder(string guid)
         {
-            BaseResponse<OrderDisplayModel> baseResponse = new BaseResponse<OrderDisplayModel>();
+            BaseResponse<OrderDisplayDetailModel> baseResponse = new BaseResponse<OrderDisplayDetailModel>();
 
-            OrderDisplayModel? orderDisplayModel = await _orderService.GetDetailByGuidAsync(guid);
+            OrderDisplayDetailModel? orderDisplayModel = await _orderService.GetDetailByGuidAsync(guid);
 
             if (orderDisplayModel == null)
             {

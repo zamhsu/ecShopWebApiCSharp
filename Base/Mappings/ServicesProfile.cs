@@ -17,6 +17,10 @@ namespace WebApi.Base.Mappings
             CreateMap<Order, OrderDisplayModel>()
                 .ForMember(dest => dest.PaymentMethodString, mo => mo.MapFrom(q => q.PaymentMethod.Name))
                 .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.OrderStatus.Name));
+            
+            CreateMap<Order, OrderDisplayDetailModel>()
+                .ForMember(dest => dest.PaymentMethodString, mo => mo.MapFrom(q => q.PaymentMethod.Name))
+                .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.OrderStatus.Name));
 
             // OrderDetail
             CreateMap<OrderDetail, OrderItemDetailDisplayModel>()

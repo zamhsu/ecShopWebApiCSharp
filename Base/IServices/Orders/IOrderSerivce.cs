@@ -20,7 +20,7 @@ namespace WebApi.Base.IServices.Orders
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <returns></returns>
-        Task<OrderDisplayModel?> GetDetailByGuidAsync(string guid);
+        Task<OrderDisplayDetailModel?> GetDetailByGuidAsync(string guid);
 
         /// <summary>
         /// 取得所有訂單

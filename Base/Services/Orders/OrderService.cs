@@ -62,7 +62,7 @@ namespace WebApi.Base.Services.Orders
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <returns></returns>
-        public async Task<OrderDisplayModel?> GetDetailByGuidAsync(string guid)
+        public async Task<OrderDisplayDetailModel?> GetDetailByGuidAsync(string guid)
         {
             Order? order = await _orderRepository.GetAll()
                 .Include(q => q.PaymentMethod)
@@ -77,7 +77,7 @@ namespace WebApi.Base.Services.Orders
             List<OrderDetail> itemDetail = await _orderDetailService.GetAllItemDetailByOrderIdAsync(order.Id);
             OrderDetail? couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
 
-            OrderDisplayModel displayModel = _mapper.Map<OrderDisplayModel>(order);
+            OrderDisplayDetailModel displayModel = _mapper.Map<OrderDisplayDetailModel>(order);
             displayModel.OrderDetails = _mapper.Map<List<OrderItemDetailDisplayModel>>(itemDetail);
 
             if (couponDetail != null)
