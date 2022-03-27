@@ -42,5 +42,20 @@ namespace WebApi.Utilities.Tests
             // Assert
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentException), 
+            "Must longer than 16 characters")]
+        public void HmacSha256Signature_ArgumentException()
+        {
+            // Arrange
+            string signKey = "ABC123";
+
+            // Act
+            SigningCredentials actual = HashUtility.CreateHmacSha256Signature(signKey);
+
+            // Assert
+            // Throw ArgumentException
+        }
     }
 }
