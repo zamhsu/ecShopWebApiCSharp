@@ -65,6 +65,21 @@ namespace WebApi.Base.Services.Orders
         }
 
         /// <summary>
+        /// 使用優惠券代碼取得一筆可用的優惠券
+        /// </summary>
+        /// <param name="code">優惠券代碼</param>
+        /// <returns></returns>
+        public async Task<Coupon> GetUsableByCodeAsync(string code)
+        {
+            int deleteStatus = (int)CouponStatusPara.Delete;
+            Coupon coupon = await _couponRepository.GetAsync(q => q.Code == code && 
+                q.Quantity > q.Used &&
+                q.StatusId != deleteStatus);
+
+            return coupon;
+        }
+
+        /// <summary>
         /// 取得所有優惠券
         /// </summary>
         /// <returns></returns>

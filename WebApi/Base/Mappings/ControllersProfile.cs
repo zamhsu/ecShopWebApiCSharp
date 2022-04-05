@@ -53,6 +53,8 @@ namespace WebApi.Base.Mappings
             CreateMap<Coupon, CouponDisplayModel>()
                 .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.CouponStatus.Name));
 
+            CreateMap<Coupon, CouponSimpleModel>();
+
             CreateMap<CreateCouponModel, Coupon>()
                 .ForMember(dest => dest.StartDate, mo => mo.Ignore())
                 .ForMember(dest => dest.ExpiredDate, mo => mo.Ignore());
