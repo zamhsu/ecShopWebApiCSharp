@@ -49,7 +49,7 @@ namespace WebApi.Base.IServices.Orders
         /// <param name="placeOrderDetails">商品</param>
         /// <param name="coupon">優惠券</param>
         /// <returns></returns>
-        Task PlaceOrderAsync(Order order, List<PlaceOrderDetailModel> placeOrderDetails, Coupon? coupon);
+        Task<string> PlaceOrderAsync(Order order, List<PlaceOrderDetailModel> placeOrderDetails, Coupon? coupon);
 
         /// <summary>
         /// 修改一筆訂單裡的消費者個人資料
