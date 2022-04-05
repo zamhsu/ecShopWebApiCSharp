@@ -110,19 +110,26 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("api/order/place")]
-        public async Task<ActionResult<BaseResponse<Order>>> PlaceOrder(BaseRequest<OrderPlaceOrderViewModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<string>>> PlaceOrder(BaseRequest<OrderPlaceOrderViewModel> baseRequest)
         {
-            BaseResponse<Order> baseResponse = new BaseResponse<Order>();
+            BaseResponse<string> baseResponse = new BaseResponse<string>();
 
-            Coupon coupon = await _couponService.GetByCodeAsync(baseRequest.Data.CouponCode);
+            if (string.IsNullOrWhiteSpace(baseRequest.Data.CouponCode))
+            {
+                baseRequest.Data.CouponCode = "";
+            }
+
+            Coupon coupon = await _couponService.GetUsableByCodeAsync(baseRequest.Data.CouponCode);
+            
             Order order = _mapper.Map<Order>(baseRequest.Data.Order);
 
             try
             {
-                await _orderService.PlaceOrderAsync(order, baseRequest.Data.OrderDetailModels, coupon);
+                string guid = await _orderService.PlaceOrderAsync(order, baseRequest.Data.OrderDetailModels, coupon);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";
+                baseResponse.Data = guid;
             }
             catch
             {

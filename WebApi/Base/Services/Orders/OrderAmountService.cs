@@ -26,10 +26,11 @@ namespace WebApi.Base.Services.Orders
         /// <returns></returns>
         public int CalculateDiscountAmount(Coupon coupon, int itemTotalAmount)
         {
+            decimal percent = Convert.ToDecimal(coupon.DiscountPercentage) / 100M;
             // 折扣後金額
-            int afterDiscountAmount = itemTotalAmount * (coupon.DiscountPercentage / 100);
+            decimal afterDiscountAmount = Convert.ToDecimal(itemTotalAmount) * percent;
             // 折扣金額(負數)
-            int discountAmount = (itemTotalAmount - afterDiscountAmount) * -1;
+            int discountAmount = (itemTotalAmount - decimal.ToInt32(afterDiscountAmount)) * -1;
 
             return discountAmount;
         }

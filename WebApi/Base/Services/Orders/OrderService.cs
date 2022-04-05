@@ -139,7 +139,7 @@ namespace WebApi.Base.Services.Orders
         /// <param name="placeOrderDetails">商品</param>
         /// <param name="coupon">優惠券</param>
         /// <returns></returns>
-        public async Task PlaceOrderAsync(Order order, List<PlaceOrderDetailModel> placeOrderDetails, Coupon? coupon)
+        public async Task<string> PlaceOrderAsync(Order order, List<PlaceOrderDetailModel> placeOrderDetails, Coupon? coupon)
         {
             int totalAmount = 0;
             int itemTotalAmount = 0;
@@ -151,10 +151,14 @@ namespace WebApi.Base.Services.Orders
             // 建立OrderDetail
             foreach (var item in placeOrderDetails)
             {
+                Product product = await _productService.GetByGuidAsync(item.ProductGuid);
+
+                if (product == null) continue;
+
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.OrderId = order.Id;
                 orderDetail.ItemNo = itemIndex;
-                orderDetail.ProductId = item.ProductId;
+                orderDetail.ProductId = product.Id;
                 orderDetail.Quantity = item.Quantity;
                 orderDetail.Total = _orderAmountService.CalculateItemTotal(item);
                 orderDetail.Order = order;
@@ -205,6 +209,8 @@ namespace WebApi.Base.Services.Orders
                 }
 
                 await _unitOfWork.SaveChangesAsync();
+
+                return order.Guid;
             }
             catch
             {

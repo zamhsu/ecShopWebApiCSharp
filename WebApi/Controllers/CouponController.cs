@@ -68,6 +68,30 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
+        [AllowAnonymous]
+        [HttpPost("api/coupon/check")]
+        public async Task<ActionResult<BaseResponse<CouponSimpleModel>>> CheckCouponIsUsable(BaseRequest<string> baseRequest)
+        {
+            BaseResponse<CouponSimpleModel> baseResponse = new BaseResponse<CouponSimpleModel>();
+
+            Coupon coupon = await _couponService.GetUsableByCodeAsync(baseRequest.Data);
+
+            if (coupon == null)
+            {
+                baseResponse.IsSuccess = false;
+                baseResponse.Message = "沒有資料";
+
+                return baseResponse;
+            }
+
+            CouponSimpleModel simpleModel = _mapper.Map<CouponSimpleModel>(coupon);
+
+            baseResponse.IsSuccess = true;
+            baseResponse.Data = simpleModel;
+
+            return baseResponse;
+        }
+
         [HttpPut("api/admin/coupon/{id}")]
         public async Task<ActionResult<BaseResponse<Coupon>>> PutCoupon(int id, BaseRequest<UpdateCouponModel> baseRequest)
         {

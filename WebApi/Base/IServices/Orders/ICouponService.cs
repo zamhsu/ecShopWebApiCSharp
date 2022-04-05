@@ -27,6 +27,13 @@ namespace WebApi.Base.IServices.Orders
         Task<Coupon> GetByCodeAsync(string code);
 
         /// <summary>
+        /// 使用優惠券代碼取得一筆可用的優惠券
+        /// </summary>
+        /// <param name="code">優惠券代碼</param>
+        /// <returns></returns>
+        Task<Coupon> GetUsableByCodeAsync(string code);
+
+        /// <summary>
         /// 取得所有優惠券
         /// </summary>
         /// <returns></returns>
