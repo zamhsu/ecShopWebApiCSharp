@@ -53,8 +53,7 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
-        [AllowAnonymous]
-        [HttpGet("api/order/{guid}")]
+        [HttpGet("api/admin/order/{guid}")]
         public async Task<ActionResult<BaseResponse<OrderDisplayDetailModel>>> GetOrder(string guid)
         {
             BaseResponse<OrderDisplayDetailModel> baseResponse = new BaseResponse<OrderDisplayDetailModel>();
@@ -120,7 +119,7 @@ namespace WebApi.Controllers
             }
 
             Coupon coupon = await _couponService.GetUsableByCodeAsync(baseRequest.Data.CouponCode);
-            
+
             Order order = _mapper.Map<Order>(baseRequest.Data.Order);
 
             try
