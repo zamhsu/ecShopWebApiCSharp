@@ -23,6 +23,17 @@ namespace WebApi.Base.IServices.Orders
         Task<OrderDisplayDetailModel?> GetDetailByGuidAsync(string guid);
 
         /// <summary>
+        /// 使用消費者資料取得分頁後的訂單詳細資料
+        /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
+        /// <param name="name">姓名</param>
+        /// <param name="email">Email</param>
+        /// <param name="phone">聯絡電話</param>
+        /// <returns></returns>
+        Task<PagedList<OrderDisplayDetailModel>> GetPagedDetailByCustomerInfoAsync(int pageSize, int page, string name, string email, string phone);
+
+        /// <summary>
         /// 取得所有訂單
         /// </summary>
         /// <returns></returns>

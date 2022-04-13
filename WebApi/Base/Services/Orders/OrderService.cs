@@ -89,6 +89,50 @@ namespace WebApi.Base.Services.Orders
         }
 
         /// <summary>
+        /// 使用消費者資料取得分頁後的訂單詳細資料
+        /// </summary>
+        /// <param name="pageSize">一頁資料的筆數</param>
+        /// <param name="page">目前頁數</param>
+        /// <param name="name">姓名</param>
+        /// <param name="email">Email</param>
+        /// <param name="phone">聯絡電話</param>
+        /// <returns></returns>
+        public async Task<PagedList<OrderDisplayDetailModel>> GetPagedDetailByCustomerInfoAsync(int pageSize, int page, string name, string email, string phone)
+        {
+            IQueryable<Order> query = _orderRepository.GetAll()
+                .Include(q => q.PaymentMethod)
+                .Include(q => q.OrderStatus)
+                .Where(q => q.Name == name
+                         && q.Email == email
+                         && q.Phone == phone)
+                .OrderByDescending(q => q.Id);
+
+            PagedList<Order> pagedOrders = query.ToPagedList(pageSize, page);
+
+            List<OrderDisplayDetailModel> displayModels = new List<OrderDisplayDetailModel>();
+
+            foreach (var order in pagedOrders.PagedData)
+            {
+                List<OrderDetail> itemDetail = await _orderDetailService.GetAllItemDetailByOrderIdAsync(order.Id);
+                OrderDetail? couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
+
+                OrderDisplayDetailModel displayModel = _mapper.Map<OrderDisplayDetailModel>(order);
+                displayModel.OrderDetails = _mapper.Map<List<OrderItemDetailDisplayModel>>(itemDetail);
+
+                if (couponDetail != null)
+                {
+                    displayModel.CouponDetail = _mapper.Map<OrderCouponDetailDisplayModel>(couponDetail);
+                }
+
+                displayModels.Add(displayModel);
+            }
+
+            PagedList<OrderDisplayDetailModel> pagedDisplayModels = new PagedList<OrderDisplayDetailModel>(displayModels, pageSize ,page);
+
+            return pagedDisplayModels;
+        }
+
+        /// <summary>
         /// 取得所有訂單
         /// </summary>
         /// <returns></returns>
