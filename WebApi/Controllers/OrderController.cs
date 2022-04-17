@@ -74,10 +74,11 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
+        [AllowAnonymous]
         [HttpPost("api/order/customerInfo")]
-        public async Task<ActionResult<BaseResponse<OrderGetCustomerOrdersViewModel>>> GetCustomerOrders([FromQuery] PageQueryString pageQuery, [FromBody] CustomerOrderQueryParamModel paramModel)
+        public async Task<ActionResult<BaseResponse<OrderGetCustomerOrdersViewModel>>> GetCustomerOrders([FromQuery] PageQueryString pageQuery, [FromBody] BaseRequest<CustomerOrderQueryParamModel> baseRequest)
         {
-            PagedList<OrderDisplayDetailModel> pagedList = await _orderService.GetPagedDetailByCustomerInfoAsync(pageQuery.PageSize, pageQuery.Page, paramModel.Name, paramModel.Email, paramModel.Phone);
+            PagedList<OrderDisplayDetailModel> pagedList = await _orderService.GetPagedDetailByCustomerInfoAsync(pageQuery.PageSize, pageQuery.Page, baseRequest.Data.Name, baseRequest.Data.Email, baseRequest.Data.Phone);
             
             OrderGetCustomerOrdersViewModel viewModel = new OrderGetCustomerOrdersViewModel()
             {
