@@ -2,6 +2,9 @@ namespace WebApi.Dtos
 {
     public class PagedList<T>
     {
+        public PagedList()
+        { }
+
         /// <summary>
         /// 分頁資料
         /// </summary>

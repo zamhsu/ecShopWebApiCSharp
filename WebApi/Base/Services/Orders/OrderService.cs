@@ -127,7 +127,11 @@ namespace WebApi.Base.Services.Orders
                 displayModels.Add(displayModel);
             }
 
-            PagedList<OrderDisplayDetailModel> pagedDisplayModels = new PagedList<OrderDisplayDetailModel>(displayModels, pageSize ,page);
+            PagedList<OrderDisplayDetailModel> pagedDisplayModels = new PagedList<OrderDisplayDetailModel>()
+            {
+                PagedData = displayModels,
+                Pagination = pagedOrders.Pagination
+            };
 
             return pagedDisplayModels;
         }
