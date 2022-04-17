@@ -53,8 +53,7 @@ namespace WebApi.Controllers
             return baseResponse;
         }
 
-        [AllowAnonymous]
-        [HttpGet("api/order/{guid}")]
+        [HttpGet("api/admin/order/{guid}")]
         public async Task<ActionResult<BaseResponse<OrderDisplayDetailModel>>> GetOrder(string guid)
         {
             BaseResponse<OrderDisplayDetailModel> baseResponse = new BaseResponse<OrderDisplayDetailModel>();
@@ -71,6 +70,25 @@ namespace WebApi.Controllers
 
             baseResponse.IsSuccess = true;
             baseResponse.Data = orderDisplayModel;
+
+            return baseResponse;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("api/order/customerInfo")]
+        public async Task<ActionResult<BaseResponse<OrderGetCustomerOrdersViewModel>>> GetCustomerOrders([FromQuery] PageQueryString pageQuery, [FromBody] BaseRequest<CustomerOrderQueryParamModel> baseRequest)
+        {
+            PagedList<OrderDisplayDetailModel> pagedList = await _orderService.GetPagedDetailByCustomerInfoAsync(pageQuery.PageSize, pageQuery.Page, baseRequest.Data.Name, baseRequest.Data.Email, baseRequest.Data.Phone);
+            
+            OrderGetCustomerOrdersViewModel viewModel = new OrderGetCustomerOrdersViewModel()
+            {
+                OrderDisplays = pagedList.PagedData,
+                Pagination = pagedList.Pagination
+            };
+
+            BaseResponse<OrderGetCustomerOrdersViewModel> baseResponse = new BaseResponse<OrderGetCustomerOrdersViewModel>();
+            baseResponse.IsSuccess = true;
+            baseResponse.Data = viewModel;
 
             return baseResponse;
         }
@@ -120,7 +138,7 @@ namespace WebApi.Controllers
             }
 
             Coupon coupon = await _couponService.GetUsableByCodeAsync(baseRequest.Data.CouponCode);
-            
+
             Order order = _mapper.Map<Order>(baseRequest.Data.Order);
 
             try
