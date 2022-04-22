@@ -119,7 +119,7 @@ namespace WebApi.Base.Services.Products
             if (product == null)
             {
                 _logger.LogInformation("[Create] Product can not be null");
-                new ArgumentNullException(nameof(product));
+                throw new ArgumentNullException(nameof(product));
             }
 
             product.Guid = Guid.NewGuid().ToString();

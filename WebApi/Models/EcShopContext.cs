@@ -24,11 +24,11 @@ namespace WebApi.Models
         public DbSet<AdminMemberStatus> AdminMemberStatus { get; set; } = null!;
 
         // Orders
-        public DbSet<Order> Order { get; set; }
-        public DbSet<OrderStatus> OrderStatuse { get; set; }
-        public DbSet<Coupon> coupon { get; set; }
-        public DbSet<OrderDetail> orderDetail { get; set; }
-        public DbSet<PaymentMethod> PaymentMethod { get; set; }
+        public DbSet<Order> Order { get; set; } = null!;
+        public DbSet<OrderStatus> OrderStatuse { get; set; } = null!;
+        public DbSet<Coupon> Coupon { get; set; } = null!;
+        public DbSet<OrderDetail> OrderDetail { get; set; } = null!;
+        public DbSet<PaymentMethod> PaymentMethod { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
