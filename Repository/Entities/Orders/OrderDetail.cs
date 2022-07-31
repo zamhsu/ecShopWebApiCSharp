@@ -12,7 +12,7 @@ namespace Repository.Entities.Orders
         public int Total { get; set; }
 
         public Order Order { get; set; } = null!;
-        public Product? Product { get; set; }
-        public Coupon? Coupon { get; set; }
+        public Product Product { get; set; }
+        public Coupon Coupon { get; set; }
     }
 }

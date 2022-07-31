@@ -20,7 +20,7 @@ namespace Repository.Entities.Orders
         public DateTimeOffset CreateDate { get; set; }
         public DateTimeOffset? UpdateDate { get; set; }
 
-        public PaymentMethod? PaymentMethod { get; set; }
+        public PaymentMethod PaymentMethod { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderDetail> OrderDetail { get; set; }
     }
