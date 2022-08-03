@@ -8,7 +8,7 @@ using Repository.Entities.Members;
 using Repository.Interfaces;
 using Service.Interfaces.Members;
 
-namespace WebApi.Base.Services.Members
+namespace Service.Implments.Members
 {
     public class AdminMemberService : IAdminMemberService
     {

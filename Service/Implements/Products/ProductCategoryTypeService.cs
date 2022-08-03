@@ -5,7 +5,7 @@ using Repository.Entities.Products;
 using Repository.Interfaces;
 using Service.Interfaces.Products;
 
-namespace WebApi.Base.Services.Products
+namespace Service.Implments.Products
 {
     public class ProductCategoryTypeService : IProductCategoryTypeService
     {

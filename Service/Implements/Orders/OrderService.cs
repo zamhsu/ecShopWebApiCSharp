@@ -11,7 +11,7 @@ using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Products;
 
-namespace WebApi.Base.Services.Orders
+namespace Service.Implments.Orders
 {
     public class OrderSerivce : IOrderService
     {

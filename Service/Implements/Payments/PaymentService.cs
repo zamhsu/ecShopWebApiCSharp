@@ -3,7 +3,7 @@ using Repository.Interfaces;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Payments;
 
-namespace WebApi.Base.Services.Payments
+namespace Service.Implments.Payments
 {
     public class PaymentService : IPaymentService
     {
