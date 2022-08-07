@@ -1,12 +1,13 @@
 using AutoMapper;
+using Common.Enums;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Base.IServices.Orders;
-using WebApi.Base.IServices.Payments;
-using WebApi.Core;
-using WebApi.Dtos;
-using WebApi.Dtos.Payments;
-using WebApi.Models;
-using WebApi.Models.Orders;
+using Repository.Entities.Orders;
+using Service.Interfaces.Orders;
+using Service.Interfaces.Payments;
+using WebApi.Infrastructures.Core;
+using WebApi.Infrastructures.Models.Dtos.Payments;
+using WebApi.Infrastructures.Models.InputParamaters;
+using WebApi.Infrastructures.Models.OutputModels;
 
 namespace WebApi.Controllers
 {
@@ -30,11 +31,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/payment/method")]
-        public async Task<ActionResult<BaseResponse<List<PaymentMethodDisplayModel>>>> GetPaymentMethod()
+        public async Task<ActionResult<BaseResponse<List<PaymentMethodDisplayDto>>>> GetPaymentMethod()
         {
             List<PaymentMethod> methodList = await _paymentMethodService.GetAllAsync();
-            List<PaymentMethodDisplayModel> displayList = _mapper.Map<List<PaymentMethodDisplayModel>>(methodList);
-            BaseResponse<List<PaymentMethodDisplayModel>> baseResponse = new BaseResponse<List<PaymentMethodDisplayModel>>()
+            List<PaymentMethodDisplayDto> displayList = _mapper.Map<List<PaymentMethodDisplayDto>>(methodList);
+            BaseResponse<List<PaymentMethodDisplayDto>> baseResponse = new BaseResponse<List<PaymentMethodDisplayDto>>()
             {
                 IsSuccess = true,
                 Data = displayList
@@ -44,13 +45,13 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/payment/creditCard")]
-        public async Task<ActionResult<BaseResponse<bool>>> PayWithCreditCard(CustomerPaymentModel model)
+        public async Task<ActionResult<BaseResponse<bool>>> PayWithCreditCard(CustomerPaymentParameter parameter)
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
-            PaymentMethodPara paymentMethodPara = PaymentMethodPara.CreditCard;
+            PaymentMethodEnum paymentMethodEnum = PaymentMethodEnum.CreditCard;
 
-            bool isAllowedMethod = await _paymentMethodService.IsAllowedMethodAsync(model.PaymentMethodId);
-            bool isCreditCard = model.PaymentMethodId == (int)paymentMethodPara;
+            bool isAllowedMethod = await _paymentMethodService.IsAllowedMethodAsync(parameter.PaymentMethodId);
+            bool isCreditCard = parameter.PaymentMethodId == (int)paymentMethodEnum;
             if (!isAllowedMethod || !isCreditCard)
             {
                 baseResponse.IsSuccess = false;
@@ -59,7 +60,7 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            bool isPaid = await _orderService.IsOrderPaidAsync(model.OrderGuid);
+            bool isPaid = await _orderService.IsOrderPaidAsync(parameter.OrderGuid);
             if (isPaid)
             {
                 baseResponse.IsSuccess = false;
@@ -70,10 +71,10 @@ namespace WebApi.Controllers
 
             try
             {
-                bool paySuccessful = await _paymentService.PayWithCreditCardAsync(model.OrderGuid);
+                bool paySuccessful = await _paymentService.PayWithCreditCardAsync(parameter.OrderGuid);
                 if (!paySuccessful)
                 {
-                    await _orderService.UpdateStatusToPaymentFailedAsync(model.OrderGuid, paymentMethodPara);
+                    await _orderService.UpdateStatusToPaymentFailedAsync(parameter.OrderGuid, paymentMethodEnum);
 
                     baseResponse.IsSuccess = false;
                     baseResponse.Message = "付款失敗";
@@ -81,7 +82,7 @@ namespace WebApi.Controllers
                     return baseResponse;
                 }
 
-                await _orderService.UpdateStatusToPaymentSuccessfulAsync(model.OrderGuid, paymentMethodPara);
+                await _orderService.UpdateStatusToPaymentSuccessfulAsync(parameter.OrderGuid, paymentMethodEnum);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "付款完成";
@@ -98,13 +99,13 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/payment/atm")]
-        public async Task<ActionResult<BaseResponse<bool>>> PayWithAtm(CustomerPaymentModel model)
+        public async Task<ActionResult<BaseResponse<bool>>> PayWithAtm(CustomerPaymentParameter parameter)
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
-            PaymentMethodPara paymentMethodPara = PaymentMethodPara.ATM;
+            PaymentMethodEnum paymentMethodEnum = PaymentMethodEnum.ATM;
 
-            bool isAllowedMethod = await _paymentMethodService.IsAllowedMethodAsync(model.PaymentMethodId);
-            bool isCreditCard = model.PaymentMethodId == (int)paymentMethodPara;
+            bool isAllowedMethod = await _paymentMethodService.IsAllowedMethodAsync(parameter.PaymentMethodId);
+            bool isCreditCard = parameter.PaymentMethodId == (int)paymentMethodEnum;
             if (!isAllowedMethod || !isCreditCard)
             {
                 baseResponse.IsSuccess = false;
@@ -113,7 +114,7 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            bool isPaid = await _orderService.IsOrderPaidAsync(model.OrderGuid);
+            bool isPaid = await _orderService.IsOrderPaidAsync(parameter.OrderGuid);
             if (isPaid)
             {
                 baseResponse.IsSuccess = false;
@@ -124,10 +125,10 @@ namespace WebApi.Controllers
 
             try
             {
-                bool paySuccessful = await _paymentService.PayWithCreditCardAsync(model.OrderGuid);
+                bool paySuccessful = await _paymentService.PayWithCreditCardAsync(parameter.OrderGuid);
                 if (!paySuccessful)
                 {
-                    await _orderService.UpdateStatusToPaymentFailedAsync(model.OrderGuid, paymentMethodPara);
+                    await _orderService.UpdateStatusToPaymentFailedAsync(parameter.OrderGuid, paymentMethodEnum);
 
                     baseResponse.IsSuccess = false;
                     baseResponse.Message = "付款失敗";
@@ -135,7 +136,7 @@ namespace WebApi.Controllers
                     return baseResponse;
                 }
 
-                await _orderService.UpdateStatusToPaymentSuccessfulAsync(model.OrderGuid, paymentMethodPara);
+                await _orderService.UpdateStatusToPaymentSuccessfulAsync(parameter.OrderGuid, paymentMethodEnum);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "付款完成";

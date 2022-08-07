@@ -65,7 +65,7 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<OrderDisplayDetailDto> GetDetailByGuidAsync(string guid)
         {
-            Order? order = await _orderRepository.GetAll()
+            Order order = await _orderRepository.GetAll()
                 .Include(q => q.PaymentMethod)
                 .Include(q => q.OrderStatus)
                 .FirstOrDefaultAsync(q => q.Guid == guid);
@@ -115,7 +115,7 @@ namespace Service.Implments.Orders
             foreach (var order in pagedOrders.PagedData)
             {
                 List<OrderDetail> itemDetail = await _orderDetailService.GetAllItemDetailByOrderIdAsync(order.Id);
-                OrderDetail? couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
+                OrderDetail couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
 
                 OrderDisplayDetailDto displayDto = _mapper.Map<OrderDisplayDetailDto>(order);
                 displayDto.OrderDetails = _mapper.Map<List<OrderItemDetailDisplayDto>>(itemDetail);

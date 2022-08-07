@@ -1,12 +1,14 @@
 using AutoMapper;
+using Common.Dtos;
+using Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Base.IServices.Orders;
-using WebApi.Core;
-using WebApi.Dtos;
-using WebApi.Dtos.Orders;
-using WebApi.Dtos.ViewModel;
-using WebApi.Models.Orders;
+using Repository.Entities.Orders;
+using Service.Interfaces.Orders;
+using WebApi.Infrastructures.Core;
+using WebApi.Infrastructures.Models.Dtos.Orders;
+using WebApi.Infrastructures.Models.InputParamaters;
+using WebApi.Infrastructures.Models.OutputModels;
 
 namespace WebApi.Controllers
 {
@@ -25,12 +27,12 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/admin/coupon")]
-        public ActionResult<BaseResponse<CouponGetCouponViewModel>> GetCoupon([FromQuery] PageQueryString pageQueryString)
+        public ActionResult<BaseResponse<CouponGetCouponViewModel>> GetCoupon([FromQuery] PageParameter pageParameter)
         {
             BaseResponse<CouponGetCouponViewModel> baseResponse = new BaseResponse<CouponGetCouponViewModel>();
 
-            PagedList<Coupon> pagedList = _couponService.GetPagedDetailAll(pageQueryString.PageSize, pageQueryString.Page);
-            List<CouponDisplayModel> couponDisplays = _mapper.Map<List<CouponDisplayModel>>(pagedList.PagedData);
+            PagedList<Coupon> pagedList = _couponService.GetPagedDetailAll(pageParameter.PageSize, pageParameter.Page);
+            List<CouponDisplayDto> couponDisplays = _mapper.Map<List<CouponDisplayDto>>(pagedList.PagedData);
             Pagination pagination = pagedList.Pagination;
 
             CouponGetCouponViewModel viewModel = new CouponGetCouponViewModel()
@@ -47,12 +49,12 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("api/coupon/{id}")]
-        public async Task<ActionResult<BaseResponse<CouponDisplayModel>>> GetCoupon(int id)
+        public async Task<ActionResult<BaseResponse<CouponDisplayDto>>> GetCoupon(int id)
         {
-            BaseResponse<CouponDisplayModel> baseResponse = new BaseResponse<CouponDisplayModel>();
+            BaseResponse<CouponDisplayDto> baseResponse = new BaseResponse<CouponDisplayDto>();
 
-            Coupon? coupon = await _couponService.GetDetailByIdAsync(id);
-            CouponDisplayModel couponDisplay = _mapper.Map<CouponDisplayModel>(coupon);
+            Coupon coupon = await _couponService.GetDetailByIdAsync(id);
+            CouponDisplayDto couponDisplay = _mapper.Map<CouponDisplayDto>(coupon);
 
             if (coupon == null)
             {
@@ -70,9 +72,9 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("api/coupon/check")]
-        public async Task<ActionResult<BaseResponse<CouponSimpleModel>>> CheckCouponIsUsable(BaseRequest<string> baseRequest)
+        public async Task<ActionResult<BaseResponse<CouponSimpleDto>>> CheckCouponIsUsable(BaseRequest<string> baseRequest)
         {
-            BaseResponse<CouponSimpleModel> baseResponse = new BaseResponse<CouponSimpleModel>();
+            BaseResponse<CouponSimpleDto> baseResponse = new BaseResponse<CouponSimpleDto>();
 
             Coupon coupon = await _couponService.GetUsableByCodeAsync(baseRequest.Data);
 
@@ -84,7 +86,7 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            CouponSimpleModel simpleModel = _mapper.Map<CouponSimpleModel>(coupon);
+            CouponSimpleDto simpleModel = _mapper.Map<CouponSimpleDto>(coupon);
 
             baseResponse.IsSuccess = true;
             baseResponse.Data = simpleModel;
@@ -93,9 +95,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("api/admin/coupon/{id}")]
-        public async Task<ActionResult<BaseResponse<Coupon>>> PutCoupon(int id, BaseRequest<UpdateCouponModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PutCoupon(int id, BaseRequest<UpdateCouponParameter> baseRequest)
         {
-            BaseResponse<Coupon> baseResponse = new BaseResponse<Coupon>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             Coupon existedCoupon = await _couponService.GetByIdAsync(id);
             if (existedCoupon == null)
@@ -125,9 +127,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/admin/coupon")]
-        public async Task<ActionResult<BaseResponse<Coupon>>> PostCoupon(BaseRequest<CreateCouponModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PostCoupon(BaseRequest<CreateCouponParameter> baseRequest)
         {
-            BaseResponse<Coupon> baseResponse = new BaseResponse<Coupon>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             var startOffset = new DateTimeOffset(baseRequest.Data.StartDate, baseRequest.UserTimeZone);
             var endOffset = new DateTimeOffset(baseRequest.Data.ExpiredDate, baseRequest.UserTimeZone);
@@ -153,9 +155,9 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("api/admin/coupon/{id}")]
-        public async Task<ActionResult<BaseResponse<Coupon>>> DeleteCoupon(int id)
+        public async Task<ActionResult<BaseResponse<bool>>> DeleteCoupon(int id)
         {
-            BaseResponse<Coupon> baseResponse = new BaseResponse<Coupon>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             Coupon coupon = await _couponService.GetByIdAsync(id);
             if (coupon == null)

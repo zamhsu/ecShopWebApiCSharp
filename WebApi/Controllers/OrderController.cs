@@ -1,14 +1,16 @@
 using AutoMapper;
+using Common.Dtos;
+using Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Base.IServices.Orders;
-using WebApi.Base.IServices.Products;
-using WebApi.Core;
-using WebApi.Dtos;
-using WebApi.Dtos.Orders;
-using WebApi.Dtos.ViewModel;
-using WebApi.Models.Orders;
-using WebApi.Models.Products;
+using Repository.Entities.Orders;
+using Service.Dtos.Orders;
+using Service.Interfaces.Orders;
+using Service.Interfaces.Products;
+using WebApi.Infrastructures.Core;
+using WebApi.Infrastructures.Models.Dtos.Orders;
+using WebApi.Infrastructures.Models.InputParamaters;
+using WebApi.Infrastructures.Models.OutputModels;
 
 namespace WebApi.Controllers
 {
@@ -33,12 +35,12 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/admin/order")]
-        public ActionResult<BaseResponse<OrderGetOrderViewModel>> GetOrder([FromQuery] PageQueryString pageQueryString)
+        public ActionResult<BaseResponse<OrderGetOrderViewModel>> GetOrder([FromQuery] PageParameter pageParameter)
         {
             BaseResponse<OrderGetOrderViewModel> baseResponse = new BaseResponse<OrderGetOrderViewModel>();
 
-            PagedList<Order> pagedList = _orderService.GetPagedDetailAll(pageQueryString.PageSize, pageQueryString.Page);
-            List<OrderDisplayModel> orderDisplays = _mapper.Map<List<OrderDisplayModel>>(pagedList.PagedData);
+            PagedList<Order> pagedList = _orderService.GetPagedDetailAll(pageParameter.PageSize, pageParameter.Page);
+            List<OrderDisplayDto> orderDisplays = _mapper.Map<List<OrderDisplayDto>>(pagedList.PagedData);
             Pagination pagination = pagedList.Pagination;
 
             OrderGetOrderViewModel viewModel = new OrderGetOrderViewModel()
@@ -54,13 +56,13 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/admin/order/{guid}")]
-        public async Task<ActionResult<BaseResponse<OrderDisplayDetailModel>>> GetOrder(string guid)
+        public async Task<ActionResult<BaseResponse<OrderDisplayDetailDto>>> GetOrder(string guid)
         {
-            BaseResponse<OrderDisplayDetailModel> baseResponse = new BaseResponse<OrderDisplayDetailModel>();
+            BaseResponse<OrderDisplayDetailDto> baseResponse = new BaseResponse<OrderDisplayDetailDto>();
 
-            OrderDisplayDetailModel? orderDisplayModel = await _orderService.GetDetailByGuidAsync(guid);
+            OrderDisplayDetailDto orderDisplayDto = await _orderService.GetDetailByGuidAsync(guid);
 
-            if (orderDisplayModel == null)
+            if (orderDisplayDto == null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "沒有資料";
@@ -69,16 +71,16 @@ namespace WebApi.Controllers
             }
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = orderDisplayModel;
+            baseResponse.Data = orderDisplayDto;
 
             return baseResponse;
         }
 
         [AllowAnonymous]
         [HttpPost("api/order/customerInfo")]
-        public async Task<ActionResult<BaseResponse<OrderGetCustomerOrdersViewModel>>> GetCustomerOrders([FromQuery] PageQueryString pageQuery, [FromBody] BaseRequest<CustomerOrderQueryParamModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<OrderGetCustomerOrdersViewModel>>> GetCustomerOrders([FromQuery] PageParameter pageParameter, [FromBody] BaseRequest<CustomerOrderQueryParameter> baseRequest)
         {
-            PagedList<OrderDisplayDetailModel> pagedList = await _orderService.GetPagedDetailByCustomerInfoAsync(pageQuery.PageSize, pageQuery.Page, baseRequest.Data.Name, baseRequest.Data.Email, baseRequest.Data.Phone);
+            PagedList<OrderDisplayDetailDto> pagedList = await _orderService.GetPagedDetailByCustomerInfoAsync(pageParameter.PageSize, pageParameter.Page, baseRequest.Data.Name, baseRequest.Data.Email, baseRequest.Data.Phone);
             
             OrderGetCustomerOrdersViewModel viewModel = new OrderGetCustomerOrdersViewModel()
             {
@@ -95,9 +97,9 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPut("api/order/customerInfo/{guid}")]
-        public async Task<ActionResult<BaseResponse<Order>>> PutOrderCustomerInfo(string guid, BaseRequest<UpdateOrderCustomerInfoModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PutOrderCustomerInfo(string guid, BaseRequest<UpdateOrderCustomerInfoParameter> baseRequest)
         {
-            BaseResponse<Order> baseResponse = new BaseResponse<Order>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
             Order existedOrder = await _orderService.GetByGuidAsync(guid);
             if (existedOrder == null)
@@ -128,7 +130,7 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("api/order/place")]
-        public async Task<ActionResult<BaseResponse<string>>> PlaceOrder(BaseRequest<OrderPlaceOrderViewModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<string>>> PlaceOrder(BaseRequest<PlaceOrderParameter> baseRequest)
         {
             BaseResponse<string> baseResponse = new BaseResponse<string>();
 

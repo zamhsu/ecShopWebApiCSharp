@@ -1,19 +1,14 @@
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Base.IServices.Products;
-using WebApi.Dtos;
-using WebApi.Dtos.Products;
-using WebApi.Models;
-using WebApi.Models.Products;
+using Common.Dtos;
+using Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using WebApi.Dtos.ViewModel;
-using WebApi.Core;
+using Microsoft.AspNetCore.Mvc;
+using Repository.Entities.Products;
+using Service.Interfaces.Products;
+using WebApi.Infrastructures.Core;
+using WebApi.Infrastructures.Models.Dtos.Products;
+using WebApi.Infrastructures.Models.InputParamaters;
+using WebApi.Infrastructures.Models.OutputModels;
 
 namespace WebApi.Controllers
 {
@@ -38,7 +33,7 @@ namespace WebApi.Controllers
             BaseResponse<ProductGetPagedProductsViewModel> baseResponse = new BaseResponse<ProductGetPagedProductsViewModel>();
 
             PagedList<Product> products = _productService.GetPagedDetailAllUsable(pageQueryString.PageSize, pageQueryString.Page);
-            List<ProductDisplayModel> productDisplays = _mapper.Map<List<ProductDisplayModel>>(products.PagedData);
+            List<ProductDisplayDto> productDisplays = _mapper.Map<List<ProductDisplayDto>>(products.PagedData);
             Pagination pagination = products.Pagination;
 
             ProductGetPagedProductsViewModel viewModel = new ProductGetPagedProductsViewModel()
@@ -55,12 +50,12 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("api/product/{guid}")]
-        public async Task<ActionResult<BaseResponse<ProductDisplayModel>>> GetProduct(string guid)
+        public async Task<ActionResult<BaseResponse<ProductDisplayDto>>> GetProduct(string guid)
         {
-            BaseResponse<ProductDisplayModel> baseResponse = new BaseResponse<ProductDisplayModel>();
+            BaseResponse<ProductDisplayDto> baseResponse = new BaseResponse<ProductDisplayDto>();
 
             Product product = await _productService.GetDetailByGuidAsync(guid);
-            ProductDisplayModel productDisplay = _mapper.Map<ProductDisplayModel>(product);
+            ProductDisplayDto productDisplay = _mapper.Map<ProductDisplayDto>(product);
 
             if (product == null)
             {
@@ -77,7 +72,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("api/admin/product/{guid}")]
-        public async Task<ActionResult<BaseResponse<bool>>> PutProduct(string guid, BaseRequest<UpdateProductModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PutProduct(string guid, BaseRequest<UpdateProductParameter> baseRequest)
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
@@ -114,7 +109,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/admin/product")]
-        public async Task<ActionResult<BaseResponse<bool>>> PostProduct(BaseRequest<CreateProductModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PostProduct(BaseRequest<CreateProductParameter> baseRequest)
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 

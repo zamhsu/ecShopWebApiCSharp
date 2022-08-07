@@ -19,9 +19,9 @@ namespace Service.Implments.Payments
         /// </summary>
         /// <param name="id">付款方式Id</param>
         /// <returns></returns>
-        public async Task<PaymentMethod?> GetByIdAsync(int id)
+        public async Task<PaymentMethod> GetByIdAsync(int id)
         {
-            PaymentMethod? paymentMethod = await _paymentMethodRepository.GetAsync(q => q.Id == id);
+            PaymentMethod paymentMethod = await _paymentMethodRepository.GetAsync(q => q.Id == id);
 
             return paymentMethod;
         }
@@ -45,7 +45,7 @@ namespace Service.Implments.Payments
         /// <returns></returns>
         public async Task<bool> IsAllowedMethodAsync(int id)
         {
-            PaymentMethod? paymentMethod = await _paymentMethodRepository.GetAsync(q => q.Id == id);
+            PaymentMethod paymentMethod = await _paymentMethodRepository.GetAsync(q => q.Id == id);
 
             return paymentMethod != null;
         }

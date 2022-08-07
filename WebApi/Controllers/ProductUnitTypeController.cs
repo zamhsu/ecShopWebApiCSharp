@@ -1,18 +1,12 @@
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Base.IServices.Products;
-using WebApi.Dtos;
-using WebApi.Dtos.Products;
-using WebApi.Models;
-using WebApi.Models.Products;
 using Microsoft.AspNetCore.Authorization;
-using WebApi.Core;
+using Microsoft.AspNetCore.Mvc;
+using Repository.Entities.Products;
+using Service.Interfaces.Products;
+using WebApi.Infrastructures.Core;
+using WebApi.Infrastructures.Models.Dtos.Products;
+using WebApi.Infrastructures.Models.InputParamaters;
+using WebApi.Infrastructures.Models.OutputModels;
 
 namespace WebApi.Controllers
 {
@@ -32,23 +26,23 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("api/productUnitType")]
-        public async Task<ActionResult<BaseResponse<List<ProductUnitTypeDisplayModel>>>> GetProductUnitType()
+        public async Task<ActionResult<BaseResponse<List<ProductUnitTypeDisplayDto>>>> GetProductUnitType()
         {
-            BaseResponse<List<ProductUnitTypeDisplayModel>> baseResponse = new BaseResponse<List<ProductUnitTypeDisplayModel>>();
+            BaseResponse<List<ProductUnitTypeDisplayDto>> baseResponse = new BaseResponse<List<ProductUnitTypeDisplayDto>>();
 
             List<ProductUnitType> unitTypes = await _productUnitTypeService.GetAllAsync();
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = _mapper.Map<List<ProductUnitTypeDisplayModel>>(unitTypes);
+            baseResponse.Data = _mapper.Map<List<ProductUnitTypeDisplayDto>>(unitTypes);
 
             return baseResponse;
         }
 
         [AllowAnonymous]
         [HttpGet("api/productUnitType/{id}")]
-        public async Task<ActionResult<BaseResponse<ProductUnitTypeDisplayModel>>> GetProductUnitType(int id)
+        public async Task<ActionResult<BaseResponse<ProductUnitTypeDisplayDto>>> GetProductUnitType(int id)
         {
-            BaseResponse<ProductUnitTypeDisplayModel> baseResponse = new BaseResponse<ProductUnitTypeDisplayModel>();
+            BaseResponse<ProductUnitTypeDisplayDto> baseResponse = new BaseResponse<ProductUnitTypeDisplayDto>();
 
             ProductUnitType productUnitType = await _productUnitTypeService.GetByIdAsync(id);
 
@@ -61,13 +55,13 @@ namespace WebApi.Controllers
             }
 
             baseResponse.IsSuccess = true;
-            baseResponse.Data = _mapper.Map<ProductUnitTypeDisplayModel>(productUnitType);
+            baseResponse.Data = _mapper.Map<ProductUnitTypeDisplayDto>(productUnitType);
 
             return baseResponse;
         }
 
         [HttpPut("api/admin/productUnitType/{id}")]
-        public async Task<ActionResult<BaseResponse<bool>>> PutProductUnitType(int id, BaseRequest<UpdateProductUnitTypeModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PutProductUnitType(int id, BaseRequest<UpdateProductUnitTypeParameter> baseRequest)
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
@@ -107,7 +101,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/admin/productUnitType")]
-        public async Task<ActionResult<BaseResponse<bool>>> PostProductUnitType(BaseRequest<CreateProductUnitTypeModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PostProductUnitType(BaseRequest<CreateProductUnitTypeParameter> baseRequest)
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 

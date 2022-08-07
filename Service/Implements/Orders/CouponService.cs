@@ -42,10 +42,10 @@ namespace Service.Implments.Orders
         /// </summary>
         /// <param name="id">優惠券id</param>
         /// <returns></returns>
-        public async Task<Coupon?> GetDetailByIdAsync(int id)
+        public async Task<Coupon> GetDetailByIdAsync(int id)
         {
             int deleteStatus = (int)CouponStatusEnum.Delete;
-            Coupon? coupon = await _couponRepository.GetAll()
+            Coupon coupon = await _couponRepository.GetAll()
                 .Include(q => q.CouponStatus)
                 .FirstOrDefaultAsync(q => q.Id == id && q.StatusId != deleteStatus);
 
