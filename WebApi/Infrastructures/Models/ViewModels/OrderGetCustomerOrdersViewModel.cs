@@ -1,7 +1,7 @@
 using Common.Dtos;
 using Service.Dtos.Orders;
 
-namespace WebApi.Infrastructures.Models.OutputModels
+namespace WebApi.Infrastructures.Models.ViewModels
 {
     public class OrderGetCustomerOrdersViewModel
     {

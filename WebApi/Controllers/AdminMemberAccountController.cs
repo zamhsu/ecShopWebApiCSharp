@@ -6,8 +6,8 @@ using Service.Dtos.Members;
 using Service.Interfaces.Members;
 using WebApi.Infrastructures.Core;
 using WebApi.Infrastructures.Helpers;
-using WebApi.Infrastructures.Models.InputParamaters;
-using WebApi.Infrastructures.Models.OutputModels;
+using WebApi.Infrastructures.Models.Paramaters;
+using WebApi.Infrastructures.Models.ViewModels;
 
 namespace WebApi.Controllers
 {

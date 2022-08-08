@@ -1,7 +1,7 @@
 using Service.Dtos.Orders;
 using WebApi.Infrastructures.Models.Dtos.Orders;
 
-namespace WebApi.Infrastructures.Models.InputParamaters
+namespace WebApi.Infrastructures.Models.Paramaters
 {
     public class PlaceOrderParameter
     {

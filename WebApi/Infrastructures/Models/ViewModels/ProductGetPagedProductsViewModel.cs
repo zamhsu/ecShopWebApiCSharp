@@ -1,7 +1,7 @@
 using Common.Dtos;
 using WebApi.Infrastructures.Models.Dtos.Products;
 
-namespace WebApi.Infrastructures.Models.OutputModels
+namespace WebApi.Infrastructures.Models.ViewModels
 {
     public class ProductGetPagedProductsViewModel
     {

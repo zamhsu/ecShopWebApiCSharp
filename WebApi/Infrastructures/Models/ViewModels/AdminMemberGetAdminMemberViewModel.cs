@@ -1,7 +1,7 @@
 using Common.Dtos;
 using WebApi.Infrastructures.Models.Dtos.Members;
 
-namespace WebApi.Infrastructures.Models.OutputModels
+namespace WebApi.Infrastructures.Models.ViewModels
 {
     public class AdminMemberGetAdminMemberViewModel
     {

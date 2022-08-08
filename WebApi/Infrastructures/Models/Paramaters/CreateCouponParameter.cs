@@ -1,4 +1,4 @@
-namespace WebApi.Infrastructures.Models.InputParamaters
+namespace WebApi.Infrastructures.Models.Paramaters
 {
     public class CreateCouponParameter
     {

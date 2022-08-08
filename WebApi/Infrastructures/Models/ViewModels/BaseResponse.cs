@@ -1,4 +1,4 @@
-namespace WebApi.Infrastructures.Models.OutputModels
+namespace WebApi.Infrastructures.Models.ViewModels
 {
     public class BaseResponse<T>
     {

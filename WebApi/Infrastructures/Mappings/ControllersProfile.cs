@@ -6,7 +6,7 @@ using WebApi.Infrastructures.Models.Dtos.Members;
 using WebApi.Infrastructures.Models.Dtos.Orders;
 using WebApi.Infrastructures.Models.Dtos.Payments;
 using WebApi.Infrastructures.Models.Dtos.Products;
-using WebApi.Infrastructures.Models.InputParamaters;
+using WebApi.Infrastructures.Models.Paramaters;
 
 namespace WebApi.Infrastructures.Mappings
 {

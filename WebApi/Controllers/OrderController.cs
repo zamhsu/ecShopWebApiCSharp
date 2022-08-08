@@ -9,8 +9,8 @@ using Service.Interfaces.Orders;
 using Service.Interfaces.Products;
 using WebApi.Infrastructures.Core;
 using WebApi.Infrastructures.Models.Dtos.Orders;
-using WebApi.Infrastructures.Models.InputParamaters;
-using WebApi.Infrastructures.Models.OutputModels;
+using WebApi.Infrastructures.Models.Paramaters;
+using WebApi.Infrastructures.Models.ViewModels;
 
 namespace WebApi.Controllers
 {

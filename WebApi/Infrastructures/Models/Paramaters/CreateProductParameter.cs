@@ -1,6 +1,6 @@
-namespace WebApi.Infrastructures.Models.InputParamaters
+namespace WebApi.Infrastructures.Models.Paramaters
 {
-    public class UpdateProductParameter
+    public class CreateProductParameter
     {
         public string Title { get; set; }
         public int CategoryId { get; set; }
