@@ -7,13 +7,10 @@ namespace Service.Implments.Payments
 {
     public class PaymentService : IPaymentService
     {
-        private readonly IRepository<PaymentMethod> _paymentMethodRepository;
         private readonly IOrderService _orderService;
 
-        public PaymentService(IRepository<PaymentMethod> paymentMethodRepository,
-            IOrderService orderService)
+        public PaymentService(IOrderService orderService)
         {
-            _paymentMethodRepository = paymentMethodRepository;
             _orderService = orderService;
         }
 

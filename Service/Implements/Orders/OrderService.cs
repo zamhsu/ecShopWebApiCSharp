@@ -15,9 +15,6 @@ namespace Service.Implments.Orders
 {
     public class OrderSerivce : IOrderService
     {
-        private readonly IRepository<Order> _orderRepository;
-        private readonly IRepository<OrderDetail> _orderDetailRepository;
-        private readonly IRepository<Coupon> _couponRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOrderAmountService _orderAmountService;
         private readonly IOrderDetailService _orderDetailService;
@@ -25,19 +22,13 @@ namespace Service.Implments.Orders
         private readonly IMapper _mapper;
         private readonly IAppLogger<Order> _logger;
 
-        public OrderSerivce(IRepository<Order> orderRepository,
-            IRepository<OrderDetail> orderDetailRepository,
-            IRepository<Coupon> couponRepository,
-            IUnitOfWork unitOfWork,
+        public OrderSerivce(IUnitOfWork unitOfWork,
             IOrderAmountService orderAmountService,
             IOrderDetailService orderDetailService,
             IProductService productService,
             IMapper mapper,
             IAppLogger<Order> logger)
         {
-            _orderRepository = orderRepository;
-            _orderDetailRepository = orderDetailRepository;
-            _couponRepository = couponRepository;
             _unitOfWork = unitOfWork;
             _orderAmountService = orderAmountService;
             _orderDetailService = orderDetailService;
@@ -53,7 +44,8 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<Order> GetByGuidAsync(string guid)
         {
-            Order order = await _orderRepository.GetAsync(q => q.Guid == guid);
+            Order order = await _unitOfWork.Repository<Order>()
+                .GetAsync(q => q.Guid == guid);
 
             return order;
         }
@@ -65,7 +57,7 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<OrderDisplayDetailDto> GetDetailByGuidAsync(string guid)
         {
-            Order order = await _orderRepository.GetAll()
+            Order order = await _unitOfWork.Repository<Order>().GetAll()
                 .Include(q => q.PaymentMethod)
                 .Include(q => q.OrderStatus)
                 .FirstOrDefaultAsync(q => q.Guid == guid);
@@ -100,7 +92,7 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<PagedList<OrderDisplayDetailDto>> GetPagedDetailByCustomerInfoAsync(int pageSize, int page, string name, string email, string phone)
         {
-            IQueryable<Order> query = _orderRepository.GetAll()
+            IQueryable<Order> query = _unitOfWork.Repository<Order>().GetAll()
                 .Include(q => q.PaymentMethod)
                 .Include(q => q.OrderStatus)
                 .Where(q => q.Name == name
@@ -143,7 +135,7 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<List<Order>> GetAllAsync()
         {
-            List<Order> orders = await _orderRepository.GetAll().ToListAsync();
+            List<Order> orders = await _unitOfWork.Repository<Order>().GetAll().ToListAsync();
 
             return orders;
         }
@@ -154,7 +146,7 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<List<Order>> GetDetailAllAsync()
         {
-            List<Order> orders = await _orderRepository.GetAll()
+            List<Order> orders = await _unitOfWork.Repository<Order>().GetAll()
                 .Include(q => q.PaymentMethod)
                 .Include(q => q.OrderStatus)
                 .ToListAsync();
@@ -170,7 +162,7 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public PagedList<Order> GetPagedDetailAll(int pageSize, int page)
         {
-            IQueryable<Order> query = _orderRepository.GetAll()
+            IQueryable<Order> query = _unitOfWork.Repository<Order>().GetAll()
                 .Include(q => q.PaymentMethod)
                 .Include(q => q.OrderStatus);
 
@@ -248,23 +240,16 @@ namespace Service.Implments.Orders
             order.StatusId = (int)OrderStatusEnum.PlaceOrder;
             order.CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
+            await _unitOfWork.Repository<Order>().CreateAsync(order);
+            await _unitOfWork.Repository<OrderDetail>().CreateAsync(orderDetails);
+            if (coupon != null)
             {
-                await _orderRepository.CreateAsync(order);
-                await _orderDetailRepository.CreateAsync(orderDetails);
-                if (coupon != null)
-                {
-                    _couponRepository.Update(coupon);
-                }
-
-                await _unitOfWork.SaveChangesAsync();
-
-                return order.Guid;
+                _unitOfWork.Repository<Coupon>().Update(coupon);
             }
-            catch
-            {
-                throw;
-            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return order.Guid;
         }
 
         /// <summary>
@@ -288,15 +273,8 @@ namespace Service.Implments.Orders
             entity.Address = order.Address;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _orderRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<Order>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -319,15 +297,8 @@ namespace Service.Implments.Orders
             entity.StatusId = (int)OrderStatusEnum.PaymentSuccessful;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _orderRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<Order>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -350,15 +321,8 @@ namespace Service.Implments.Orders
             entity.StatusId = (int)OrderStatusEnum.PaymentFailed;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _orderRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<Order>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -391,15 +355,8 @@ namespace Service.Implments.Orders
             entity.StatusId = order.StatusId;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _orderRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<Order>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>

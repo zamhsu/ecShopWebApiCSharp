@@ -12,17 +12,14 @@ namespace Service.Implments.Products
 {
     public class ProductService : IProductService
     {
-        private readonly IRepository<Product> _productRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAppLogger<Product> _logger;
 
-        public ProductService(IRepository<Product> productRepository,
-            IUnitOfWork unitOfWork,
+        public ProductService(IUnitOfWork unitOfWork,
             IMapper mapper,
             IAppLogger<Product> logger)
         {
-            _productRepository = productRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
@@ -36,7 +33,8 @@ namespace Service.Implments.Products
         public async Task<Product> GetByGuidAsync(string guid)
         {
             int okStatus = (int)ProductStatusEnum.OK;
-            Product product = await _productRepository.GetAsync(q => q.Guid == guid && q.StatusId == okStatus);
+            Product product = await _unitOfWork.Repository<Product>()
+                .GetAsync(q => q.Guid == guid && q.StatusId == okStatus);
 
             return product;
         }
@@ -49,7 +47,7 @@ namespace Service.Implments.Products
         public async Task<Product> GetDetailByGuidAsync(string guid)
         {
             int okStatus = (int)ProductStatusEnum.OK;
-            Product product = await _productRepository.GetAll()
+            Product product = await _unitOfWork.Repository<Product>().GetAll()
                 .Include(q => q.ProductCategoryType)
                 .Include(q => q.ProductUnitType)
                 .Include(q => q.ProductStatus)
@@ -65,7 +63,8 @@ namespace Service.Implments.Products
         public async Task<List<Product>> GetAllUsableAsync()
         {
             int okStatus = (int)ProductStatusEnum.OK;
-            IQueryable<Product> query = _productRepository.GetAll().Where(q => q.StatusId == okStatus);
+            IQueryable<Product> query = _unitOfWork.Repository<Product>().GetAll()
+                .Where(q => q.StatusId == okStatus);
             List<Product> products = await query.ToListAsync();
 
             return products;
@@ -78,7 +77,7 @@ namespace Service.Implments.Products
         public async Task<List<Product>> GetDetailAllUsableAsync()
         {
             int okStatus = (int)ProductStatusEnum.OK;
-            IQueryable<Product> query = _productRepository.GetAll()
+            IQueryable<Product> query = _unitOfWork.Repository<Product>().GetAll()
                 .Where(q => q.StatusId == okStatus)
                 .Include(q => q.ProductCategoryType)
                 .Include(q => q.ProductUnitType)
@@ -98,7 +97,7 @@ namespace Service.Implments.Products
         public PagedList<Product> GetPagedDetailAllUsable(int pageSize, int page)
         {
             int okStatus = (int)ProductStatusEnum.OK;
-            IQueryable<Product> query = _productRepository.GetAll()
+            IQueryable<Product> query = _unitOfWork.Repository<Product>().GetAll()
                 .Where(q => q.StatusId == okStatus)
                 .Include(q => q.ProductCategoryType)
                 .Include(q => q.ProductUnitType)
@@ -129,15 +128,8 @@ namespace Service.Implments.Products
             product.StatusId = (int)ProductStatusEnum.OK;
             product.CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                await _productRepository.CreateAsync(product);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            await _unitOfWork.Repository<Product>().CreateAsync(product);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -168,15 +160,8 @@ namespace Service.Implments.Products
             entity.Memo = product.Memo;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _productRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<Product>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -196,15 +181,8 @@ namespace Service.Implments.Products
             entity.StatusId = (int)ProductStatusEnum.Delete;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _productRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<Product>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

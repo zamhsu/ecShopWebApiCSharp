@@ -7,11 +7,11 @@ namespace Service.Implments.Payments
 {
     public class PaymentMethodService : IPaymentMethodService
     {
-        private readonly IRepository<PaymentMethod> _paymentMethodRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PaymentMethodService(IRepository<PaymentMethod> paymentMethodRepository)
+        public PaymentMethodService(IUnitOfWork unitOfWork)
         {
-            _paymentMethodRepository = paymentMethodRepository;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -21,7 +21,8 @@ namespace Service.Implments.Payments
         /// <returns></returns>
         public async Task<PaymentMethod> GetByIdAsync(int id)
         {
-            PaymentMethod paymentMethod = await _paymentMethodRepository.GetAsync(q => q.Id == id);
+            PaymentMethod paymentMethod = await _unitOfWork.Repository<PaymentMethod>()
+                .GetAsync(q => q.Id == id);
 
             return paymentMethod;
         }
@@ -32,7 +33,7 @@ namespace Service.Implments.Payments
         /// <returns></returns>
         public async Task<List<PaymentMethod>> GetAllAsync()
         {
-            IQueryable<PaymentMethod> query = _paymentMethodRepository.GetAllNoTracking();
+            IQueryable<PaymentMethod> query = _unitOfWork.Repository<PaymentMethod>().GetAllNoTracking();
             List<PaymentMethod> paymentMethods = await query.ToListAsync();
 
             return paymentMethods;
@@ -45,7 +46,8 @@ namespace Service.Implments.Payments
         /// <returns></returns>
         public async Task<bool> IsAllowedMethodAsync(int id)
         {
-            PaymentMethod paymentMethod = await _paymentMethodRepository.GetAsync(q => q.Id == id);
+            PaymentMethod paymentMethod = await _unitOfWork.Repository<PaymentMethod>()
+                .GetAsync(q => q.Id == id);
 
             return paymentMethod != null;
         }

@@ -9,17 +9,14 @@ namespace Service.Implments.Products
 {
     public class ProductCategoryTypeService : IProductCategoryTypeService
     {
-        private readonly IRepository<ProductCategoryType> _productCategoryTypeRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAppLogger<ProductCategoryType> _logger;
 
-        public ProductCategoryTypeService(IRepository<ProductCategoryType> productCategoryTypeRepository,
-            IUnitOfWork unitOfWork,
+        public ProductCategoryTypeService(IUnitOfWork unitOfWork,
             IMapper mapper,
             IAppLogger<ProductCategoryType> logger)
         {
-            _productCategoryTypeRepository = productCategoryTypeRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
@@ -32,7 +29,8 @@ namespace Service.Implments.Products
         /// <returns></returns>
         public async Task<ProductCategoryType> GetByIdAsync(int id)
         {
-            ProductCategoryType productCategoryType = await _productCategoryTypeRepository.GetAsync(q => q.Id == id);
+            ProductCategoryType productCategoryType = await _unitOfWork.Repository<ProductCategoryType>()
+                .GetAsync(q => q.Id == id);
 
             return productCategoryType;
         }
@@ -43,7 +41,7 @@ namespace Service.Implments.Products
         /// <returns></returns>
         public async Task<List<ProductCategoryType>> GetAllAsync()
         {
-            IQueryable<ProductCategoryType> query = _productCategoryTypeRepository.GetAll();
+            IQueryable<ProductCategoryType> query = _unitOfWork.Repository<ProductCategoryType>().GetAll();
             List<ProductCategoryType> productCategoryTypes = await query.ToListAsync();
 
             return productCategoryTypes;
@@ -58,18 +56,11 @@ namespace Service.Implments.Products
             if (productCategoryType == null)
             {
                 _logger.LogInformation("[Create] ProductCategoryType can not be null");
-                new ArgumentNullException(nameof(productCategoryType));
+                throw new ArgumentNullException(nameof(productCategoryType));
             }
 
-            try
-            {
-                await _productCategoryTypeRepository.CreateAsync(productCategoryType);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            await _unitOfWork.Repository<ProductCategoryType>().CreateAsync(productCategoryType);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -89,15 +80,8 @@ namespace Service.Implments.Products
 
             entity.Name = productCategoryType.Name;
 
-            try
-            {
-                _productCategoryTypeRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<ProductCategoryType>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -116,15 +100,8 @@ namespace Service.Implments.Products
 
             entity.Deleted = true;
 
-            try
-            {
-                _productCategoryTypeRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<ProductCategoryType>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

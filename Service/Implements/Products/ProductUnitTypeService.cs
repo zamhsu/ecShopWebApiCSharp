@@ -9,17 +9,14 @@ namespace Service.Implments.Products
 {
     public class ProductUnitTypeService : IProductUnitTypeService
     {
-        private readonly IRepository<ProductUnitType> _productUnitTypeRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAppLogger<ProductUnitType> _logger;
 
-        public ProductUnitTypeService(IRepository<ProductUnitType> productUnitTypeRepository,
-            IUnitOfWork unitOfWork,
+        public ProductUnitTypeService(IUnitOfWork unitOfWork,
             IMapper mapper,
             IAppLogger<ProductUnitType> logger)
         {
-            _productUnitTypeRepository = productUnitTypeRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
@@ -32,7 +29,8 @@ namespace Service.Implments.Products
         /// <returns></returns>
         public async Task<ProductUnitType> GetByIdAsync(int id)
         {
-            ProductUnitType productUnitType = await _productUnitTypeRepository.GetAsync(q => q.Id == id);
+            ProductUnitType productUnitType = await _unitOfWork.Repository<ProductUnitType>()
+                .GetAsync(q => q.Id == id);
 
             return productUnitType;
         }
@@ -43,7 +41,7 @@ namespace Service.Implments.Products
         /// <returns></returns>
         public async Task<List<ProductUnitType>> GetAllAsync()
         {
-            IQueryable<ProductUnitType> query = _productUnitTypeRepository.GetAll();
+            IQueryable<ProductUnitType> query = _unitOfWork.Repository<ProductUnitType>().GetAll();
             List<ProductUnitType> productUnitTypes = await query.ToListAsync();
 
             return productUnitTypes;
@@ -58,18 +56,11 @@ namespace Service.Implments.Products
             if (productUnitType == null)
             {
                 _logger.LogInformation("[Create] ProductUnitType can not be null");
-                new ArgumentNullException(nameof(productUnitType));
+                throw new ArgumentNullException(nameof(productUnitType));
             }
 
-            try
-            {
-                await _productUnitTypeRepository.CreateAsync(productUnitType);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            await _unitOfWork.Repository<ProductUnitType>().CreateAsync(productUnitType);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -89,15 +80,8 @@ namespace Service.Implments.Products
 
             entity.Name = updateProductUnitType.Name;
 
-            try
-            {
-                _productUnitTypeRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<ProductUnitType>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -116,15 +100,8 @@ namespace Service.Implments.Products
 
             entity.Deleted = true;
 
-            try
-            {
-                _productUnitTypeRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<ProductUnitType>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

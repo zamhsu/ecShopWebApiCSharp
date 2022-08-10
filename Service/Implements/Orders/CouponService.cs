@@ -11,15 +11,12 @@ namespace Service.Implments.Orders
 {
     public class CouponService : ICouponService
     {
-        private readonly IRepository<Coupon> _couponRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAppLogger<Coupon> _logger;
 
-        public CouponService(IRepository<Coupon> couponRepository,
-            IUnitOfWork unitOfWork,
+        public CouponService(IUnitOfWork unitOfWork,
             IAppLogger<Coupon> logger)
         {
-            _couponRepository = couponRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
@@ -32,7 +29,8 @@ namespace Service.Implments.Orders
         public async Task<Coupon> GetByIdAsync(int id)
         {
             int deleteStatus = (int)CouponStatusEnum.Delete;
-            Coupon coupon = await _couponRepository.GetAsync(q => q.Id == id && q.StatusId != deleteStatus);
+            Coupon coupon = await _unitOfWork.Repository<Coupon>()
+                .GetAsync(q => q.Id == id && q.StatusId != deleteStatus);
 
             return coupon;
         }
@@ -45,7 +43,7 @@ namespace Service.Implments.Orders
         public async Task<Coupon> GetDetailByIdAsync(int id)
         {
             int deleteStatus = (int)CouponStatusEnum.Delete;
-            Coupon coupon = await _couponRepository.GetAll()
+            Coupon coupon = await _unitOfWork.Repository<Coupon>().GetAll()
                 .Include(q => q.CouponStatus)
                 .FirstOrDefaultAsync(q => q.Id == id && q.StatusId != deleteStatus);
 
@@ -60,7 +58,8 @@ namespace Service.Implments.Orders
         public async Task<Coupon> GetByCodeAsync(string code)
         {
             int deleteStatus = (int)CouponStatusEnum.Delete;
-            Coupon coupon = await _couponRepository.GetAsync(q => q.Code == code && q.StatusId != deleteStatus);
+            Coupon coupon = await _unitOfWork.Repository<Coupon>()
+                .GetAsync(q => q.Code == code && q.StatusId != deleteStatus);
 
             return coupon;
         }
@@ -73,9 +72,10 @@ namespace Service.Implments.Orders
         public async Task<Coupon> GetUsableByCodeAsync(string code)
         {
             int deleteStatus = (int)CouponStatusEnum.Delete;
-            Coupon coupon = await _couponRepository.GetAsync(q => q.Code == code && 
-                q.Quantity > q.Used &&
-                q.StatusId != deleteStatus);
+            Coupon coupon = await _unitOfWork.Repository<Coupon>()
+                .GetAsync(q => q.Code == code 
+                            && q.Quantity > q.Used 
+                            && q.StatusId != deleteStatus);
 
             return coupon;
         }
@@ -87,7 +87,8 @@ namespace Service.Implments.Orders
         public async Task<List<Coupon>> GetAllAsync()
         {
             int deleteStatus = (int)CouponStatusEnum.Delete;
-            IQueryable<Coupon> query = _couponRepository.GetAll().Where(q => q.StatusId != deleteStatus);
+            IQueryable<Coupon> query = _unitOfWork.Repository<Coupon>().GetAll()
+                .Where(q => q.StatusId != deleteStatus);
             List<Coupon> coupons = await query.ToListAsync();
 
             return coupons;
@@ -100,7 +101,7 @@ namespace Service.Implments.Orders
         public async Task<List<Coupon>> GetDetailAllAsync()
         {
             int okStatus = (int)CouponStatusEnum.OK;
-            IQueryable<Coupon> query = _couponRepository.GetAll()
+            IQueryable<Coupon> query = _unitOfWork.Repository<Coupon>().GetAll()
                 .Where(q => q.StatusId == okStatus)
                 .Include(q => q.CouponStatus);
 
@@ -118,7 +119,7 @@ namespace Service.Implments.Orders
         public PagedList<Coupon> GetPagedDetailAll(int pageSize, int page)
         {
             int okStatus = (int)CouponStatusEnum.OK;
-            IQueryable<Coupon> query = _couponRepository.GetAll()
+            IQueryable<Coupon> query = _unitOfWork.Repository<Coupon>().GetAll()
                 .Where(q => q.StatusId == okStatus)
                 .Include(q => q.CouponStatus);
 
@@ -138,22 +139,15 @@ namespace Service.Implments.Orders
             if (coupon == null)
             {
                 _logger.LogInformation("[Create] Coupon can not be null");
-                new ArgumentNullException(nameof(coupon));
+                throw new ArgumentNullException(nameof(coupon));
             }
 
             coupon.StartDate = coupon.StartDate.ToUniversalTime();
             coupon.ExpiredDate = coupon.ExpiredDate.ToUniversalTime();
             coupon.StatusId = (int)CouponStatusEnum.OK;
 
-            try
-            {
-                await _couponRepository.CreateAsync(coupon);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            await _unitOfWork.Repository<Coupon>().CreateAsync(coupon);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -175,15 +169,8 @@ namespace Service.Implments.Orders
             entity.Used = coupon.Used;
             entity.StatusId = coupon.StatusId;
 
-            try
-            {
-                _couponRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<Coupon>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -202,15 +189,8 @@ namespace Service.Implments.Orders
 
             entity.StatusId = (int)CouponStatusEnum.Delete;
 
-            try
-            {
-                _couponRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<Coupon>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

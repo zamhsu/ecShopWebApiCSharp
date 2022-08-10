@@ -12,17 +12,14 @@ namespace Service.Implments.Members
 {
     public class AdminMemberService : IAdminMemberService
     {
-        private readonly IRepository<AdminMember> _adminMemberRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAppLogger<AdminMember> _logger;
 
-        public AdminMemberService(IRepository<AdminMember> adminMemberRepository,
-            IUnitOfWork unitOfWork,
+        public AdminMemberService(IUnitOfWork unitOfWork,
             IMapper mapper,
             IAppLogger<AdminMember> logger)
         {
-            _adminMemberRepository = adminMemberRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
@@ -35,7 +32,8 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<AdminMember> GetByGuidAsync(string guid)
         {
-            AdminMember adminMember = await _adminMemberRepository.GetAsync(q => q.Guid == guid);
+            AdminMember adminMember = await _unitOfWork.Repository<AdminMember>()
+                .GetAsync(q => q.Guid == guid);
 
             return adminMember;
         }
@@ -47,7 +45,7 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<AdminMember> GetDetailByGuidAsync(string guid)
         {
-            AdminMember adminMember = await _adminMemberRepository.GetAll()
+            AdminMember adminMember = await _unitOfWork.Repository<AdminMember>().GetAll()
                 .Include(q => q.AdminMemberStatus)
                 .FirstOrDefaultAsync(q => q.Guid == guid);
 
@@ -61,7 +59,8 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<AdminMember> GetByAccountAsync(string account)
         {
-            AdminMember adminMember = await _adminMemberRepository.GetAsync(q => q.Account == account);
+            AdminMember adminMember = await _unitOfWork.Repository<AdminMember>()
+                .GetAsync(q => q.Account == account);
 
             return adminMember;
         }
@@ -72,7 +71,7 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<List<AdminMember>> GetAllAsync()
         {
-            IQueryable<AdminMember> query = _adminMemberRepository.GetAll();
+            IQueryable<AdminMember> query = _unitOfWork.Repository<AdminMember>().GetAll();
             List<AdminMember> adminMembers = await query.ToListAsync();
 
             return adminMembers;
@@ -84,7 +83,7 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<List<AdminMember>> GetDetailAllAsync()
         {
-            IQueryable<AdminMember> query = _adminMemberRepository.GetAll()
+            IQueryable<AdminMember> query = _unitOfWork.Repository<AdminMember>().GetAll()
                 .Include(q => q.AdminMemberStatus);
             List<AdminMember> adminMembers = await query.ToListAsync();
 
@@ -99,7 +98,7 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public PagedList<AdminMember> GetPagedDetailAll(int pageSize, int page)
         {
-            IQueryable<AdminMember> query = _adminMemberRepository.GetAll()
+            IQueryable<AdminMember> query = _unitOfWork.Repository<AdminMember>().GetAll()
                 .Include(q => q.AdminMemberStatus);
 
             query = query.OrderByDescending(q => q.Id);
@@ -119,22 +118,15 @@ namespace Service.Implments.Members
             if (adminMember == null)
             {
                 _logger.LogInformation("[Create] AdminMember can not be null");
-                new ArgumentNullException(nameof(adminMember));
+                throw new ArgumentNullException(nameof(adminMember));
             }
 
             adminMember.Guid = Guid.NewGuid().ToString();
             adminMember.StatusId = (int)AdminMemberStatusEnum.OK;
             adminMember.CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                await _adminMemberRepository.CreateAsync(adminMember);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            await _unitOfWork.Repository<AdminMember>().CreateAsync(adminMember);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -157,15 +149,8 @@ namespace Service.Implments.Members
             entity.Email = adminMember.Email;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _adminMemberRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<AdminMember>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -194,15 +179,8 @@ namespace Service.Implments.Members
             entity.IsMaster = adminMember.IsMaster;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _adminMemberRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<AdminMember>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>
@@ -223,15 +201,8 @@ namespace Service.Implments.Members
             entity.StatusId = (int)AdminMemberStatusEnum.Delete;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                _adminMemberRepository.Update(entity);
-                await _unitOfWork.SaveChangesAsync();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.Repository<AdminMember>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

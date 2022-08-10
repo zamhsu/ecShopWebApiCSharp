@@ -8,15 +8,12 @@ namespace Service.Implments.Orders
 {
     public class OrderDetailService : IOrderDetailService
     {
-        private readonly IRepository<OrderDetail> _orderDetailRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAppLogger<OrderDetail> _logger;
 
-        public OrderDetailService(IRepository<OrderDetail> orderDetailRepository,
-            IUnitOfWork unitOfWork,
+        public OrderDetailService(IUnitOfWork unitOfWork,
             IAppLogger<OrderDetail> logger)
         {
-            _orderDetailRepository = orderDetailRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
@@ -28,9 +25,11 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<List<OrderDetail>> GetAllItemDetailByOrderIdAsync(int orderId)
         {
-            IQueryable<OrderDetail> query = _orderDetailRepository.GetAll()
+            IQueryable<OrderDetail> query = _unitOfWork.Repository<OrderDetail>().GetAll()
                 .Include(q => q.Product)
-                .Where(q => q.OrderId == orderId && q.ProductId != null && q.CouponId == null);
+                .Where(q => q.OrderId == orderId 
+                         && q.ProductId != null 
+                         && q.CouponId == null);
 
             List<OrderDetail> orderDetails = await query.ToListAsync();
 
@@ -44,9 +43,11 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<OrderDetail> GetCouponDetailByOrderIdAsync(int orderId)
         {
-            OrderDetail orderDetail = await _orderDetailRepository.GetAll()
+            OrderDetail orderDetail = await _unitOfWork.Repository<OrderDetail>().GetAll()
                 .Include(q => q.Coupon)
-                .FirstOrDefaultAsync(q => q.OrderId == orderId && q.ProductId == null && q.CouponId != null);
+                .FirstOrDefaultAsync(q => q.OrderId == orderId 
+                                       && q.ProductId == null 
+                                       && q.CouponId != null);
 
             return orderDetail;
         }

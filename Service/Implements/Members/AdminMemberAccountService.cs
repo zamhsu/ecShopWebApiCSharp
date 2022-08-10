@@ -103,14 +103,7 @@ namespace Service.Implments.Members
         {
             DateTimeOffset expirationDate = new DateTimeOffset(DateTime.UtcNow.AddDays(-1)).ToUniversalTime();
 
-            try
-            {
-                await UpdateExpirationDateAsync(guid, expirationDate);
-            }
-            catch
-            {
-                throw;
-            }
+            await UpdateExpirationDateAsync(guid, expirationDate);
         }
 
         /// <summary>
@@ -125,14 +118,7 @@ namespace Service.Implments.Members
             adminMember.Pwd = HashPassword(adminMember.Pwd, hashSalt);
             adminMember.HashSalt = hashSalt;
 
-            try
-            {
-                await _adminMemberService.CreateAsync(adminMember);
-            }
-            catch
-            {
-                throw;
-            }
+            await _adminMemberService.CreateAsync(adminMember);
         }
 
         /// <summary>
@@ -151,14 +137,7 @@ namespace Service.Implments.Members
 
             adminMember.ExpirationDate = expirationDate;
 
-            try
-            {
-                await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
-            }
-            catch
-            {
-                throw;
-            }
+            await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
         }
 
         /// <summary>
@@ -178,14 +157,7 @@ namespace Service.Implments.Members
             adminMember.ErrorTimes = errorTimes;
             adminMember.LastLoginDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            try
-            {
-                await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
-            }
-            catch
-            {
-                throw;
-            }
+            await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
         }
 
         /// <summary>
@@ -203,14 +175,7 @@ namespace Service.Implments.Members
 
             adminMember.StatusId = (int)AdminMemberStatusEnum.Lock;
 
-            try
-            {
-                await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
-            }
-            catch
-            {
-                throw;
-            }
+            await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
         }
 
         /// <summary>
@@ -236,15 +201,8 @@ namespace Service.Implments.Members
 
             string hashedNewPassword = HashPassword(newRawPassword, adminMember.HashSalt);
 
-            try
-            {
-                adminMember.Pwd = hashedNewPassword;
-                await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
-            }
-            catch
-            {
-                throw;
-            }
+            adminMember.Pwd = hashedNewPassword;
+            await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
 
             return true;
         }
