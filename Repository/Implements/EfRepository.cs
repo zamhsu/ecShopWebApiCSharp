@@ -47,17 +47,12 @@ namespace Repository.Implements
         /// <param name="entity">Entity</param>
         public virtual async Task CreateAsync(T entity)
         {
-            try
+            if (entity == null)
             {
-                if (entity == null)
-                    throw new ArgumentNullException(nameof(entity));
+                throw new ArgumentNullException(nameof(entity));
+            }
 
-                await _context.AddAsync(entity);
-            }
-            catch
-            {
-                throw;
-            }
+            await _context.AddAsync(entity);
         }
 
         /// <summary>
@@ -66,17 +61,12 @@ namespace Repository.Implements
         /// <param name="entities">Entities</param>
         public virtual async Task CreateAsync(IEnumerable<T> entities)
         {
-            try
+            if (entities == null)
             {
-                if (entities == null)
-                    throw new ArgumentNullException(nameof(entities));
+                throw new ArgumentNullException(nameof(entities));
+            }
 
-                await _context.AddRangeAsync(entities);
-            }
-            catch
-            {
-                throw;
-            }
+            await _context.AddRangeAsync(entities);
         }
 
         /// <summary>
@@ -85,17 +75,12 @@ namespace Repository.Implements
         /// <param name="entity">Entity</param>
         public virtual void Update(T entity)
         {
-            try
+            if (entity == null)
             {
-                if (entity == null)
-                    throw new ArgumentNullException(nameof(entity));
+                throw new ArgumentNullException(nameof(entity));
+            }
 
-                _context.Update(entity);
-            }
-            catch
-            {
-                throw;
-            }
+            _context.Update(entity);
         }
 
         /// <summary>
@@ -104,17 +89,12 @@ namespace Repository.Implements
         /// /// <param name="entities">Entities</param>
         public virtual void Update(IEnumerable<T> entities)
         {
-            try
+            if (entities == null)
             {
-                if (entities == null)
-                    throw new ArgumentNullException(nameof(entities));
+                throw new ArgumentNullException(nameof(entities));
+            }
 
-                _context.UpdateRange(entities);
-            }
-            catch
-            {
-                throw;
-            }
+            _context.UpdateRange(entities);
         }
 
         /// <summary>
@@ -123,17 +103,12 @@ namespace Repository.Implements
         /// <param name="entity">Entity</param>
         public virtual void Delete(T entity)
         {
-            try
+            if (entity == null)
             {
-                if (entity == null)
-                    throw new ArgumentNullException(nameof(entity));
+                throw new ArgumentNullException(nameof(entity));
+            }
 
-                _context.Remove(entity);
-            }
-            catch
-            {
-                throw;
-            }
+            _context.Remove(entity);
         }
 
         /// <summary>
@@ -142,17 +117,12 @@ namespace Repository.Implements
         /// <param name="entities">Entities</param>
         public virtual void Delete(IEnumerable<T> entities)
         {
-            try
+            if (entities == null)
             {
-                if (entities == null)
-                    throw new ArgumentNullException(nameof(entities));
+                throw new ArgumentNullException(nameof(entities));
+            }
 
-                _context.RemoveRange(entities);
-            }
-            catch
-            {
-                throw;
-            }
+            _context.RemoveRange(entities);
         }
     }
 }
