@@ -30,14 +30,14 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<AdminMemberInfoDto> LoginAsync(string account, string rawPassword)
         {
-            AdminMember adminMember = await _adminMemberService.GetByAccountAsync(account);
-            if (adminMember == null)
+            AdminMemberDto adminMemberDto = await _adminMemberService.GetByAccountAsync(account);
+            if (adminMemberDto is null)
             {
                 return null;
             }
 
-            int errorTimes = adminMember.ErrorTimes;
-            if (IsAccountLocked((AdminMemberStatusEnum)adminMember.StatusId))
+            int errorTimes = adminMemberDto.ErrorTimes;
+            if (IsAccountLocked((AdminMemberStatusEnum)adminMemberDto.StatusId))
             {
                 errorTimes = errorTimes + 1;
                 await UpdateErrorTimesAsync(account, errorTimes);
@@ -63,9 +63,9 @@ namespace Service.Implments.Members
             DateTimeOffset expirationDate = new DateTimeOffset(DateTime.UtcNow.AddDays(1)).ToUniversalTime();
             await UpdateExpirationDateAsync(account, expirationDate);
             await UpdateErrorTimesAsync(account, errorTimes);
-            adminMember = await _adminMemberService.GetByAccountAsync(account);
+            adminMemberDto = await _adminMemberService.GetByAccountAsync(account);
 
-            AdminMemberInfoDto model = _mapper.Map<AdminMemberInfoDto>(adminMember);
+            AdminMemberInfoDto model = _mapper.Map<AdminMemberInfoDto>(adminMemberDto);
 
             return model;
         }
@@ -77,19 +77,19 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<AdminMemberInfoDto> LoginByOnlyGuidAsync(string guid)
         {
-            AdminMember adminMember = await _adminMemberService.GetByGuidAsync(guid);
-            if (adminMember == null)
+            AdminMemberDto adminMemberDto = await _adminMemberService.GetByGuidAsync(guid);
+            if (adminMemberDto is null)
             {
                 return null;
             }
 
             int errorTimes = 0;
             DateTimeOffset expirationDate = new DateTimeOffset(DateTime.UtcNow.AddDays(1)).ToUniversalTime();
-            await UpdateExpirationDateAsync(adminMember.Account, expirationDate);
-            await UpdateErrorTimesAsync(adminMember.Account, errorTimes);
-            adminMember = await _adminMemberService.GetByAccountAsync(adminMember.Account);
+            await UpdateExpirationDateAsync(adminMemberDto.Account, expirationDate);
+            await UpdateErrorTimesAsync(adminMemberDto.Account, errorTimes);
+            adminMemberDto = await _adminMemberService.GetByAccountAsync(adminMemberDto.Account);
 
-            AdminMemberInfoDto model = _mapper.Map<AdminMemberInfoDto>(adminMember);
+            AdminMemberInfoDto model = _mapper.Map<AdminMemberInfoDto>(adminMemberDto);
 
             return model;
         }
@@ -99,26 +99,28 @@ namespace Service.Implments.Members
         /// </summary>
         /// <param name="guid">管理員GUID</param>
         /// <returns></returns>
-        public async Task LogoutAsync(string guid)
+        public async Task<bool> LogoutAsync(string guid)
         {
             DateTimeOffset expirationDate = new DateTimeOffset(DateTime.UtcNow.AddDays(-1)).ToUniversalTime();
 
-            await UpdateExpirationDateAsync(guid, expirationDate);
+            return await UpdateExpirationDateAsync(guid, expirationDate);
         }
 
         /// <summary>
         /// 註冊帳號
         /// </summary>
-        /// <param name="adminMember">管理員資料</param>
+        /// <param name="adminMember">管理員註冊資料</param>
         /// <returns></returns>
-        public async Task RegisterAsync(AdminMember adminMember)
+        public async Task<bool> RegisterAsync(AdminMemberRegisterDto registerDto)
         {
+            AdminMemberCreateDto createDto = _mapper.Map<AdminMemberCreateDto>(registerDto);
+
             string hashSalt = Guid.NewGuid().ToString();
 
-            adminMember.Pwd = HashPassword(adminMember.Pwd, hashSalt);
-            adminMember.HashSalt = hashSalt;
+            createDto.Pwd = HashPassword(createDto.Pwd, hashSalt);
+            createDto.HashSalt = hashSalt;
 
-            await _adminMemberService.CreateAsync(adminMember);
+            return await _adminMemberService.CreateAsync(createDto);
         }
 
         /// <summary>
@@ -127,17 +129,19 @@ namespace Service.Implments.Members
         /// <param name="account">帳號</param>
         /// <param name="expirationDate">Token過期時間</param>
         /// <returns></returns>
-        public async Task UpdateExpirationDateAsync(string account, DateTimeOffset expirationDate)
+        public async Task<bool> UpdateExpirationDateAsync(string account, DateTimeOffset expirationDate)
         {
-            AdminMember adminMember = await _adminMemberService.GetByAccountAsync(account);
-            if (adminMember == null)
+            AdminMemberDto adminMemberDto = await _adminMemberService.GetByAccountAsync(account);
+            if (adminMemberDto is null)
             {
-                throw new ArgumentNullException(nameof(adminMember));
+                throw new ArgumentNullException(nameof(adminMemberDto));
             }
 
-            adminMember.ExpirationDate = expirationDate;
+            adminMemberDto.ExpirationDate = expirationDate;
 
-            await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
+            AdminMemberUpdateDto updateDto = _mapper.Map<AdminMemberUpdateDto>(adminMemberDto);
+
+            return await _adminMemberService.UpdateAsync(updateDto);
         }
 
         /// <summary>
@@ -146,18 +150,20 @@ namespace Service.Implments.Members
         /// <param name="account">帳號</param>
         /// <param name="errorTimes">錯誤次數</param>
         /// <returns></returns>
-        public async Task UpdateErrorTimesAsync(string account, int errorTimes)
+        public async Task<bool> UpdateErrorTimesAsync(string account, int errorTimes)
         {
-            AdminMember adminMember = await _adminMemberService.GetByAccountAsync(account);
-            if (adminMember == null)
+            AdminMemberDto adminMemberDto = await _adminMemberService.GetByAccountAsync(account);
+            if (adminMemberDto is null)
             {
-                throw new ArgumentNullException(nameof(adminMember));
+                throw new ArgumentNullException(nameof(adminMemberDto));
             }
 
-            adminMember.ErrorTimes = errorTimes;
-            adminMember.LastLoginDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
+            adminMemberDto.ErrorTimes = errorTimes;
+            adminMemberDto.LastLoginDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
-            await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
+            AdminMemberUpdateDto updateDto = _mapper.Map<AdminMemberUpdateDto>(adminMemberDto);
+
+            return await _adminMemberService.UpdateAsync(updateDto);
         }
 
         /// <summary>
@@ -165,17 +171,19 @@ namespace Service.Implments.Members
         /// </summary>
         /// <param name="account">帳號</param>
         /// <returns></returns>
-        public async Task LockAccount(string account)
+        public async Task<bool> LockAccount(string account)
         {
-            AdminMember adminMember = await _adminMemberService.GetByAccountAsync(account);
-            if (adminMember == null)
+            AdminMemberDto adminMemberDto = await _adminMemberService.GetByAccountAsync(account);
+            if (adminMemberDto is null)
             {
-                throw new ArgumentNullException(nameof(adminMember));
+                throw new ArgumentNullException(nameof(adminMemberDto));
             }
 
-            adminMember.StatusId = (int)AdminMemberStatusEnum.Lock;
+            adminMemberDto.StatusId = (int)AdminMemberStatusEnum.Lock;
 
-            await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
+            AdminMemberUpdateDto updateDto = _mapper.Map<AdminMemberUpdateDto>(adminMemberDto);
+
+            return await _adminMemberService.UpdateAsync(updateDto);
         }
 
         /// <summary>
@@ -187,8 +195,8 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<bool> ChangePasswordAsync(string account, string currentRawPassword, string newRawPassword)
         {
-            AdminMember adminMember = await _adminMemberService.GetByAccountAsync(account);
-            if (adminMember == null)
+            AdminMemberDto adminMemberDto = await _adminMemberService.GetByAccountAsync(account);
+            if (adminMemberDto is null)
             {
                 return false;
             }
@@ -199,12 +207,13 @@ namespace Service.Implments.Members
                 return false;
             }
 
-            string hashedNewPassword = HashPassword(newRawPassword, adminMember.HashSalt);
+            string hashedNewPassword = HashPassword(newRawPassword, adminMemberDto.HashSalt);
 
-            adminMember.Pwd = hashedNewPassword;
-            await _adminMemberService.UpdateAsync(adminMember.Guid, adminMember);
+            adminMemberDto.Pwd = hashedNewPassword;
 
-            return true;
+            AdminMemberUpdateDto updateDto = _mapper.Map<AdminMemberUpdateDto>(adminMemberDto);
+
+            return await _adminMemberService.UpdateAsync(updateDto);
         }
 
         /// <summary>
@@ -215,16 +224,16 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public async Task<bool> IsSamePasswordAsync(string account, string rawPassword)
         {
-            AdminMember adminMember = await _adminMemberService.GetByAccountAsync(account);
+            AdminMemberDto adminMemberDto = await _adminMemberService.GetByAccountAsync(account);
 
-            if (adminMember == null)
+            if (adminMemberDto is null)
             {
                 return false;
             }
 
-            string hashedPassword = HashPassword(rawPassword, adminMember.HashSalt);
+            string hashedPassword = HashPassword(rawPassword, adminMemberDto.HashSalt);
 
-            return adminMember.Pwd == hashedPassword;
+            return adminMemberDto.Pwd == hashedPassword;
         }
 
         /// <summary>
@@ -246,7 +255,7 @@ namespace Service.Implments.Members
         /// <returns></returns>
         public bool IsAccountLocked(AdminMemberStatusEnum status)
         {
-            return status == AdminMemberStatusEnum.Lock;
+            return status.Equals(AdminMemberStatusEnum.Lock);
         }
 
         /// <summary>

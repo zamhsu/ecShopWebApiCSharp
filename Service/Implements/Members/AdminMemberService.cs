@@ -6,6 +6,7 @@ using Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Repository.Entities.Members;
 using Repository.Interfaces;
+using Service.Dtos.Members;
 using Service.Interfaces.Members;
 
 namespace Service.Implments.Members
@@ -30,12 +31,14 @@ namespace Service.Implments.Members
         /// </summary>
         /// <param name="guid">管理員GUID</param>
         /// <returns></returns>
-        public async Task<AdminMember> GetByGuidAsync(string guid)
+        public async Task<AdminMemberDto> GetByGuidAsync(string guid)
         {
             AdminMember adminMember = await _unitOfWork.Repository<AdminMember>()
-                .GetAsync(q => q.Guid == guid);
+                .GetAsync(q => q.Guid.Equals(guid));
 
-            return adminMember;
+            AdminMemberDto dto = _mapper.Map<AdminMemberDto>(adminMember);
+
+            return dto;
         }
 
         /// <summary>
@@ -43,13 +46,15 @@ namespace Service.Implments.Members
         /// </summary>
         /// <param name="guid">管理員GUID</param>
         /// <returns></returns>
-        public async Task<AdminMember> GetDetailByGuidAsync(string guid)
+        public async Task<AdminMemberDetailDto> GetDetailByGuidAsync(string guid)
         {
             AdminMember adminMember = await _unitOfWork.Repository<AdminMember>().GetAll()
                 .Include(q => q.AdminMemberStatus)
-                .FirstOrDefaultAsync(q => q.Guid == guid);
+                .FirstOrDefaultAsync(q => q.Guid.Equals(guid));
 
-            return adminMember;
+            AdminMemberDetailDto dto = _mapper.Map<AdminMemberDetailDto>(adminMember);
+
+            return dto;
         }
 
         /// <summary>
@@ -57,37 +62,43 @@ namespace Service.Implments.Members
         /// </summary>
         /// <param name="account">帳號</param>
         /// <returns></returns>
-        public async Task<AdminMember> GetByAccountAsync(string account)
+        public async Task<AdminMemberDto> GetByAccountAsync(string account)
         {
             AdminMember adminMember = await _unitOfWork.Repository<AdminMember>()
-                .GetAsync(q => q.Account == account);
+                .GetAsync(q => q.Account.Equals(account));
 
-            return adminMember;
+            AdminMemberDto dto = _mapper.Map<AdminMemberDto>(adminMember);
+
+            return dto;
         }
 
         /// <summary>
         /// 取得所有管理員
         /// </summary>
         /// <returns></returns>
-        public async Task<List<AdminMember>> GetAllAsync()
+        public async Task<List<AdminMemberDto>> GetAllAsync()
         {
             IQueryable<AdminMember> query = _unitOfWork.Repository<AdminMember>().GetAll();
             List<AdminMember> adminMembers = await query.ToListAsync();
 
-            return adminMembers;
+            List<AdminMemberDto> dtos = _mapper.Map<List<AdminMemberDto>>(adminMembers);
+
+            return dtos;
         }
 
         /// <summary>
         /// 取得包含關聯性資料的所有管理員
         /// </summary>
         /// <returns></returns>
-        public async Task<List<AdminMember>> GetDetailAllAsync()
+        public async Task<List<AdminMemberDetailDto>> GetDetailAllAsync()
         {
             IQueryable<AdminMember> query = _unitOfWork.Repository<AdminMember>().GetAll()
                 .Include(q => q.AdminMemberStatus);
             List<AdminMember> adminMembers = await query.ToListAsync();
 
-            return adminMembers;
+            List<AdminMemberDetailDto> dtos = _mapper.Map<List<AdminMemberDetailDto>>(adminMembers);
+
+            return dtos;
         }
 
         /// <summary>
@@ -96,7 +107,7 @@ namespace Service.Implments.Members
         /// <param name="pageSize">一頁資料的筆數</param>
         /// <param name="page">目前頁數</param>
         /// <returns></returns>
-        public PagedList<AdminMember> GetPagedDetailAll(int pageSize, int page)
+        public PagedList<AdminMemberDetailDto> GetPagedDetailAll(int pageSize, int page)
         {
             IQueryable<AdminMember> query = _unitOfWork.Repository<AdminMember>().GetAll()
                 .Include(q => q.AdminMemberStatus);
@@ -105,28 +116,32 @@ namespace Service.Implments.Members
 
             PagedList<AdminMember> adminMembers = query.ToPagedList(pageSize, page);
 
-            return adminMembers;
+            PagedList<AdminMemberDetailDto> dtos = _mapper.Map<PagedList<AdminMemberDetailDto>>(adminMembers);
+
+            return dtos;
         }
 
         /// <summary>
         /// 新增一筆管理員資料
         /// </summary>
-        /// <param name="adminMember">新增管理員的資料</param>
+        /// <param name="createDto">新增管理員的資料</param>
         /// <returns></returns>
-        public async Task CreateAsync(AdminMember adminMember)
+        public async Task<bool> CreateAsync(AdminMemberCreateDto createDto)
         {
-            if (adminMember == null)
+            if (createDto is null)
             {
-                _logger.LogInformation("[Create] AdminMember can not be null");
-                throw new ArgumentNullException(nameof(adminMember));
+                _logger.LogInformation("[Create] AdminMemberCreateDto can not be null");
+                throw new ArgumentNullException(nameof(createDto));
             }
+
+            AdminMember adminMember = _mapper.Map<AdminMember>(createDto);
 
             adminMember.Guid = Guid.NewGuid().ToString();
             adminMember.StatusId = (int)AdminMemberStatusEnum.OK;
             adminMember.CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             await _unitOfWork.Repository<AdminMember>().CreateAsync(adminMember);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
@@ -135,52 +150,53 @@ namespace Service.Implments.Members
         /// <param name="guid">管理員GUID</param>
         /// <param name="adminMember">修改管理員的資料</param>
         /// <returns></returns>
-        public async Task UpdateUserInfoAsync(string guid, AdminMember adminMember)
+        public async Task<bool> UpdateUserInfoAsync(AdminMemberUserInfoDto userInfoDto)
         {
-            AdminMember entity = await GetByGuidAsync(guid);
+            AdminMember entity = await _unitOfWork.Repository<AdminMember>()
+                .GetAsync(q => q.Guid.Equals(userInfoDto.Guid));
 
-            if (entity == null)
+            if (entity is null)
             {
-                _logger.LogInformation($"[Update] AdminMember is not existed (Guid:{guid})");
+                _logger.LogInformation($"[Update] AdminMember is not existed (Guid:{userInfoDto.Guid})");
                 throw new ArgumentNullException(nameof(AdminMember));
             }
 
-            entity.UserName = adminMember.UserName;
-            entity.Email = adminMember.Email;
+            entity.UserName = userInfoDto.UserName;
+            entity.Email = userInfoDto.Email;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             _unitOfWork.Repository<AdminMember>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
         /// 修改一筆管理員資料
         /// </summary>
-        /// <param name="guid">管理員GUID</param>
-        /// <param name="adminMember">修改管理員的資料</param>
+        /// <param name="updateDto">修改管理員的資料</param>
         /// <returns></returns>
-        public async Task UpdateAsync(string guid, AdminMember adminMember)
+        public async Task<bool> UpdateAsync(AdminMemberUpdateDto updateDto)
         {
-            AdminMember entity = await GetByGuidAsync(guid);
+            AdminMember entity = await _unitOfWork.Repository<AdminMember>()
+                .GetAsync(q => q.Guid.Equals(updateDto.Guid));
 
-            if (entity == null)
+            if (entity is null)
             {
-                _logger.LogInformation($"[Update] AdminMember is not existed (Guid:{guid})");
+                _logger.LogInformation($"[Update] AdminMember is not existed (Guid:{updateDto.Guid})");
                 throw new ArgumentNullException(nameof(AdminMember));
             }
 
-            entity.UserName = adminMember.UserName;
-            entity.Email = adminMember.Email;
-            entity.Pwd = adminMember.Pwd;
-            entity.StatusId = adminMember.StatusId;
-            entity.ErrorTimes = adminMember.ErrorTimes;
-            entity.LastLoginDate = adminMember.LastLoginDate;
-            entity.ExpirationDate = adminMember.ExpirationDate;
-            entity.IsMaster = adminMember.IsMaster;
+            entity.UserName = updateDto.UserName;
+            entity.Email = updateDto.Email;
+            entity.Pwd = updateDto.Pwd;
+            entity.StatusId = updateDto.StatusId;
+            entity.ErrorTimes = updateDto.ErrorTimes;
+            entity.LastLoginDate = updateDto.LastLoginDate;
+            entity.ExpirationDate = updateDto.ExpirationDate;
+            entity.IsMaster = updateDto.IsMaster;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             _unitOfWork.Repository<AdminMember>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
@@ -188,9 +204,10 @@ namespace Service.Implments.Members
         /// </summary>
         /// <param name="guid">管理員GUID</param>
         /// <returns></returns>
-        public async Task DeleteByGuidAsync(string guid)
+        public async Task<bool> DeleteByGuidAsync(string guid)
         {
-            AdminMember entity = await GetByGuidAsync(guid);
+            AdminMember entity = await _unitOfWork.Repository<AdminMember>()
+                .GetAsync(q => q.Guid.Equals(guid));
 
             if (entity == null)
             {
@@ -202,7 +219,7 @@ namespace Service.Implments.Members
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             _unitOfWork.Repository<AdminMember>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }

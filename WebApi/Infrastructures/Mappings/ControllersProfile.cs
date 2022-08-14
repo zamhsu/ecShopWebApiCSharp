@@ -1,7 +1,7 @@
 using AutoMapper;
-using Repository.Entities.Members;
 using Repository.Entities.Orders;
 using Repository.Entities.Products;
+using Service.Dtos.Members;
 using WebApi.Infrastructures.Models.Dtos.Members;
 using WebApi.Infrastructures.Models.Dtos.Orders;
 using WebApi.Infrastructures.Models.Dtos.Payments;
@@ -15,12 +15,11 @@ namespace WebApi.Infrastructures.Mappings
         public ControllersProfile()
         {
             // AdminMember
-            CreateMap<AdminMember, AdminMemberDisplayDto>()
-                .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.AdminMemberStatus.Name));
+            CreateMap<AdminMemberDetailDto, AdminMemberDisplayDto>();
 
-            CreateMap<CreateAdminMemberParameter, AdminMember>();
+            CreateMap<CreateAdminMemberParameter, AdminMemberRegisterDto>();
 
-            CreateMap<UpdateAdminMemberInfoParameter, AdminMember>();
+            CreateMap<UpdateAdminMemberInfoParameter, AdminMemberUserInfoDto>();
 
             // Product
             CreateMap<Product, ProductDisplayDto>()

@@ -26,14 +26,14 @@ namespace Service.Interfaces.Members
         /// </summary>
         /// <param name="guid">管理員GUID</param>
         /// <returns></returns>
-        Task LogoutAsync(string guid);
+        Task<bool> LogoutAsync(string guid);
 
         /// <summary>
         /// 註冊帳號
         /// </summary>
-        /// <param name="adminMember">管理員資料</param>
+        /// <param name="registerDto">管理員資料</param>
         /// <returns></returns>
-        Task RegisterAsync(AdminMember adminMember);
+        Task<bool> RegisterAsync(AdminMemberRegisterDto registerDto);
 
         /// <summary>
         /// 更新Token過期時間
@@ -41,7 +41,7 @@ namespace Service.Interfaces.Members
         /// <param name="account">帳號</param>
         /// <param name="expirationDate">Token過期時間</param>
         /// <returns></returns>
-        Task UpdateExpirationDateAsync(string account, DateTimeOffset expirationDate);
+        Task<bool> UpdateExpirationDateAsync(string account, DateTimeOffset expirationDate);
 
         /// <summary>
         /// 更新登入密碼輸入錯誤次數
@@ -49,14 +49,14 @@ namespace Service.Interfaces.Members
         /// <param name="account">帳號</param>
         /// <param name="errorTimes">錯誤次數</param>
         /// <returns></returns>
-        Task UpdateErrorTimesAsync(string account, int errorTimes);
+        Task<bool> UpdateErrorTimesAsync(string account, int errorTimes);
 
         /// <summary>
         /// 鎖定帳號
         /// </summary>
         /// <param name="account">帳號</param>
         /// <returns></returns>
-        Task LockAccount(string account);
+        Task<bool> LockAccount(string account);
 
         /// <summary>
         /// 更換密碼

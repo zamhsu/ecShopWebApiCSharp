@@ -12,6 +12,11 @@ namespace Service.Mappings
         {
             // AdminMember
             CreateMap<AdminMember, AdminMemberInfoDto>();
+            CreateMap<AdminMember, AdminMemberDto>();
+            CreateMap<AdminMember, AdminMemberDetailDto>()
+                .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.AdminMemberStatus.Name));
+            CreateMap<AdminMemberDto, AdminMemberInfoDto>();
+            CreateMap<AdminMemberDto, AdminMemberUpdateDto>();
 
             // Order
             CreateMap<Order, OrderDisplayDetailDto>()
