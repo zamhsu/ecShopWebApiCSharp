@@ -18,6 +18,12 @@ namespace Service.Mappings
             CreateMap<AdminMemberDto, AdminMemberInfoDto>();
             CreateMap<AdminMemberDto, AdminMemberUpdateDto>();
 
+            // Coupon
+            CreateMap<Coupon, CouponDto>();
+            CreateMap<Coupon, CouponDetailDto>()
+                .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.CouponStatus.Name));
+            CreateMap<CouponCreateDto, Coupon>();
+
             // Order
             CreateMap<Order, OrderDisplayDetailDto>()
                 .ForMember(dest => dest.PaymentMethodString, mo => mo.MapFrom(q => q.PaymentMethod.Name))

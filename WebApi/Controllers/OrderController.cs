@@ -139,13 +139,11 @@ namespace WebApi.Controllers
                 baseRequest.Data.CouponCode = "";
             }
 
-            Coupon coupon = await _couponService.GetUsableByCodeAsync(baseRequest.Data.CouponCode);
-
             Order order = _mapper.Map<Order>(baseRequest.Data.Order);
 
             try
             {
-                string guid = await _orderService.PlaceOrderAsync(order, baseRequest.Data.OrderDetailModels, coupon);
+                string guid = await _orderService.PlaceOrderAsync(order, baseRequest.Data.OrderDetailModels, baseRequest.Data.CouponCode);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";

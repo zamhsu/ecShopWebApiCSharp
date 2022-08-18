@@ -18,6 +18,7 @@ namespace Service.Implments.Orders
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOrderAmountService _orderAmountService;
         private readonly IOrderDetailService _orderDetailService;
+        private readonly ICouponService _couponService;
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
         private readonly IAppLogger<Order> _logger;
@@ -25,6 +26,7 @@ namespace Service.Implments.Orders
         public OrderSerivce(IUnitOfWork unitOfWork,
             IOrderAmountService orderAmountService,
             IOrderDetailService orderDetailService,
+            ICouponService couponService,
             IProductService productService,
             IMapper mapper,
             IAppLogger<Order> logger)
@@ -32,6 +34,7 @@ namespace Service.Implments.Orders
             _unitOfWork = unitOfWork;
             _orderAmountService = orderAmountService;
             _orderDetailService = orderDetailService;
+            _couponService = couponService;
             _productService = productService;
             _mapper = mapper;
             _logger = logger;
@@ -178,9 +181,9 @@ namespace Service.Implments.Orders
         /// </summary>
         /// <param name="order">訂單資料</param>
         /// <param name="placeOrderDetails">商品</param>
-        /// <param name="coupon">優惠券</param>
+        /// <param name="couponCode">優惠券代碼</param>
         /// <returns></returns>
-        public async Task<string> PlaceOrderAsync(Order order, List<PlaceOrderDetailDto> placeOrderDetails, Coupon coupon)
+        public async Task<string> PlaceOrderAsync(Order order, List<PlaceOrderDetailDto> placeOrderDetails, string couponCode)
         {
             int totalAmount = 0;
             int itemTotalAmount = 0;
@@ -212,7 +215,11 @@ namespace Service.Implments.Orders
                 itemIndex++;
             }
 
-            if (coupon != null)
+            CouponDto usableCoupon = await _couponService.GetUsableByCodeAsync(couponCode);
+            Coupon coupon = await _unitOfWork.Repository<Coupon>()
+                    .GetAsync(q => q.Id.Equals(usableCoupon.Id));
+
+            if (usableCoupon is not null)
             {
                 // 計算優惠金額
                 discountAmount = _orderAmountService.CalculateDiscountAmount(coupon, itemTotalAmount);

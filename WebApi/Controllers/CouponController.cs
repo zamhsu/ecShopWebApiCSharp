@@ -4,6 +4,7 @@ using Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Entities.Orders;
+using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 using WebApi.Infrastructures.Core;
 using WebApi.Infrastructures.Models.Dtos.Orders;
@@ -31,7 +32,7 @@ namespace WebApi.Controllers
         {
             BaseResponse<CouponGetCouponViewModel> baseResponse = new BaseResponse<CouponGetCouponViewModel>();
 
-            PagedList<Coupon> pagedList = _couponService.GetPagedDetailAll(pageParameter.PageSize, pageParameter.Page);
+            PagedList<CouponDetailDto> pagedList = _couponService.GetPagedDetailAll(pageParameter.PageSize, pageParameter.Page);
             List<CouponDisplayDto> couponDisplays = _mapper.Map<List<CouponDisplayDto>>(pagedList.PagedData);
             Pagination pagination = pagedList.Pagination;
 
@@ -53,10 +54,10 @@ namespace WebApi.Controllers
         {
             BaseResponse<CouponDisplayDto> baseResponse = new BaseResponse<CouponDisplayDto>();
 
-            Coupon coupon = await _couponService.GetDetailByIdAsync(id);
+            CouponDetailDto coupon = await _couponService.GetDetailByIdAsync(id);
             CouponDisplayDto couponDisplay = _mapper.Map<CouponDisplayDto>(coupon);
 
-            if (coupon == null)
+            if (coupon is null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "沒有資料";
@@ -76,9 +77,9 @@ namespace WebApi.Controllers
         {
             BaseResponse<CouponSimpleDto> baseResponse = new BaseResponse<CouponSimpleDto>();
 
-            Coupon coupon = await _couponService.GetUsableByCodeAsync(baseRequest.Data);
+            CouponDto coupon = await _couponService.GetUsableByCodeAsync(baseRequest.Data);
 
-            if (coupon == null)
+            if (coupon is null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "沒有資料";
@@ -99,8 +100,8 @@ namespace WebApi.Controllers
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            Coupon existedCoupon = await _couponService.GetByIdAsync(id);
-            if (existedCoupon == null)
+            CouponDto existedCoupon = await _couponService.GetByIdAsync(id);
+            if (existedCoupon is null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -108,16 +109,17 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            Coupon coupon = _mapper.Map<Coupon>(baseRequest.Data);
+            CouponUpdateDto updateDto = _mapper.Map<CouponUpdateDto>(baseRequest.Data);
+            updateDto.Id = id;
 
-            try
+            bool result = await _couponService.UpdateAsync(updateDto);
+
+            if (result.Equals(true))
             {
-                await _couponService.UpdateAsync(id, coupon);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "修改成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "修改失敗";
@@ -134,18 +136,18 @@ namespace WebApi.Controllers
             var startOffset = new DateTimeOffset(baseRequest.Data.StartDate, baseRequest.UserTimeZone);
             var endOffset = new DateTimeOffset(baseRequest.Data.ExpiredDate, baseRequest.UserTimeZone);
 
-            Coupon coupon = _mapper.Map<Coupon>(baseRequest.Data);
-            coupon.StartDate = startOffset;
-            coupon.ExpiredDate = endOffset;
+            CouponCreateDto createDto = _mapper.Map<CouponCreateDto>(baseRequest.Data);
+            createDto.StartDate = startOffset;
+            createDto.ExpiredDate = endOffset;
 
-            try
+            bool result = await _couponService.CreateAsync(createDto);
+
+            if(result.Equals(true))
             {
-                await _couponService.CreateAsync(coupon);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "建立失敗";
@@ -159,8 +161,8 @@ namespace WebApi.Controllers
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            Coupon coupon = await _couponService.GetByIdAsync(id);
-            if (coupon == null)
+            CouponDto coupon = await _couponService.GetByIdAsync(id);
+            if (coupon is null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -168,14 +170,14 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            try
-            {
-                await _couponService.DeleteByIdAsync(id);
+            bool result = await _couponService.DeleteByIdAsync(id);
 
+            if(result.Equals(true))
+            {
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "刪除成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "刪除失敗";

@@ -57,9 +57,9 @@ namespace Service.Interfaces.Orders
         /// </summary>
         /// <param name="order">訂單資料</param>
         /// <param name="placeOrderDetails">商品</param>
-        /// <param name="coupon">優惠券</param>
+        /// <param name="couponCode">優惠券代碼</param>
         /// <returns></returns>
-        Task<string> PlaceOrderAsync(Order order, List<PlaceOrderDetailDto> placeOrderDetails, Coupon coupon);
+        Task<string> PlaceOrderAsync(Order order, List<PlaceOrderDetailDto> placeOrderDetails, string couponCode);
 
         /// <summary>
         /// 修改一筆訂單裡的消費者個人資料
