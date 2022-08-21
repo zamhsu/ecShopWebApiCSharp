@@ -45,12 +45,14 @@ namespace Service.Implments.Orders
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <returns></returns>
-        public async Task<Order> GetByGuidAsync(string guid)
+        public async Task<OrderDto> GetByGuidAsync(string guid)
         {
             Order order = await _unitOfWork.Repository<Order>()
                 .GetAsync(q => q.Guid == guid);
 
-            return order;
+            OrderDto dto = _mapper.Map<OrderDto>(order);
+
+            return dto;
         }
 
         /// <summary>
@@ -70,15 +72,15 @@ namespace Service.Implments.Orders
                 return null;
             }
 
-            List<OrderDetail> itemDetail = await _orderDetailService.GetAllItemDetailByOrderIdAsync(order.Id);
-            OrderDetail couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
+            List<OrderItemDetailDisplayDto> itemDetail = await _orderDetailService.GetAllItemDetailByOrderIdAsync(order.Id);
+            OrderCouponDetailDisplayDto couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
 
             OrderDisplayDetailDto displayDto = _mapper.Map<OrderDisplayDetailDto>(order);
-            displayDto.OrderDetails = _mapper.Map<List<OrderItemDetailDisplayDto>>(itemDetail);
+            displayDto.OrderDetails = itemDetail;
 
             if (couponDetail != null)
             {
-                displayDto.CouponDetail = _mapper.Map<OrderCouponDetailDisplayDto>(couponDetail);
+                displayDto.CouponDetail = couponDetail;
             }
 
             return displayDto;
@@ -109,15 +111,15 @@ namespace Service.Implments.Orders
 
             foreach (var order in pagedOrders.PagedData)
             {
-                List<OrderDetail> itemDetail = await _orderDetailService.GetAllItemDetailByOrderIdAsync(order.Id);
-                OrderDetail couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
+                List<OrderItemDetailDisplayDto> itemDetail = await _orderDetailService.GetAllItemDetailByOrderIdAsync(order.Id);
+                OrderCouponDetailDisplayDto couponDetail = await _orderDetailService.GetCouponDetailByOrderIdAsync(order.Id);
 
                 OrderDisplayDetailDto displayDto = _mapper.Map<OrderDisplayDetailDto>(order);
-                displayDto.OrderDetails = _mapper.Map<List<OrderItemDetailDisplayDto>>(itemDetail);
+                displayDto.OrderDetails = itemDetail;
 
                 if (couponDetail != null)
                 {
-                    displayDto.CouponDetail = _mapper.Map<OrderCouponDetailDisplayDto>(couponDetail);
+                    displayDto.CouponDetail = couponDetail;
                 }
 
                 displayDtos.Add(displayDto);
@@ -136,25 +138,29 @@ namespace Service.Implments.Orders
         /// 取得所有訂單
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Order>> GetAllAsync()
+        public async Task<List<OrderDto>> GetAllAsync()
         {
             List<Order> orders = await _unitOfWork.Repository<Order>().GetAll().ToListAsync();
 
-            return orders;
+            List<OrderDto> dtos = _mapper.Map<List<OrderDto>>(orders);
+
+            return dtos;
         }
 
         /// <summary>
         /// 取得所有訂單詳細資料
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Order>> GetDetailAllAsync()
+        public async Task<List<OrderDetailDto>> GetDetailAllAsync()
         {
             List<Order> orders = await _unitOfWork.Repository<Order>().GetAll()
                 .Include(q => q.PaymentMethod)
                 .Include(q => q.OrderStatus)
                 .ToListAsync();
 
-            return orders;
+            List<OrderDetailDto> dtos = _mapper.Map<List<OrderDetailDto>>(orders);
+
+            return dtos;
         }
 
         /// <summary>
@@ -163,7 +169,7 @@ namespace Service.Implments.Orders
         /// <param name="pageSize">一頁資料的筆數</param>
         /// <param name="page">目前頁數</param>
         /// <returns></returns>
-        public PagedList<Order> GetPagedDetailAll(int pageSize, int page)
+        public PagedList<OrderDetailDto> GetPagedDetailAll(int pageSize, int page)
         {
             IQueryable<Order> query = _unitOfWork.Repository<Order>().GetAll()
                 .Include(q => q.PaymentMethod)
@@ -172,18 +178,19 @@ namespace Service.Implments.Orders
             query = query.OrderByDescending(q => q.Id);
 
             PagedList<Order> orders = query.ToPagedList(pageSize, page);
+            PagedList<OrderDetailDto> dtos = _mapper.Map<PagedList<OrderDetailDto>>(orders);
 
-            return orders;
+            return dtos;
         }
 
         /// <summary>
         /// 下訂單
         /// </summary>
-        /// <param name="order">訂單資料</param>
+        /// <param name="customerInfoDto">顧客資料</param>
         /// <param name="placeOrderDetails">商品</param>
         /// <param name="couponCode">優惠券代碼</param>
         /// <returns></returns>
-        public async Task<string> PlaceOrderAsync(Order order, List<PlaceOrderDetailDto> placeOrderDetails, string couponCode)
+        public async Task<string> PlaceOrderAsync(OrderCustomerInfoDto customerInfoDto, List<PlaceOrderDetailDto> placeOrderDetails, string couponCode)
         {
             int totalAmount = 0;
             int itemTotalAmount = 0;
@@ -191,6 +198,7 @@ namespace Service.Implments.Orders
 
             int itemIndex = 1;
             List<OrderDetail> orderDetails = new List<OrderDetail>();
+            Order order = _mapper.Map<Order>(customerInfoDto);
 
             // 建立OrderDetail
             foreach (var item in placeOrderDetails)
@@ -262,108 +270,89 @@ namespace Service.Implments.Orders
         /// <summary>
         /// 修改一筆訂單裡的消費者個人資料
         /// </summary>
-        /// <param name="guid">訂單GUID</param>
-        /// <param name="order">修改訂單的資料</param>
-        public async Task UpdateCustomerInfoAsync(string guid, Order order)
+        /// <param name="customerInfoDto">修改訂單的資料</param>
+        /// <returns></returns>
+        public async Task<bool> UpdateCustomerInfoAsync(OrderCustomerInfoDto customerInfoDto)
         {
-            Order entity = await GetByGuidAsync(guid);
+            Order entity = await _unitOfWork.Repository<Order>()
+                .GetAsync(q => q.Guid == customerInfoDto.Guid);
 
             if (entity == null)
             {
-                _logger.LogInformation($"[Update] Order is not existed (Guid:{guid})");
-                throw new ArgumentNullException(nameof(entity));
+                _logger.LogInformation($"[Update] Order is not existed (Guid:{customerInfoDto.Guid})");
+                throw new ArgumentNullException(nameof(customerInfoDto));
             }
 
-            entity.Name = order.Name;
-            entity.Email = order.Email;
-            entity.Phone = order.Phone;
-            entity.Address = order.Address;
+            entity.Name = customerInfoDto.Name;
+            entity.Email = customerInfoDto.Email;
+            entity.Phone = customerInfoDto.Phone;
+            entity.Address = customerInfoDto.Address;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             _unitOfWork.Repository<Order>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
-        /// 修改一筆訂單狀態為完成付款
+        /// 修改一筆訂單付款狀態
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <param name="paymentMethod">付款方式</param>
-        public async Task UpdateStatusToPaymentSuccessfulAsync(string guid, PaymentMethodEnum paymentMethod)
+        /// <param name="orderStatus">訂單狀態</param>
+        /// <returns></returns>
+        public async Task<bool> UpdatePaymentStatusAsync(string guid, PaymentMethodEnum paymentMethod, OrderStatusEnum orderStatus)
         {
-            Order entity = await GetByGuidAsync(guid);
+            Order entity = await _unitOfWork.Repository<Order>()
+                .GetAsync(q => q.Guid == guid);
 
             if (entity == null)
             {
                 _logger.LogInformation($"[Update] Order is not existed (Guid:{guid})");
-                throw new ArgumentNullException(nameof(entity));
+                throw new ArgumentNullException(nameof(guid));
             }
 
             entity.PaymentMethodId = (int)paymentMethod;
             entity.PaidDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
-            entity.StatusId = (int)OrderStatusEnum.PaymentSuccessful;
+            entity.StatusId = (int)orderStatus;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             _unitOfWork.Repository<Order>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
-        }
-
-        /// <summary>
-        /// 修改一筆訂單狀態為付款失敗
-        /// </summary>
-        /// <param name="guid">訂單GUID</param>
-        /// <param name="paymentMethod">付款方式</param>
-        public async Task UpdateStatusToPaymentFailedAsync(string guid, PaymentMethodEnum paymentMethod)
-        {
-            Order entity = await GetByGuidAsync(guid);
-
-            if (entity == null)
-            {
-                _logger.LogInformation($"[Update] Order is not existed (Guid:{guid})");
-                throw new ArgumentNullException(nameof(entity));
-            }
-
-            entity.PaymentMethodId = (int)paymentMethod;
-            entity.PaidDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
-            entity.StatusId = (int)OrderStatusEnum.PaymentFailed;
-            entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
-
-            _unitOfWork.Repository<Order>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
         /// 修改一筆訂單資料
         /// </summary>
-        /// <param name="guid">訂單GUID</param>
-        /// <param name="order">修改訂單的資料</param>
-        public async Task UpdateAsync(string guid, Order order)
+        /// <param name="updateDto">修改訂單的資料</param>
+        /// <returns></returns>
+        public async Task<bool> UpdateAsync(OrderUpdateDto updateDto)
         {
-            Order entity = await GetByGuidAsync(guid);
+            Order entity = await _unitOfWork.Repository<Order>()
+                .GetAsync(q => q.Guid == updateDto.Guid);
 
             if (entity == null)
             {
-                _logger.LogInformation($"[Update] Order is not existed (Guid:{guid})");
-                throw new ArgumentNullException(nameof(entity));
+                _logger.LogInformation($"[Update] Order is not existed (Guid:{updateDto.Guid})");
+                throw new ArgumentNullException(nameof(updateDto));
             }
 
-            if (order.PaidDate != null)
+            if (updateDto.PaidDate != null)
             {
-                entity.PaidDate = order.PaidDate.GetValueOrDefault().ToUniversalTime();
+                entity.PaidDate = updateDto.PaidDate.GetValueOrDefault().ToUniversalTime();
             }
 
-            entity.Name = order.Name;
-            entity.Email = order.Email;
-            entity.Phone = order.Phone;
-            entity.Address = order.Address;
-            entity.Total = order.Total;
-            entity.PaymentMethodId = order.PaymentMethodId;
-            entity.PaidDate = order.PaidDate;
-            entity.StatusId = order.StatusId;
+            entity.Name = updateDto.Name;
+            entity.Email = updateDto.Email;
+            entity.Phone = updateDto.Phone;
+            entity.Address = updateDto.Address;
+            entity.Total = updateDto.Total;
+            entity.PaymentMethodId = updateDto.PaymentMethodId;
+            entity.PaidDate = updateDto.PaidDate;
+            entity.StatusId = updateDto.StatusId;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             _unitOfWork.Repository<Order>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
@@ -373,9 +362,24 @@ namespace Service.Implments.Orders
         /// <returns></returns>
         public async Task<bool> IsOrderPaidAsync(string guid)
         {
-            Order order = await GetByGuidAsync(guid);
+            bool result = await _unitOfWork.Repository<Order>().GetAllNoTracking()
+                .AnyAsync(q => q.Guid == guid 
+                            && q.StatusId > (int)OrderStatusEnum.PlaceOrder);
 
-            return order.StatusId > (int)OrderStatusEnum.PlaceOrder;
+            return result;
+        }
+
+        /// <summary>
+        /// 訂單是否存在
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <returns></returns>
+        public async Task<bool> IsExistsAsync(string guid)
+        {
+            bool result = await _unitOfWork.Repository<Order>().GetAllNoTracking()
+                .AnyAsync(q => q.Guid == guid);
+
+            return result;
         }
     }
 }

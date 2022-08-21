@@ -1,5 +1,6 @@
 using Repository.Entities.Orders;
 using Repository.Interfaces;
+using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Payments;
 
@@ -21,7 +22,7 @@ namespace Service.Implments.Payments
         /// <returns></returns>
         public async Task<bool> PayWithCreditCardAsync(string orderGuid)
         {
-            Order order = await _orderService.GetByGuidAsync(orderGuid);
+            OrderDto order = await _orderService.GetByGuidAsync(orderGuid);
 
             if (order == null)
             {
@@ -38,7 +39,7 @@ namespace Service.Implments.Payments
         /// <returns></returns>
         public async Task<bool> PayWithAtmAsync(string orderGuid)
         {
-            Order order = await _orderService.GetByGuidAsync(orderGuid);
+            OrderDto order = await _orderService.GetByGuidAsync(orderGuid);
 
             if (order == null)
             {

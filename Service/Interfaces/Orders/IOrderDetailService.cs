@@ -1,4 +1,4 @@
-using Repository.Entities.Orders;
+using Service.Dtos.Orders;
 
 namespace Service.Interfaces.Orders
 {
@@ -9,13 +9,13 @@ namespace Service.Interfaces.Orders
         /// </summary>
         /// <param name="orderId">訂單編號</param>
         /// <returns></returns>
-        Task<List<OrderDetail>> GetAllItemDetailByOrderIdAsync(int orderId);
+        Task<List<OrderItemDetailDisplayDto>> GetAllItemDetailByOrderIdAsync(int orderId);
 
         /// <summary>
         /// 取得訂單優惠券詳細資料
         /// </summary>
         /// <param name="orderId">訂單編號</param>
         /// <returns></returns>
-        Task<OrderDetail> GetCouponDetailByOrderIdAsync(int orderId);
+        Task<OrderCouponDetailDisplayDto> GetCouponDetailByOrderIdAsync(int orderId);
     }
 }

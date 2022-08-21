@@ -12,7 +12,7 @@ namespace Service.Interfaces.Orders
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <returns></returns>
-        Task<Order> GetByGuidAsync(string guid);
+        Task<OrderDto> GetByGuidAsync(string guid);
 
         /// <summary>
         /// 使用Guid取得一筆訂單詳細資料
@@ -36,13 +36,13 @@ namespace Service.Interfaces.Orders
         /// 取得所有訂單
         /// </summary>
         /// <returns></returns>
-        Task<List<Order>> GetAllAsync();
+        Task<List<OrderDto>> GetAllAsync();
 
         /// <summary>
         /// 取得所有訂單詳細資料
         /// </summary>
         /// <returns></returns>
-        Task<List<Order>> GetDetailAllAsync();
+        Task<List<OrderDetailDto>> GetDetailAllAsync();
 
         /// <summary>
         /// 取得分頁後所有訂單詳細資料
@@ -50,44 +50,39 @@ namespace Service.Interfaces.Orders
         /// <param name="pageSize">一頁資料的筆數</param>
         /// <param name="page">目前頁數</param>
         /// <returns></returns>
-        PagedList<Order> GetPagedDetailAll(int pageSize, int page);
+        PagedList<OrderDetailDto> GetPagedDetailAll(int pageSize, int page);
 
         /// <summary>
         /// 下訂單
         /// </summary>
-        /// <param name="order">訂單資料</param>
+        /// <param name="customerInfoDto">顧客資料</param>
         /// <param name="placeOrderDetails">商品</param>
         /// <param name="couponCode">優惠券代碼</param>
         /// <returns></returns>
-        Task<string> PlaceOrderAsync(Order order, List<PlaceOrderDetailDto> placeOrderDetails, string couponCode);
+        Task<string> PlaceOrderAsync(OrderCustomerInfoDto customerInfoDto, List<PlaceOrderDetailDto> placeOrderDetails, string couponCode);
 
         /// <summary>
         /// 修改一筆訂單裡的消費者個人資料
         /// </summary>
-        /// <param name="guid">訂單GUID</param>
-        /// <param name="order">修改訂單的資料</param>
-        Task UpdateCustomerInfoAsync(string guid, Order order);
+        /// <param name="customerInfoDto">修改訂單的資料</param>
+        /// <returns></returns>
+        Task<bool> UpdateCustomerInfoAsync(OrderCustomerInfoDto customerInfoDto);
 
         /// <summary>
-        /// 修改一筆訂單狀態為完成付款
+        /// 修改一筆訂單付款狀態
         /// </summary>
         /// <param name="guid">訂單GUID</param>
         /// <param name="paymentMethod">付款方式</param>
-        Task UpdateStatusToPaymentSuccessfulAsync(string guid, PaymentMethodEnum paymentMethod);
-
-        /// <summary>
-        /// 修改一筆訂單狀態為付款失敗
-        /// </summary>
-        /// <param name="guid">訂單GUID</param>
-        /// <param name="paymentMethod">付款方式</param>
-        Task UpdateStatusToPaymentFailedAsync(string guid, PaymentMethodEnum paymentMethod);
+        /// <param name="orderStatus">訂單狀態</param>
+        /// <returns></returns>
+        Task<bool> UpdatePaymentStatusAsync(string guid, PaymentMethodEnum paymentMethod, OrderStatusEnum orderStatus);
 
         /// <summary>
         /// 修改一筆訂單資料
         /// </summary>
-        /// <param name="guid">訂單GUID</param>
-        /// <param name="order">修改訂單的資料</param>
-        Task UpdateAsync(string guid, Order order);
+        /// <param name="updateDto">修改訂單的資料</param>
+        /// <returns></returns>
+        Task<bool> UpdateAsync(OrderUpdateDto updateDto);
 
         /// <summary>
         /// 訂單是否已經付款
@@ -95,5 +90,12 @@ namespace Service.Interfaces.Orders
         /// <param name="guid">訂單GUID</param>
         /// <returns></returns>
         Task<bool> IsOrderPaidAsync(string guid);
+
+        /// <summary>
+        /// 訂單是否存在
+        /// </summary>
+        /// <param name="guid">訂單GUID</param>
+        /// <returns></returns>
+        Task<bool> IsExistsAsync(string guid);
     }
 }

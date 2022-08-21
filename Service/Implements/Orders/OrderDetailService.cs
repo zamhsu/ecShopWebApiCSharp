@@ -1,7 +1,9 @@
+using AutoMapper;
 using Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Repository.Entities.Orders;
 using Repository.Interfaces;
+using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 
 namespace Service.Implments.Orders
@@ -9,12 +11,15 @@ namespace Service.Implments.Orders
     public class OrderDetailService : IOrderDetailService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
         private readonly IAppLogger<OrderDetail> _logger;
 
         public OrderDetailService(IUnitOfWork unitOfWork,
+            IMapper mapper,
             IAppLogger<OrderDetail> logger)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -23,7 +28,7 @@ namespace Service.Implments.Orders
         /// </summary>
         /// <param name="orderId">訂單編號</param>
         /// <returns></returns>
-        public async Task<List<OrderDetail>> GetAllItemDetailByOrderIdAsync(int orderId)
+        public async Task<List<OrderItemDetailDisplayDto>> GetAllItemDetailByOrderIdAsync(int orderId)
         {
             IQueryable<OrderDetail> query = _unitOfWork.Repository<OrderDetail>().GetAll()
                 .Include(q => q.Product)
@@ -32,8 +37,9 @@ namespace Service.Implments.Orders
                          && q.CouponId == null);
 
             List<OrderDetail> orderDetails = await query.ToListAsync();
+            List<OrderItemDetailDisplayDto> dtos = _mapper.Map<List<OrderItemDetailDisplayDto>>(orderDetails);
 
-            return orderDetails;
+            return dtos;
         }
 
         /// <summary>
@@ -41,7 +47,7 @@ namespace Service.Implments.Orders
         /// </summary>
         /// <param name="orderId">訂單編號</param>
         /// <returns></returns>
-        public async Task<OrderDetail> GetCouponDetailByOrderIdAsync(int orderId)
+        public async Task<OrderCouponDetailDisplayDto> GetCouponDetailByOrderIdAsync(int orderId)
         {
             OrderDetail orderDetail = await _unitOfWork.Repository<OrderDetail>().GetAll()
                 .Include(q => q.Coupon)
@@ -49,7 +55,9 @@ namespace Service.Implments.Orders
                                        && q.ProductId == null 
                                        && q.CouponId != null);
 
-            return orderDetail;
+            OrderCouponDetailDisplayDto dto = _mapper.Map<OrderCouponDetailDisplayDto>(orderDetail);
+
+            return dto;
         }
     }
 }

@@ -25,9 +25,14 @@ namespace Service.Mappings
             CreateMap<CouponCreateDto, Coupon>();
 
             // Order
+            CreateMap<Order, OrderDto>();
+            CreateMap<Order, OrderDetailDto>()
+                .ForMember(dest => dest.PaymentMethodString, mo => mo.MapFrom(q => q.PaymentMethod.Name))
+                .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.OrderStatus.Name));
             CreateMap<Order, OrderDisplayDetailDto>()
                 .ForMember(dest => dest.PaymentMethodString, mo => mo.MapFrom(q => q.PaymentMethod.Name))
                 .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.OrderStatus.Name));
+            CreateMap<OrderCustomerInfoDto, Order>();
 
             // OrderDetail
             CreateMap<OrderDetail, OrderItemDetailDisplayDto>()

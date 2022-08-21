@@ -74,7 +74,7 @@ namespace WebApi.Controllers
                 bool paySuccessful = await _paymentService.PayWithCreditCardAsync(parameter.OrderGuid);
                 if (!paySuccessful)
                 {
-                    await _orderService.UpdateStatusToPaymentFailedAsync(parameter.OrderGuid, paymentMethodEnum);
+                    await _orderService.UpdatePaymentStatusAsync(parameter.OrderGuid, paymentMethodEnum, OrderStatusEnum.PaymentSuccessful);
 
                     baseResponse.IsSuccess = false;
                     baseResponse.Message = "付款失敗";
@@ -82,7 +82,7 @@ namespace WebApi.Controllers
                     return baseResponse;
                 }
 
-                await _orderService.UpdateStatusToPaymentSuccessfulAsync(parameter.OrderGuid, paymentMethodEnum);
+                await _orderService.UpdatePaymentStatusAsync(parameter.OrderGuid, paymentMethodEnum, OrderStatusEnum.PaymentFailed);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "付款完成";
@@ -128,7 +128,7 @@ namespace WebApi.Controllers
                 bool paySuccessful = await _paymentService.PayWithCreditCardAsync(parameter.OrderGuid);
                 if (!paySuccessful)
                 {
-                    await _orderService.UpdateStatusToPaymentFailedAsync(parameter.OrderGuid, paymentMethodEnum);
+                    await _orderService.UpdatePaymentStatusAsync(parameter.OrderGuid, paymentMethodEnum, OrderStatusEnum.PaymentSuccessful);
 
                     baseResponse.IsSuccess = false;
                     baseResponse.Message = "付款失敗";
@@ -136,7 +136,7 @@ namespace WebApi.Controllers
                     return baseResponse;
                 }
 
-                await _orderService.UpdateStatusToPaymentSuccessfulAsync(parameter.OrderGuid, paymentMethodEnum);
+                await _orderService.UpdatePaymentStatusAsync(parameter.OrderGuid, paymentMethodEnum, OrderStatusEnum.PaymentFailed);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "付款完成";

@@ -39,7 +39,7 @@ namespace WebApi.Controllers
         {
             BaseResponse<OrderGetOrderViewModel> baseResponse = new BaseResponse<OrderGetOrderViewModel>();
 
-            PagedList<Order> pagedList = _orderService.GetPagedDetailAll(pageParameter.PageSize, pageParameter.Page);
+            PagedList<OrderDetailDto> pagedList = _orderService.GetPagedDetailAll(pageParameter.PageSize, pageParameter.Page);
             List<OrderDisplayDto> orderDisplays = _mapper.Map<List<OrderDisplayDto>>(pagedList.PagedData);
             Pagination pagination = pagedList.Pagination;
 
@@ -101,8 +101,8 @@ namespace WebApi.Controllers
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            Order existedOrder = await _orderService.GetByGuidAsync(guid);
-            if (existedOrder == null)
+            bool isExists = await _orderService.IsExistsAsync(guid);
+            if (isExists == false)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -110,16 +110,17 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            Order order = _mapper.Map<Order>(baseRequest.Data);
+            OrderCustomerInfoDto customerInfoDto = _mapper.Map<OrderCustomerInfoDto>(baseRequest.Data);
+            customerInfoDto.Guid = guid;
 
-            try
+            bool result = await _orderService.UpdateCustomerInfoAsync(customerInfoDto);
+
+            if(result == true)
             {
-                await _orderService.UpdateCustomerInfoAsync(guid, order);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "修改成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "修改失敗";
@@ -139,11 +140,11 @@ namespace WebApi.Controllers
                 baseRequest.Data.CouponCode = "";
             }
 
-            Order order = _mapper.Map<Order>(baseRequest.Data.Order);
+            OrderCustomerInfoDto customerInfoDto = _mapper.Map<OrderCustomerInfoDto>(baseRequest.Data.Order);
 
             try
             {
-                string guid = await _orderService.PlaceOrderAsync(order, baseRequest.Data.OrderDetailModels, baseRequest.Data.CouponCode);
+                string guid = await _orderService.PlaceOrderAsync(customerInfoDto, baseRequest.Data.OrderDetailModels, baseRequest.Data.CouponCode);
 
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";
