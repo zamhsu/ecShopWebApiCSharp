@@ -27,7 +27,6 @@ namespace Repository.Implements
             if (!_repositories.ContainsKey(type))
             {
                 _repositories[type] = new EfRepository<T>(_context);
-                _repositories.Add(type, _repositories[type]);
             }
 
             return (IRepository<T>)_repositories[type];

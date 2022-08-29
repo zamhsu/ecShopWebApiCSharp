@@ -31,7 +31,7 @@ builder.Logging.AddConsole();
 builder.Services.AddCors(opt =>
 {
     // 從appsettings.json中取得允許的來源
-    string[] allowOrigins =  builder.Configuration.GetValue<string>("Cors:AllowOrigins").Split(',',  StringSplitOptions.RemoveEmptyEntries);
+    string[] allowOrigins = builder.Configuration.GetValue<string>("Cors:AllowOrigins").Split(',', StringSplitOptions.RemoveEmptyEntries);
     opt.AddPolicy(name: allowSpecificOrigins,
                   b =>
                   {
@@ -82,10 +82,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Repositories
-builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// Unit of Work
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 // Services
 builder.Services.AddScoped<IAdminMemberService, AdminMemberService>();
