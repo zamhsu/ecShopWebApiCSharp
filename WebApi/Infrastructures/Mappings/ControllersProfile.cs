@@ -3,6 +3,7 @@ using Repository.Entities.Orders;
 using Repository.Entities.Products;
 using Service.Dtos.Members;
 using Service.Dtos.Orders;
+using Service.Dtos.Payments;
 using WebApi.Infrastructures.Models.Dtos.Members;
 using WebApi.Infrastructures.Models.Dtos.Orders;
 using WebApi.Infrastructures.Models.Dtos.Payments;
@@ -69,7 +70,7 @@ namespace WebApi.Infrastructures.Mappings
             CreateMap<UpdateOrderCustomerInfoParameter, Order>();
 
             // PaymentMethod
-            CreateMap<PaymentMethod, PaymentMethodDisplayDto>();
+            CreateMap<PaymentMethodDto, PaymentMethodDisplayDto>();
         }
     }
 }

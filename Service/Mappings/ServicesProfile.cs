@@ -3,6 +3,7 @@ using Repository.Entities.Members;
 using Repository.Entities.Orders;
 using Service.Dtos.Members;
 using Service.Dtos.Orders;
+using Service.Dtos.Payments;
 
 namespace Service.Mappings
 {
@@ -41,6 +42,9 @@ namespace Service.Mappings
 
             CreateMap<OrderDetail, OrderCouponDetailDisplayDto>()
                 .ForMember(dest => dest.CouponCode, mo => mo.MapFrom(q => q.Coupon.Code));
+
+            // Payment
+            CreateMap<PaymentMethod, PaymentMethodDto>();
         }
     }
 }

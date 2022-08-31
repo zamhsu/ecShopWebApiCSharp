@@ -1,6 +1,8 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Repository.Entities.Orders;
 using Repository.Interfaces;
+using Service.Dtos.Payments;
 using Service.Interfaces.Payments;
 
 namespace Service.Implments.Payments
@@ -8,10 +10,13 @@ namespace Service.Implments.Payments
     public class PaymentMethodService : IPaymentMethodService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private IMapper _mapper;
 
-        public PaymentMethodService(IUnitOfWork unitOfWork)
+        public PaymentMethodService(IUnitOfWork unitOfWork,
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -19,24 +24,28 @@ namespace Service.Implments.Payments
         /// </summary>
         /// <param name="id">付款方式Id</param>
         /// <returns></returns>
-        public async Task<PaymentMethod> GetByIdAsync(int id)
+        public async Task<PaymentMethodDto> GetByIdAsync(int id)
         {
             PaymentMethod paymentMethod = await _unitOfWork.Repository<PaymentMethod>()
                 .GetAsync(q => q.Id == id);
 
-            return paymentMethod;
+            PaymentMethodDto dto = _mapper.Map<PaymentMethodDto>(paymentMethod);
+
+            return dto;
         }
 
         /// <summary>
         /// 取得所有付款方式
         /// </summary>
         /// <returns></returns>
-        public async Task<List<PaymentMethod>> GetAllAsync()
+        public async Task<List<PaymentMethodDto>> GetAllAsync()
         {
             IQueryable<PaymentMethod> query = _unitOfWork.Repository<PaymentMethod>().GetAllNoTracking();
             List<PaymentMethod> paymentMethods = await query.ToListAsync();
 
-            return paymentMethods;
+            List<PaymentMethodDto> dtos = _mapper.Map<List<PaymentMethodDto>>(paymentMethods);
+
+            return dtos;
         }
 
         /// <summary>

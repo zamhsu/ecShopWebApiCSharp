@@ -2,6 +2,7 @@ using AutoMapper;
 using Common.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Entities.Orders;
+using Service.Dtos.Payments;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Payments;
 using WebApi.Infrastructures.Core;
@@ -33,7 +34,7 @@ namespace WebApi.Controllers
         [HttpGet("api/payment/method")]
         public async Task<ActionResult<BaseResponse<List<PaymentMethodDisplayDto>>>> GetPaymentMethod()
         {
-            List<PaymentMethod> methodList = await _paymentMethodService.GetAllAsync();
+            List<PaymentMethodDto> methodList = await _paymentMethodService.GetAllAsync();
             List<PaymentMethodDisplayDto> displayList = _mapper.Map<List<PaymentMethodDisplayDto>>(methodList);
             BaseResponse<List<PaymentMethodDisplayDto>> baseResponse = new BaseResponse<List<PaymentMethodDisplayDto>>()
             {

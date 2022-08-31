@@ -1,4 +1,5 @@
 using Repository.Entities.Orders;
+using Service.Dtos.Payments;
 
 namespace Service.Interfaces.Payments
 {
@@ -9,13 +10,13 @@ namespace Service.Interfaces.Payments
         /// </summary>
         /// <param name="id">付款方式Id</param>
         /// <returns></returns>
-        Task<PaymentMethod> GetByIdAsync(int id);
+        Task<PaymentMethodDto> GetByIdAsync(int id);
 
         /// <summary>
         /// 取得所有付款方式
         /// </summary>
         /// <returns></returns>
-        Task<List<PaymentMethod>> GetAllAsync();
+        Task<List<PaymentMethodDto>> GetAllAsync();
 
         /// <summary>
         /// 付款方式是否為允許使用
