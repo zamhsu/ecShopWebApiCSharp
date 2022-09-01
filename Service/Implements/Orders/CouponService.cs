@@ -9,7 +9,7 @@ using Common.Helpers;
 using Service.Dtos.Orders;
 using AutoMapper;
 
-namespace Service.Implments.Orders
+namespace Service.Implements.Orders
 {
     public class CouponService : ICouponService
     {

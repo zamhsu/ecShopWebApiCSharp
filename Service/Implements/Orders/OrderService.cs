@@ -11,7 +11,7 @@ using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Products;
 
-namespace Service.Implments.Orders
+namespace Service.Implements.Orders
 {
     public class OrderSerivce : IOrderService
     {

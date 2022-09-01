@@ -3,7 +3,7 @@ using Common.Utilities;
 using Service.Interfaces.Security;
 using System.Text;
 
-namespace Service.Implments.Security
+namespace Service.Implements.Security
 {
     public class EncryptionService : IEncryptionService
     {

@@ -5,7 +5,7 @@ using Service.Dtos.Members;
 using Service.Interfaces.Members;
 using Service.Interfaces.Security;
 
-namespace Service.Implments.Members
+namespace Service.Implements.Members
 {
     public class AdminMemberAccountService : IAdminMemberAccountService
     {

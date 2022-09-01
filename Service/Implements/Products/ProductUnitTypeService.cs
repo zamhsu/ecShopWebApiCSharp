@@ -5,7 +5,7 @@ using Repository.Entities.Products;
 using Repository.Interfaces;
 using Service.Interfaces.Products;
 
-namespace Service.Implments.Products
+namespace Service.Implements.Products
 {
     public class ProductUnitTypeService : IProductUnitTypeService
     {

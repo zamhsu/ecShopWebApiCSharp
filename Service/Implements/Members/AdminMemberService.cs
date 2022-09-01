@@ -9,7 +9,7 @@ using Repository.Interfaces;
 using Service.Dtos.Members;
 using Service.Interfaces.Members;
 
-namespace Service.Implments.Members
+namespace Service.Implements.Members
 {
     public class AdminMemberService : IAdminMemberService
     {

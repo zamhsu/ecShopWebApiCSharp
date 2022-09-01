@@ -4,7 +4,7 @@ using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Payments;
 
-namespace Service.Implments.Payments
+namespace Service.Implements.Payments
 {
     public class PaymentService : IPaymentService
     {

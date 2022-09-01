@@ -5,7 +5,7 @@ using Repository.Interfaces;
 using Service.Dtos.Payments;
 using Service.Interfaces.Payments;
 
-namespace Service.Implments.Payments
+namespace Service.Implements.Payments
 {
     public class PaymentMethodService : IPaymentMethodService
     {

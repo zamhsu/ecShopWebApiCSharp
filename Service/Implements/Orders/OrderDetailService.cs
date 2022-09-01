@@ -6,7 +6,7 @@ using Repository.Interfaces;
 using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 
-namespace Service.Implments.Orders
+namespace Service.Implements.Orders
 {
     public class OrderDetailService : IOrderDetailService
     {
