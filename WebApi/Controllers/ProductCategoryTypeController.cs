@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Repository.Entities.Products;
+using Service.Dtos.Products;
 using Service.Interfaces.Products;
 using WebApi.Infrastructures.Core;
 using WebApi.Infrastructures.Models.Dtos.Payments;
@@ -30,7 +30,7 @@ namespace WebApi.Controllers
         {
             BaseResponse<List<ProductCategoryTypeDisplayDto>> baseResponse = new BaseResponse<List<ProductCategoryTypeDisplayDto>>();
 
-            List<ProductCategoryType> categoryTypes = await _productCategoryTypeService.GetAllAsync();
+            List<ProductCategoryTypeDto> categoryTypes = await _productCategoryTypeService.GetAllAsync();
             List<ProductCategoryTypeDisplayDto> displayModels = _mapper.Map<List<ProductCategoryTypeDisplayDto>>(categoryTypes);
 
             baseResponse.IsSuccess = true;
@@ -45,7 +45,7 @@ namespace WebApi.Controllers
         {
             BaseResponse<ProductCategoryTypeDisplayDto> baseResponse = new BaseResponse<ProductCategoryTypeDisplayDto>();
 
-            ProductCategoryType productCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
+            ProductCategoryTypeDto productCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
 
             if (productCategoryType == null)
             {
@@ -76,8 +76,8 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            ProductCategoryType existedProductCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
-            if (existedProductCategoryType == null)
+            bool isExists = await _productCategoryTypeService.IsExistsAsync(id);
+            if (isExists == false)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -85,16 +85,16 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            ProductCategoryType productCategoryType = _mapper.Map<ProductCategoryType>(baseRequest.Data);
+            ProductCategoryTypeUpdateDto updateDto = _mapper.Map<ProductCategoryTypeUpdateDto>(baseRequest.Data);
 
-            try
+            bool result = await _productCategoryTypeService.UpdateAsync(updateDto);
+
+            if (result == true)
             {
-                await _productCategoryTypeService.UpdateAsync(id, productCategoryType);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "修改成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "修改失敗";
@@ -108,16 +108,16 @@ namespace WebApi.Controllers
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            ProductCategoryType productCategoryType = _mapper.Map<ProductCategoryType>(baseRequest.Data);
+            ProductCategoryTypeCreateDto createDto = _mapper.Map<ProductCategoryTypeCreateDto>(baseRequest.Data);
 
-            try
+            bool result = await _productCategoryTypeService.CreateAsync(createDto);
+
+            if (result == true)
             {
-                await _productCategoryTypeService.CreateAsync(productCategoryType);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "建立失敗";
@@ -131,8 +131,8 @@ namespace WebApi.Controllers
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            ProductCategoryType productCategoryType = await _productCategoryTypeService.GetByIdAsync(id);
-            if (productCategoryType == null)
+            bool isExists = await _productCategoryTypeService.IsExistsAsync(id);
+            if (isExists == false)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -140,14 +140,14 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            try
-            {
-                await _productCategoryTypeService.DeleteByIdAsync(id);
+            bool result = await _productCategoryTypeService.DeleteByIdAsync(id);
 
+            if (result == true)
+            {
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "刪除成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "刪除失敗";

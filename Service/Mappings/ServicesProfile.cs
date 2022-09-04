@@ -1,9 +1,11 @@
 using AutoMapper;
 using Repository.Entities.Members;
 using Repository.Entities.Orders;
+using Repository.Entities.Products;
 using Service.Dtos.Members;
 using Service.Dtos.Orders;
 using Service.Dtos.Payments;
+using Service.Dtos.Products;
 
 namespace Service.Mappings
 {
@@ -45,6 +47,22 @@ namespace Service.Mappings
 
             // Payment
             CreateMap<PaymentMethod, PaymentMethodDto>();
+
+            // ProductCategoryType
+            CreateMap<ProductCategoryType, ProductCategoryTypeDto>();
+            CreateMap<ProductCategoryTypeCreateDto, ProductCategoryType>();
+
+            // ProductUnitType
+            CreateMap<ProductUnitType, ProductUnitTypeDto>();
+            CreateMap<ProductUnitTypeCreateDto, ProductUnitType>();
+
+            // Product
+            CreateMap<Product, ProductDetailDto>()
+                .ForMember(dest => dest.UnitString, mo => mo.MapFrom(q => q.ProductUnitType.Name))
+                .ForMember(dest => dest.CategoryString, mo => mo.MapFrom(q => q.ProductCategoryType.Name))
+                .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.ProductStatus.Name));
+            CreateMap<ProductCreateDto, Product>();
+            CreateMap<ProductUpdateDto, Product>();
         }
     }
 }

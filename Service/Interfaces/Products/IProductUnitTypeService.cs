@@ -1,4 +1,5 @@
 using Repository.Entities.Products;
+using Service.Dtos.Products;
 
 namespace Service.Interfaces.Products
 {
@@ -9,31 +10,40 @@ namespace Service.Interfaces.Products
         /// </summary>
         /// <param name="id">產品單位編號</param>
         /// <returns></returns>
-        Task<ProductUnitType> GetByIdAsync(int id);
+        Task<ProductUnitTypeDto> GetByIdAsync(int id);
 
         /// <summary>
         /// 取得所有產品單位
         /// </summary>
         /// <returns></returns>
-        Task<List<ProductUnitType>> GetAllAsync();
+        Task<List<ProductUnitTypeDto>> GetAllAsync();
 
         /// <summary>
         /// 新增一筆產品單位資料
         /// </summary>
-        /// <param name="productUnitType">新增產品單位的資料</param>
-        Task CreateAsync(ProductUnitType createProductUnitType);
+        /// <param name="createDto">新增產品單位的資料</param>
+        /// <returns></returns>
+        Task<bool> CreateAsync(ProductUnitTypeCreateDto createDto);
 
         /// <summary>
         /// 修改一筆產品單位資料
         /// </summary>
-        /// <param name="id">產品單位編號</param>
-        /// <param name="productUnitType">修改產品單位的資料</param>
-        Task UpdateAsync(int id, ProductUnitType updateProductUnitType);
+        /// <param name="UpdateDto">修改產品單位的資料</param>
+        /// <returns></returns>
+        Task<bool> UpdateAsync(ProductUnitTypeUpdateDto updateDto);
 
         /// <summary>
         /// 使用產品單位編號刪除一筆產品單位
         /// </summary>
         /// <param name="id">產品單位編號</param>
-        Task DeleteByIdAsync(int id);
+        /// <returns></returns>
+        Task<bool> DeleteByIdAsync(int id);
+
+        /// <summary>
+        /// 產品單位是否存在
+        /// </summary>
+        /// <param name="id">產品單位編號</param>
+        /// <returns></returns>
+        Task<bool> IsExistsAsync(int id);
     }
 }

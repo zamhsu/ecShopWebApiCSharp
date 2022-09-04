@@ -3,6 +3,7 @@ using Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Repository.Entities.Products;
 using Repository.Interfaces;
+using Service.Dtos.Products;
 using Service.Interfaces.Products;
 
 namespace Service.Implements.Products
@@ -27,70 +28,79 @@ namespace Service.Implements.Products
         /// </summary>
         /// <param name="id">產品分類編號</param>
         /// <returns></returns>
-        public async Task<ProductCategoryType> GetByIdAsync(int id)
+        public async Task<ProductCategoryTypeDto> GetByIdAsync(int id)
         {
             ProductCategoryType productCategoryType = await _unitOfWork.Repository<ProductCategoryType>()
-                .GetAsync(q => q.Id == id);
+                .GetAsync(q => q.Id == id && q.Deleted == false);
 
-            return productCategoryType;
+            ProductCategoryTypeDto dto = _mapper.Map<ProductCategoryTypeDto>(productCategoryType);
+
+            return dto;
         }
 
         /// <summary>
         /// 取得所有產品分類
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ProductCategoryType>> GetAllAsync()
+        public async Task<List<ProductCategoryTypeDto>> GetAllAsync()
         {
-            IQueryable<ProductCategoryType> query = _unitOfWork.Repository<ProductCategoryType>().GetAll();
+            IQueryable<ProductCategoryType> query = _unitOfWork.Repository<ProductCategoryType>().GetAll()
+                .Where(q => q.Deleted == false);
             List<ProductCategoryType> productCategoryTypes = await query.ToListAsync();
 
-            return productCategoryTypes;
+            List<ProductCategoryTypeDto> dtos = _mapper.Map<List<ProductCategoryTypeDto>>(productCategoryTypes);
+
+            return dtos;
         }
 
         /// <summary>
         /// 新增一筆產品分類資料
         /// </summary>
-        /// <param name="productCategoryType">新增產品分類的資料</param>
-        public async Task CreateAsync(ProductCategoryType productCategoryType)
+        /// <param name="createDto">新增產品分類的資料</param>
+        public async Task<bool> CreateAsync(ProductCategoryTypeCreateDto createDto)
         {
-            if (productCategoryType == null)
+            if (createDto == null)
             {
-                _logger.LogInformation("[Create] ProductCategoryType can not be null");
-                throw new ArgumentNullException(nameof(productCategoryType));
+                _logger.LogInformation("[Create] ProductCategoryTypeCreateDto can not be null");
+                throw new ArgumentNullException(nameof(createDto));
             }
 
+            ProductCategoryType productCategoryType = _mapper.Map<ProductCategoryType>(createDto);
+            productCategoryType.Deleted = false;
+
             await _unitOfWork.Repository<ProductCategoryType>().CreateAsync(productCategoryType);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
         /// 修改一筆產品分類資料
         /// </summary>
-        /// <param name="id">產品分類編號</param>
-        /// <param name="productCategoryType">修改產品分類的資料</param>
-        public async Task UpdateAsync(int id, ProductCategoryType productCategoryType)
+        /// <param name="updateDto">修改產品分類的資料</param>
+        public async Task<bool> UpdateAsync(ProductCategoryTypeUpdateDto updateDto)
         {
-            ProductCategoryType entity = await GetByIdAsync(id);
+            ProductCategoryType entity = await _unitOfWork.Repository<ProductCategoryType>()
+                .GetAsync(q => q.Id == updateDto.Id && q.Deleted == false);
 
             if (entity == null)
             {
-                _logger.LogInformation($"[Update] ProductCategoryType is not existed (Id:{id})");
-                throw new ArgumentNullException(nameof(productCategoryType));
+                _logger.LogInformation($"[Update] ProductCategoryType is not existed (Id:{updateDto.Id})");
+                throw new ArgumentNullException(nameof(updateDto));
             }
 
-            entity.Name = productCategoryType.Name;
+            entity.Name = updateDto.Name;
 
             _unitOfWork.Repository<ProductCategoryType>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
         /// 使用產品分類編號刪除一筆產品分類
         /// </summary>
         /// <param name="id">產品分類編號</param>
-        public async Task DeleteByIdAsync(int id)
+        public async Task<bool> DeleteByIdAsync(int id)
         {
-            ProductCategoryType entity = await GetByIdAsync(id);
+            ProductCategoryType entity = await _unitOfWork.Repository<ProductCategoryType>()
+                .GetAsync(q => q.Id == id && q.Deleted == false);
 
             if (entity == null)
             {
@@ -101,7 +111,20 @@ namespace Service.Implements.Products
             entity.Deleted = true;
 
             _unitOfWork.Repository<ProductCategoryType>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// 指定產品分類是否存在
+        /// </summary>
+        /// <param name="id">產品分類編號</param>
+        /// <returns></returns>
+        public async Task<bool> IsExistsAsync(int id)
+        {
+            bool result = await _unitOfWork.Repository<ProductCategoryType>().GetAllNoTracking()
+                .AnyAsync(q => q.Id == id && q.Deleted == false);
+
+            return result;
         }
     }
 }

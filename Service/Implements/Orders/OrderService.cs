@@ -203,7 +203,8 @@ namespace Service.Implements.Orders
             // 建立OrderDetail
             foreach (var item in placeOrderDetails)
             {
-                Product product = await _productService.GetByGuidAsync(item.ProductGuid);
+                Product product = await _unitOfWork.Repository<Product>()
+                    .GetAsync(q => q.Guid == item.ProductGuid && q.StatusId == (int)ProductStatusEnum.OK);
 
                 if (product == null) continue;
 
@@ -214,7 +215,7 @@ namespace Service.Implements.Orders
                 orderDetail.Quantity = item.Quantity;
                 orderDetail.Total = _orderAmountService.CalculateItemTotal(item);
                 orderDetail.Order = order;
-                orderDetail.Product = await _productService.GetByGuidAsync(item.ProductGuid);
+                orderDetail.Product = product;
 
                 orderDetails.Add(orderDetail);
 

@@ -6,6 +6,7 @@ using Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Repository.Entities.Products;
 using Repository.Interfaces;
+using Service.Dtos.Products;
 using Service.Interfaces.Products;
 
 namespace Service.Implements.Products
@@ -30,13 +31,15 @@ namespace Service.Implements.Products
         /// </summary>
         /// <param name="guid">產品GUID</param>
         /// <returns></returns>
-        public async Task<Product> GetByGuidAsync(string guid)
+        public async Task<ProductDto> GetByGuidAsync(string guid)
         {
             int okStatus = (int)ProductStatusEnum.OK;
             Product product = await _unitOfWork.Repository<Product>()
                 .GetAsync(q => q.Guid == guid && q.StatusId == okStatus);
 
-            return product;
+            ProductDto dto = _mapper.Map<ProductDto>(product);
+
+            return dto;
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace Service.Implements.Products
         /// </summary>
         /// <param name="guid">產品GUID</param>
         /// <returns></returns>
-        public async Task<Product> GetDetailByGuidAsync(string guid)
+        public async Task<ProductDetailDto> GetDetailByGuidAsync(string guid)
         {
             int okStatus = (int)ProductStatusEnum.OK;
             Product product = await _unitOfWork.Repository<Product>().GetAll()
@@ -53,28 +56,32 @@ namespace Service.Implements.Products
                 .Include(q => q.ProductStatus)
                 .FirstOrDefaultAsync(q => q.Guid == guid && q.StatusId == okStatus);
 
-            return product;
+            ProductDetailDto dto = _mapper.Map<ProductDetailDto>(product);
+
+            return dto;
         }
 
         /// <summary>
         /// 取得所有產品
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Product>> GetAllUsableAsync()
+        public async Task<List<ProductDto>> GetAllUsableAsync()
         {
             int okStatus = (int)ProductStatusEnum.OK;
             IQueryable<Product> query = _unitOfWork.Repository<Product>().GetAll()
                 .Where(q => q.StatusId == okStatus);
             List<Product> products = await query.ToListAsync();
 
-            return products;
+            List<ProductDto> dtos = _mapper.Map<List<ProductDto>>(products);
+
+            return dtos;
         }
 
         /// <summary>
         /// 取得包含關聯性資料的所有產品
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Product>> GetDetailAllUsableAsync()
+        public async Task<List<ProductDetailDto>> GetDetailAllUsableAsync()
         {
             int okStatus = (int)ProductStatusEnum.OK;
             IQueryable<Product> query = _unitOfWork.Repository<Product>().GetAll()
@@ -85,7 +92,9 @@ namespace Service.Implements.Products
 
             List<Product> products = await query.ToListAsync();
 
-            return products;
+            List<ProductDetailDto> dtos = _mapper.Map<List<ProductDetailDto>>(products);
+
+            return dtos;
         }
 
         /// <summary>
@@ -94,7 +103,7 @@ namespace Service.Implements.Products
         /// <param name="pageSize">一頁資料的筆數</param>
         /// <param name="page">目前頁數</param>
         /// <returns></returns>
-        public PagedList<Product> GetPagedDetailAllUsable(int pageSize, int page)
+        public PagedList<ProductDetailDto> GetPagedDetailAllUsable(int pageSize, int page)
         {
             int okStatus = (int)ProductStatusEnum.OK;
             IQueryable<Product> query = _unitOfWork.Repository<Product>().GetAll()
@@ -107,20 +116,24 @@ namespace Service.Implements.Products
 
             PagedList<Product> products = query.ToPagedList(pageSize, page);
 
-            return products;
+            PagedList<ProductDetailDto> dtos = _mapper.Map<PagedList<ProductDetailDto>>(products);
+
+            return dtos;
         }
 
         /// <summary>
         /// 新增一筆產品資料
         /// </summary>
-        /// <param name="product">新增產品的資料</param>
-        public async Task CreateAsync(Product product)
+        /// <param name="createDto">新增產品的資料</param>
+        public async Task<bool> CreateAsync(ProductCreateDto createDto)
         {
-            if (product == null)
+            if (createDto == null)
             {
-                _logger.LogInformation("[Create] Product can not be null");
-                throw new ArgumentNullException(nameof(product));
+                _logger.LogInformation("[Create] ProductCreateDto can not be null");
+                throw new ArgumentNullException(nameof(createDto));
             }
+
+            Product product = _mapper.Map<Product>(createDto);
 
             product.Guid = Guid.NewGuid().ToString();
             product.StartDisplay = product.StartDisplay.ToUniversalTime();
@@ -129,48 +142,49 @@ namespace Service.Implements.Products
             product.CreateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             await _unitOfWork.Repository<Product>().CreateAsync(product);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
         /// 修改一筆產品資料
         /// </summary>
-        /// <param name="guid">產品GUID</param>
-        /// <param name="product">修改產品的資料</param>
-        public async Task UpdateAsync(string guid, Product product)
+        /// <param name="updateDto">修改產品的資料</param>
+        public async Task<bool> UpdateAsync(ProductUpdateDto updateDto)
         {
-            Product entity = await GetByGuidAsync(guid);
+            Product entity = await _unitOfWork.Repository<Product>()
+                .GetAsync(q => q.Guid == updateDto.Guid && q.StatusId == (int)ProductStatusEnum.OK);
 
             if (entity == null)
             {
-                _logger.LogInformation($"[Update] Product is not existed (Guid:{guid})");
+                _logger.LogInformation($"[Update] Product is not existed (Guid:{updateDto.Guid})");
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            entity.Title = product.Title;
-            entity.CategoryId = product.CategoryId;
-            entity.UnitId = product.UnitId;
-            entity.Quantity = product.Quantity;
-            entity.OriginPrice = product.OriginPrice;
-            entity.Price = product.Price;
-            entity.Description = product.Description;
-            entity.StartDisplay = product.StartDisplay.ToUniversalTime();
-            entity.EndDisplay = product.EndDisplay.ToUniversalTime();
-            entity.ImageUrl = product.ImageUrl;
-            entity.Memo = product.Memo;
+            entity.Title = updateDto.Title;
+            entity.CategoryId = updateDto.CategoryId;
+            entity.UnitId = updateDto.UnitId;
+            entity.Quantity = updateDto.Quantity;
+            entity.OriginPrice = updateDto.OriginPrice;
+            entity.Price = updateDto.Price;
+            entity.Description = updateDto.Description;
+            entity.StartDisplay = updateDto.StartDisplay.ToUniversalTime();
+            entity.EndDisplay = updateDto.EndDisplay.ToUniversalTime();
+            entity.ImageUrl = updateDto.ImageUrl;
+            entity.Memo = updateDto.Memo;
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             _unitOfWork.Repository<Product>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         /// <summary>
         /// 使用Guid刪除一筆產品
         /// </summary>
         /// <param name="guid">產品GUID</param>
-        public async Task DeleteByGuidAsync(string guid)
+        public async Task<bool> DeleteByGuidAsync(string guid)
         {
-            Product entity = await GetByGuidAsync(guid);
+            Product entity = await _unitOfWork.Repository<Product>()
+                .GetAsync(q => q.Guid == guid && q.StatusId == (int)ProductStatusEnum.OK);
 
             if (entity == null)
             {
@@ -182,7 +196,20 @@ namespace Service.Implements.Products
             entity.UpdateDate = new DateTimeOffset(DateTime.UtcNow).ToUniversalTime();
 
             _unitOfWork.Repository<Product>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// 產品是否存在
+        /// </summary>
+        /// <param name="guid">產品GUID</param>
+        /// <returns></returns>
+        public async Task<bool> IsExistsAsync(string guid)
+        {
+            bool result = await _unitOfWork.Repository<Product>().GetAllNoTracking()
+                .AnyAsync(q => q.StatusId == (int)ProductStatusEnum.OK);
+
+            return result;
         }
     }
 }

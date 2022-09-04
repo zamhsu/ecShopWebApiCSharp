@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Repository.Entities.Products;
+using Service.Dtos.Products;
 using Service.Interfaces.Products;
 using WebApi.Infrastructures.Core;
 using WebApi.Infrastructures.Models.Dtos.Products;
@@ -30,7 +30,7 @@ namespace WebApi.Controllers
         {
             BaseResponse<List<ProductUnitTypeDisplayDto>> baseResponse = new BaseResponse<List<ProductUnitTypeDisplayDto>>();
 
-            List<ProductUnitType> unitTypes = await _productUnitTypeService.GetAllAsync();
+            List<ProductUnitTypeDto> unitTypes = await _productUnitTypeService.GetAllAsync();
 
             baseResponse.IsSuccess = true;
             baseResponse.Data = _mapper.Map<List<ProductUnitTypeDisplayDto>>(unitTypes);
@@ -44,7 +44,7 @@ namespace WebApi.Controllers
         {
             BaseResponse<ProductUnitTypeDisplayDto> baseResponse = new BaseResponse<ProductUnitTypeDisplayDto>();
 
-            ProductUnitType productUnitType = await _productUnitTypeService.GetByIdAsync(id);
+            ProductUnitTypeDto productUnitType = await _productUnitTypeService.GetByIdAsync(id);
 
             if (productUnitType == null)
             {
@@ -73,8 +73,8 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            ProductUnitType existedProductUnitType = await _productUnitTypeService.GetByIdAsync(id);
-            if (existedProductUnitType == null)
+            bool isExists = await _productUnitTypeService.IsExistsAsync(id);
+            if (isExists == false)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -82,16 +82,16 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            ProductUnitType productUnitType = _mapper.Map<ProductUnitType>(baseRequest.Data);
+            ProductUnitTypeUpdateDto updateDto = _mapper.Map<ProductUnitTypeUpdateDto>(baseRequest.Data);
 
-            try
+            bool result = await _productUnitTypeService.UpdateAsync(updateDto);
+
+            if(result == true)
             {
-                await _productUnitTypeService.UpdateAsync(id, productUnitType);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "修改成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "修改失敗";
@@ -105,16 +105,16 @@ namespace WebApi.Controllers
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            ProductUnitType productUnitType = _mapper.Map<ProductUnitType>(baseRequest.Data);
+            ProductUnitTypeCreateDto createDto = _mapper.Map<ProductUnitTypeCreateDto>(baseRequest.Data);
 
-            try
+            bool result = await _productUnitTypeService.CreateAsync(createDto);
+
+            if (result == true)
             {
-                await _productUnitTypeService.CreateAsync(productUnitType);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "建立失敗";
@@ -128,8 +128,8 @@ namespace WebApi.Controllers
         {
             BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            ProductUnitType productUnitType = await _productUnitTypeService.GetByIdAsync(id);
-            if (productUnitType == null)
+            bool isExists = await _productUnitTypeService.IsExistsAsync(id);
+            if (isExists == false)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -137,14 +137,14 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            try
-            {
-                await _productUnitTypeService.DeleteByIdAsync(id);
+            bool result = await _productUnitTypeService.DeleteByIdAsync(id);
 
+            if (result == true)
+            {
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "刪除成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "刪除失敗";
