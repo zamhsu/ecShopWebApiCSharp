@@ -115,8 +115,11 @@ namespace Service.Implements.Members
             query = query.OrderByDescending(q => q.Id);
 
             PagedList<AdminMember> adminMembers = query.ToPagedList(pageSize, page);
-
-            PagedList<AdminMemberDetailDto> dtos = _mapper.Map<PagedList<AdminMemberDetailDto>>(adminMembers);
+            PagedList<AdminMemberDetailDto> dtos = new PagedList<AdminMemberDetailDto>()
+            {
+                PagedData = _mapper.Map<List<AdminMemberDetailDto>>(adminMembers),
+                Pagination = adminMembers.Pagination
+            };
 
             return dtos;
         }

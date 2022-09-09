@@ -116,7 +116,11 @@ namespace Service.Implements.Products
 
             PagedList<Product> products = query.ToPagedList(pageSize, page);
 
-            PagedList<ProductDetailDto> dtos = _mapper.Map<PagedList<ProductDetailDto>>(products);
+            PagedList<ProductDetailDto> dtos = new PagedList<ProductDetailDto>()
+            {
+                PagedData = _mapper.Map<List<ProductDetailDto>>(products.PagedData),
+                Pagination = products.Pagination
+            };
 
             return dtos;
         }

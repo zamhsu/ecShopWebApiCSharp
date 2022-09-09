@@ -178,7 +178,11 @@ namespace Service.Implements.Orders
             query = query.OrderByDescending(q => q.Id);
 
             PagedList<Order> orders = query.ToPagedList(pageSize, page);
-            PagedList<OrderDetailDto> dtos = _mapper.Map<PagedList<OrderDetailDto>>(orders);
+            PagedList<OrderDetailDto> dtos = new PagedList<OrderDetailDto>()
+            {
+                PagedData = _mapper.Map<List<OrderDetailDto>>(orders.PagedData),
+                Pagination = orders.Pagination
+            };
 
             return dtos;
         }

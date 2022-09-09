@@ -143,8 +143,11 @@ namespace Service.Implements.Orders
             query = query.OrderByDescending(q => q.Id);
 
             PagedList<Coupon> coupons = query.ToPagedList(pageSize, page);
-
-            PagedList<CouponDetailDto> dtos = _mapper.Map<PagedList<CouponDetailDto>>(coupons);
+            PagedList<CouponDetailDto> dtos = new PagedList<CouponDetailDto>()
+            {
+                PagedData = _mapper.Map<List<CouponDetailDto>>(coupons),
+                Pagination = coupons.Pagination
+            };
 
             return dtos;
         }
