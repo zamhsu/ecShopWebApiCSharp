@@ -5,8 +5,8 @@ namespace WebApi.Infrastructures.Models.ViewModels
 {
     public class ProductGetPagedProductsViewModel
     {
-        public List<ProductDisplayDto> Products { get; set; } = null!;
+        public List<ProductDisplayDto> Products { get; set; }
 
-        public Pagination Pagination { get; set; } = null!;
+        public Pagination Pagination { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace WebApi.Infrastructures.Models.Paramaters
         /// 訂單Guid
         /// </summary>
         /// <value></value>
-        public string OrderGuid { get; set; } = null!;
+        public string OrderGuid { get; set; }
 
         /// <summary>
         /// 付款方式Id

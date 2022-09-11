@@ -18,24 +18,18 @@ namespace Service.Implements.Orders
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOrderAmountService _orderAmountService;
         private readonly IOrderDetailService _orderDetailService;
-        private readonly ICouponService _couponService;
-        private readonly IProductService _productService;
         private readonly IMapper _mapper;
         private readonly IAppLogger<Order> _logger;
 
         public OrderSerivce(IUnitOfWork unitOfWork,
             IOrderAmountService orderAmountService,
             IOrderDetailService orderDetailService,
-            ICouponService couponService,
-            IProductService productService,
             IMapper mapper,
             IAppLogger<Order> logger)
         {
             _unitOfWork = unitOfWork;
             _orderAmountService = orderAmountService;
             _orderDetailService = orderDetailService;
-            _couponService = couponService;
-            _productService = productService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -228,11 +222,12 @@ namespace Service.Implements.Orders
                 itemIndex++;
             }
 
-            CouponDto usableCoupon = await _couponService.GetUsableByCodeAsync(couponCode);
             Coupon coupon = await _unitOfWork.Repository<Coupon>()
-                    .GetAsync(q => q.Id.Equals(usableCoupon.Id));
+                .GetAsync(q => q.Code == couponCode
+                            && q.Quantity > q.Used 
+                            && q.StatusId != (int)CouponStatusEnum.Delete);
 
-            if (usableCoupon is not null)
+            if (coupon is not null)
             {
                 // 計算優惠金額
                 discountAmount = _orderAmountService.CalculateDiscountAmount(coupon, itemTotalAmount);

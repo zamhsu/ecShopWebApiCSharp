@@ -5,8 +5,8 @@ namespace WebApi.Infrastructures.Models.ViewModels
 {
     public class AdminMemberGetAdminMemberViewModel
     {
-        public List<AdminMemberDisplayDto> AdminMemberDisplays { get; set; } = null!;
+        public List<AdminMemberDisplayDto> AdminMemberDisplays { get; set; }
 
-        public Pagination Pagination { get; set; } = null!;
+        public Pagination Pagination { get; set; }
     }
 }

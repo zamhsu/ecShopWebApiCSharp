@@ -3,8 +3,8 @@ namespace WebApi.Infrastructures.Models.Dtos.Orders
     public class CouponDisplayDto
     {
         public int Id { get; set; }
-        public string Title { get; set; } = null!;
-        public string Code { get; set; } = null!;
+        public string Title { get; set; }
+        public string Code { get; set; }
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset ExpiredDate { get; set; }
         public int Quantity { get; set; }

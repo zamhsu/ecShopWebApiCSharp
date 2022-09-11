@@ -2,8 +2,8 @@ namespace WebApi.Infrastructures.Models.Paramaters
 {
     public class CreateCouponParameter
     {
-        public string Title { get; set; } = null!;
-        public string Code { get; set; } = null!;
+        public string Title { get; set; }
+        public string Code { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime ExpiredDate { get; set; }
         public int Quantity { get; set; }

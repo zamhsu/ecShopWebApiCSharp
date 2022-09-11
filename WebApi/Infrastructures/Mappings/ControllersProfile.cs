@@ -1,6 +1,4 @@
 using AutoMapper;
-using Repository.Entities.Orders;
-using Repository.Entities.Products;
 using Service.Dtos.Members;
 using Service.Dtos.Orders;
 using Service.Dtos.Payments;
@@ -24,6 +22,7 @@ namespace WebApi.Infrastructures.Mappings
 
             // Product
             CreateMap<ProductDto, ProductDisplayDto>();
+            CreateMap<ProductDetailDto, ProductDisplayDto>();
             CreateMap<CreateProductParameter, ProductCreateDto>()
                 .ForMember(dest => dest.StartDisplay, mo => mo.Ignore())
                 .ForMember(dest => dest.EndDisplay, mo => mo.Ignore());
@@ -50,9 +49,9 @@ namespace WebApi.Infrastructures.Mappings
             CreateMap<UpdateCouponParameter, CouponUpdateDto>();
 
             // Order
-            CreateMap<Order, OrderDisplayDto>();
-            CreateMap<PlaceOrderDto, Order>();
-            CreateMap<UpdateOrderCustomerInfoParameter, Order>();
+            CreateMap<OrderDetailDto, OrderDisplayDto>();
+            CreateMap<PlaceOrderDto, OrderCustomerInfoDto>();
+            CreateMap<UpdateOrderCustomerInfoParameter, OrderCustomerInfoDto>();
 
             // PaymentMethod
             CreateMap<PaymentMethodDto, PaymentMethodDisplayDto>();

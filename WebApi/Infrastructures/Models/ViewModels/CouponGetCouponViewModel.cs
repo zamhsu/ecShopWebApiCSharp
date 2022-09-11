@@ -5,8 +5,8 @@ namespace WebApi.Infrastructures.Models.ViewModels
 {
     public class CouponGetCouponViewModel
     {
-        public List<CouponDisplayDto> CouponDisplays { get; set; } = null!;
+        public List<CouponDisplayDto> CouponDisplays { get; set; }
 
-        public Pagination Pagination { get; set; } = null!;
+        public Pagination Pagination { get; set; }
     }
 }

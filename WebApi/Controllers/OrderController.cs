@@ -3,7 +3,6 @@ using Common.Dtos;
 using Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Repository.Entities.Orders;
 using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Products;
@@ -19,18 +18,12 @@ namespace WebApi.Controllers
     public class OrderController : CustomBaseController
     {
         private readonly IOrderService _orderService;
-        private readonly ICouponService _couponService;
-        private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderSerivce,
-            ICouponService couponService,
-            IProductService productService,
+        public OrderController(IOrderService orderService,
             IMapper mapper)
         {
-            _orderService = orderSerivce;
-            _couponService = couponService;
-            _productService = productService;
+            _orderService = orderService;
             _mapper = mapper;
         }
 
@@ -142,15 +135,15 @@ namespace WebApi.Controllers
 
             OrderCustomerInfoDto customerInfoDto = _mapper.Map<OrderCustomerInfoDto>(baseRequest.Data.Order);
 
-            try
-            {
-                string guid = await _orderService.PlaceOrderAsync(customerInfoDto, baseRequest.Data.OrderDetailModels, baseRequest.Data.CouponCode);
+            string guid = await _orderService.PlaceOrderAsync(customerInfoDto, baseRequest.Data.OrderDetailModels, baseRequest.Data.CouponCode);
 
+            if (!string.IsNullOrWhiteSpace(guid))
+            {
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";
                 baseResponse.Data = guid;
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "建立失敗";

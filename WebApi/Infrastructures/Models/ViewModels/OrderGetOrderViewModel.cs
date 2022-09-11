@@ -5,8 +5,8 @@ namespace WebApi.Infrastructures.Models.ViewModels
 {
     public class OrderGetOrderViewModel
     {
-        public List<OrderDisplayDto> OrderDisplays { get; set; } = null!;
+        public List<OrderDisplayDto> OrderDisplays { get; set; }
 
-        public Pagination Pagination { get; set; } = null!;
+        public Pagination Pagination { get; set; }
     }
 }

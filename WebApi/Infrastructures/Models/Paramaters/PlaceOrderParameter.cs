@@ -9,13 +9,13 @@ namespace WebApi.Infrastructures.Models.Paramaters
         /// 下訂單的資料
         /// </summary>
         /// <value></value>
-        public PlaceOrderDto Order { get; set; } = null!;
+        public PlaceOrderDto Order { get; set; }
 
         /// <summary>
         /// 訂單品項
         /// </summary>
         /// <value></value>
-        public List<PlaceOrderDetailDto> OrderDetailModels { get; set; } = null!;
+        public List<PlaceOrderDetailDto> OrderDetailModels { get; set; }
 
         /// <summary>
         /// 優惠碼
