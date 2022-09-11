@@ -1,12 +1,9 @@
-﻿using WebApi.Utilities;
+﻿using Common.Enums;
+using Common.Utilities;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using WebApi.Models;
 
 namespace WebApi.Utilities.Tests
 {
@@ -18,7 +15,7 @@ namespace WebApi.Utilities.Tests
         {
             // Arrange
             byte[] data = Encoding.UTF8.GetBytes("ABC123");
-            GeneralHashAlgorithmPara hashAlgorithm = GeneralHashAlgorithmPara.SHA256;
+            GeneralHashAlgorithmEnum hashAlgorithm = GeneralHashAlgorithmEnum.SHA256;
             string expected = "E0BEBD22819993425814866B62701E2919EA26F1370499C1037B53B9D49C2C8A";
 
             // Act
@@ -33,7 +30,7 @@ namespace WebApi.Utilities.Tests
         {
             // Arrange
             byte[] data = Encoding.UTF8.GetBytes("ABC123");
-            GeneralHashAlgorithmPara hashAlgorithm = GeneralHashAlgorithmPara.SHA512;
+            GeneralHashAlgorithmEnum hashAlgorithm = GeneralHashAlgorithmEnum.SHA512;
             string expected = "8C9333343C6C4222418EDB1D7C9F84D051610526085960A1732C7C3D763FFF64EC7F5220998434C896DDA243AE777D0FB213F36B9B19F7E4A244D5C993B8DFED";
 
             // Act

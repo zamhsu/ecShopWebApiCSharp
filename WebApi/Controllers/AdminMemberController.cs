@@ -1,12 +1,14 @@
 using AutoMapper;
+using Common.Dtos;
+using Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Base.IServices.Members;
-using WebApi.Core;
-using WebApi.Dtos;
-using WebApi.Dtos.Members;
-using WebApi.Dtos.ViewModel;
-using WebApi.Models.Members;
+using Service.Dtos.Members;
+using Service.Interfaces.Members;
+using WebApi.Infrastructures.Core;
+using WebApi.Infrastructures.Models.Dtos.Members;
+using WebApi.Infrastructures.Models.Paramaters;
+using WebApi.Infrastructures.Models.ViewModels;
 
 namespace WebApi.Controllers
 {
@@ -28,12 +30,12 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/admin/adminMember")]
-        public ActionResult<BaseResponse<AdminMemberGetAdminMemberViewModel>> GetAdminMember([FromQuery] PageQueryString pageQueryString)
+        public ActionResult<BaseResponse<AdminMemberGetAdminMemberViewModel>> GetAdminMember([FromQuery] PageParameter pageParameter)
         {
             BaseResponse<AdminMemberGetAdminMemberViewModel> baseResponse = new BaseResponse<AdminMemberGetAdminMemberViewModel>();
 
-            PagedList<AdminMember> pagedList = _adminMemberService.GetPagedDetailAll(pageQueryString.PageSize, pageQueryString.Page);
-            List<AdminMemberDisplayModel> adminMemberDisplays = _mapper.Map<List<AdminMemberDisplayModel>>(pagedList.PagedData);
+            PagedList<AdminMemberDetailDto> pagedList = _adminMemberService.GetPagedDetailAll(pageParameter.PageSize, pageParameter.Page);
+            List<AdminMemberDisplayDto> adminMemberDisplays = _mapper.Map<List<AdminMemberDisplayDto>>(pagedList.PagedData);
             Pagination pagination = pagedList.Pagination;
 
             AdminMemberGetAdminMemberViewModel viewModel = new AdminMemberGetAdminMemberViewModel()
@@ -49,14 +51,14 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("api/admin/adminMember/{guid}")]
-        public async Task<ActionResult<BaseResponse<AdminMemberDisplayModel>>> GetAdminMember(string guid)
+        public async Task<ActionResult<BaseResponse<AdminMemberDisplayDto>>> GetAdminMember(string guid)
         {
-            BaseResponse<AdminMemberDisplayModel> baseResponse = new BaseResponse<AdminMemberDisplayModel>();
+            BaseResponse<AdminMemberDisplayDto> baseResponse = new BaseResponse<AdminMemberDisplayDto>();
 
-            AdminMember adminMember = await _adminMemberService.GetDetailByGuidAsync(guid);
-            AdminMemberDisplayModel adminMemberDisplay = _mapper.Map<AdminMemberDisplayModel>(adminMember);
+            AdminMemberDetailDto adminMember = await _adminMemberService.GetDetailByGuidAsync(guid);
+            AdminMemberDisplayDto adminMemberDisplay = _mapper.Map<AdminMemberDisplayDto>(adminMember);
 
-            if (adminMember == null)
+            if (adminMember is null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "沒有資料";
@@ -71,12 +73,12 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("api/admin/adminMember/{guid}/userInfo")]
-        public async Task<ActionResult<BaseResponse<AdminMember>>> PutAdminMemberInfo(string guid, BaseRequest<UpdateAdminMemberInfoModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PutAdminMemberInfo(string guid, BaseRequest<UpdateAdminMemberInfoParameter> baseRequest)
         {
-            BaseResponse<AdminMember> baseResponse = new BaseResponse<AdminMember>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            AdminMember existedAdminMember = await _adminMemberService.GetByGuidAsync(guid);
-            if (existedAdminMember == null)
+            AdminMemberDto existedAdminMember = await _adminMemberService.GetByGuidAsync(guid);
+            if (existedAdminMember is null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -84,16 +86,17 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            AdminMember adminMember = _mapper.Map<AdminMember>(baseRequest.Data);
+            AdminMemberUserInfoDto userInfoDto = _mapper.Map<AdminMemberUserInfoDto>(baseRequest.Data);
+            userInfoDto.Guid = guid;
 
-            try
+            bool result = await _adminMemberService.UpdateUserInfoAsync(userInfoDto);
+
+            if(result.Equals(true))
             {
-                await _adminMemberService.UpdateUserInfoAsync(guid, adminMember);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "修改成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "修改失敗";
@@ -103,20 +106,20 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("api/admin/adminMember")]
-        public async Task<ActionResult<BaseResponse<AdminMember>>> PostAdminMember(BaseRequest<CreateAdminMemberModel> baseRequest)
+        public async Task<ActionResult<BaseResponse<bool>>> PostAdminMember(BaseRequest<CreateAdminMemberParameter> baseRequest)
         {
-            BaseResponse<AdminMember> baseResponse = new BaseResponse<AdminMember>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            AdminMember adminMember = _mapper.Map<AdminMember>(baseRequest.Data);
+            AdminMemberRegisterDto registerDto = _mapper.Map<AdminMemberRegisterDto>(baseRequest.Data);
 
-            try
+            bool result = await _adminMemberAccountService.RegisterAsync(registerDto);
+
+            if(result.Equals(true))
             {
-                await _adminMemberAccountService.RegisterAsync(adminMember);
-
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "建立成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "建立失敗";
@@ -126,12 +129,12 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("api/admin/adminMember/{guid}")]
-        public async Task<ActionResult<BaseResponse<AdminMember>>> DeleteAdminMember(string guid)
+        public async Task<ActionResult<BaseResponse<bool>>> DeleteAdminMember(string guid)
         {
-            BaseResponse<AdminMember> baseResponse = new BaseResponse<AdminMember>();
+            BaseResponse<bool> baseResponse = new BaseResponse<bool>();
 
-            AdminMember adminMember = await _adminMemberService.GetByGuidAsync(guid);
-            if (adminMember == null)
+            AdminMemberDto adminMemberDto = await _adminMemberService.GetByGuidAsync(guid);
+            if (adminMemberDto is null)
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "找不到資料";
@@ -139,14 +142,14 @@ namespace WebApi.Controllers
                 return baseResponse;
             }
 
-            try
-            {
-                await _adminMemberService.DeleteByGuidAsync(guid);
+            bool result = await _adminMemberService.DeleteByGuidAsync(guid);
 
+            if(result.Equals(true))
+            {
                 baseResponse.IsSuccess = true;
                 baseResponse.Message = "刪除成功";
             }
-            catch
+            else
             {
                 baseResponse.IsSuccess = false;
                 baseResponse.Message = "刪除失敗";
