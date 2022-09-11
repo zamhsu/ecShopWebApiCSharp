@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Utilities
 {
-    public class HashUtility
+    public static class HashUtility
     {
         /// <summary>
         /// 建立常用雜湊
