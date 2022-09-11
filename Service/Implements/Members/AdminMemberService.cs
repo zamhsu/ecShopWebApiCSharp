@@ -150,8 +150,7 @@ namespace Service.Implements.Members
         /// <summary>
         /// 修改一筆管理員個人資料
         /// </summary>
-        /// <param name="guid">管理員GUID</param>
-        /// <param name="adminMember">修改管理員的資料</param>
+        /// <param name="userInfoDto">修改管理員的資料</param>
         /// <returns></returns>
         public async Task<bool> UpdateUserInfoAsync(AdminMemberUserInfoDto userInfoDto)
         {

@@ -1,5 +1,4 @@
 using Common.Enums;
-using Repository.Entities.Members;
 using Service.Dtos.Members;
 
 namespace Service.Interfaces.Members
