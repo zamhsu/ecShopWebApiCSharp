@@ -15,6 +15,11 @@ namespace Repository.Implements
             _context = context;
         }
 
+        /// <summary>
+        /// 特定Entity的Repository
+        /// </summary>
+        /// <typeparam name="T">Entity</typeparam>
+        /// <returns></returns>
         public IRepository<T> Repository<T>() where T : class
         {
             if (_repositories is null)
