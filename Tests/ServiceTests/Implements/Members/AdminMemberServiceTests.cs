@@ -171,7 +171,7 @@ public class AdminMemberServiceTests : IClassFixture<CommonClassFixture>
 
         // assert
         Assert.NotEmpty(actual);
-        Assert.True(actual.Count.Equals(count));
+        Assert.Equal(count, actual.Count);
     }
     
     [Fact]
@@ -213,7 +213,7 @@ public class AdminMemberServiceTests : IClassFixture<CommonClassFixture>
 
         // assert
         Assert.NotEmpty(actual);
-        Assert.True(actual.Count.Equals(count));
+        Assert.Equal(count, actual.Count);
     }
     
     [Fact]
@@ -256,7 +256,7 @@ public class AdminMemberServiceTests : IClassFixture<CommonClassFixture>
 
         // assert
         Assert.NotEmpty(actual.PagedData);
-        Assert.True(actual.PagedData.Count.Equals(count));
+        Assert.Equal(count, actual.PagedData.Count);
     }
     
     [Theory]
