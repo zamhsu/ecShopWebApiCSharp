@@ -117,7 +117,7 @@ namespace Service.Implements.Members
             PagedList<AdminMember> adminMembers = query.ToPagedList(pageSize, page);
             PagedList<AdminMemberDetailDto> dtos = new PagedList<AdminMemberDetailDto>()
             {
-                PagedData = _mapper.Map<List<AdminMemberDetailDto>>(adminMembers),
+                PagedData = _mapper.Map<List<AdminMemberDetailDto>>(adminMembers.PagedData),
                 Pagination = adminMembers.Pagination
             };
 
@@ -154,13 +154,19 @@ namespace Service.Implements.Members
         /// <returns></returns>
         public async Task<bool> UpdateUserInfoAsync(AdminMemberUserInfoDto userInfoDto)
         {
+            if (userInfoDto is null)
+            {
+                _logger.LogInformation("[Update] AdminMemberUserInfoDto can not be null");
+                throw new ArgumentNullException(nameof(userInfoDto));
+            }
+            
             AdminMember entity = await _unitOfWork.Repository<AdminMember>()
                 .GetAsync(q => q.Guid.Equals(userInfoDto.Guid));
 
             if (entity is null)
             {
                 _logger.LogInformation($"[Update] AdminMember is not existed (Guid:{userInfoDto.Guid})");
-                throw new ArgumentNullException(nameof(AdminMember));
+                throw new ArgumentException(nameof(userInfoDto));
             }
 
             entity.UserName = userInfoDto.UserName;
@@ -178,13 +184,19 @@ namespace Service.Implements.Members
         /// <returns></returns>
         public async Task<bool> UpdateAsync(AdminMemberUpdateDto updateDto)
         {
+            if (updateDto is null)
+            {
+                _logger.LogInformation("[Update] AdminMemberUpdateDto can not be null");
+                throw new ArgumentNullException(nameof(updateDto));
+            }
+            
             AdminMember entity = await _unitOfWork.Repository<AdminMember>()
                 .GetAsync(q => q.Guid.Equals(updateDto.Guid));
 
             if (entity is null)
             {
                 _logger.LogInformation($"[Update] AdminMember is not existed (Guid:{updateDto.Guid})");
-                throw new ArgumentNullException(nameof(AdminMember));
+                throw new ArgumentException(nameof(updateDto));
             }
 
             entity.UserName = updateDto.UserName;
@@ -208,13 +220,19 @@ namespace Service.Implements.Members
         /// <returns></returns>
         public async Task<bool> DeleteByGuidAsync(string guid)
         {
+            if (string.IsNullOrWhiteSpace(guid))
+            {
+                _logger.LogInformation("[Delete] guid can not be null");
+                throw new ArgumentNullException(nameof(guid));
+            }
+            
             AdminMember entity = await _unitOfWork.Repository<AdminMember>()
                 .GetAsync(q => q.Guid.Equals(guid));
 
             if (entity == null)
             {
                 _logger.LogInformation($"[Delete] AdminMember is not existed (Guid:{guid})");
-                throw new ArgumentNullException(nameof(entity));
+                throw new ArgumentException(nameof(guid));
             }
 
             entity.StatusId = (int)AdminMemberStatusEnum.Delete;
