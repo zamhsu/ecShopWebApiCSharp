@@ -3,7 +3,7 @@ namespace Repository.Interfaces
     public interface IUnitOfWork : IDisposable
     {
         /// <summary>
-        /// 特定Entity的Repositry
+        /// 特定Entity的Repository
         /// </summary>
         /// <typeparam name="T">Entity</typeparam>
         /// <returns></returns>
