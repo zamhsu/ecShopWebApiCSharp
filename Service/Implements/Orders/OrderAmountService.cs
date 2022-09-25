@@ -43,6 +43,11 @@ namespace Service.Implements.Orders
         /// <returns></returns>
         public int CalculateTotalAmount(int itemTotalAmount, int discountAmount)
         {
+            if (discountAmount > 0)
+            {
+                throw new ArgumentException("優惠金額應該是負數");
+            }
+            
             int totalAmount = itemTotalAmount + discountAmount;
 
             return totalAmount;

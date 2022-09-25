@@ -20,6 +20,7 @@ namespace Service.Mappings
                 .ForMember(dest => dest.StatusString, mo => mo.MapFrom(q => q.AdminMemberStatus.Name));
             CreateMap<AdminMemberDto, AdminMemberInfoDto>();
             CreateMap<AdminMemberDto, AdminMemberUpdateDto>();
+            CreateMap<AdminMemberCreateDto, AdminMember>();
 
             // Coupon
             CreateMap<Coupon, CouponDto>();

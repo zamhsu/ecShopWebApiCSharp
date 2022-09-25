@@ -1,6 +1,5 @@
 using AutoMapper;
 using Common.Enums;
-using Repository.Entities.Members;
 using Service.Dtos.Members;
 using Service.Interfaces.Members;
 using Service.Interfaces.Security;
@@ -109,7 +108,7 @@ namespace Service.Implements.Members
         /// <summary>
         /// 註冊帳號
         /// </summary>
-        /// <param name="adminMember">管理員註冊資料</param>
+        /// <param name="registerDto">管理員註冊資料</param>
         /// <returns></returns>
         public async Task<bool> RegisterAsync(AdminMemberRegisterDto registerDto)
         {
@@ -251,7 +250,7 @@ namespace Service.Implements.Members
         /// <summary>
         /// 帳號是否被鎖定
         /// </summary>
-        /// <param name="statusPara">管理員帳號狀態參數</param>
+        /// <param name="status">管理員帳號狀態參數</param>
         /// <returns></returns>
         public bool IsAccountLocked(AdminMemberStatusEnum status)
         {
