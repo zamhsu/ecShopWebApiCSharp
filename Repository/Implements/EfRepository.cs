@@ -61,7 +61,7 @@ namespace Repository.Implements
         /// <param name="entities">Entities</param>
         public virtual async Task CreateAsync(IEnumerable<T> entities)
         {
-            if (entities == null)
+            if (entities.Any() == false || entities == null)
             {
                 throw new ArgumentNullException(nameof(entities));
             }
@@ -89,7 +89,7 @@ namespace Repository.Implements
         /// /// <param name="entities">Entities</param>
         public virtual void Update(IEnumerable<T> entities)
         {
-            if (entities == null)
+            if (entities.Any() == false || entities == null)
             {
                 throw new ArgumentNullException(nameof(entities));
             }
@@ -117,7 +117,7 @@ namespace Repository.Implements
         /// <param name="entities">Entities</param>
         public virtual void Delete(IEnumerable<T> entities)
         {
-            if (entities == null)
+            if (entities.Any() == false || entities == null)
             {
                 throw new ArgumentNullException(nameof(entities));
             }

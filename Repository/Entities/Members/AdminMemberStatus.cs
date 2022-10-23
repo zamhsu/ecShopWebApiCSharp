@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Repository.Entities.Members
 {
     public class AdminMemberStatus

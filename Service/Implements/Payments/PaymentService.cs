@@ -1,5 +1,3 @@
-using Repository.Entities.Orders;
-using Repository.Interfaces;
 using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Payments;

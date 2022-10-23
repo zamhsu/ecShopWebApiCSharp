@@ -9,7 +9,6 @@ using Repository.Entities.Products;
 using Repository.Interfaces;
 using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
-using Service.Interfaces.Products;
 
 namespace Service.Implements.Orders
 {

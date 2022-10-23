@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 using Repository.Entities.Members;
 using Repository.Entities.Orders;
 using Repository.Entities.Products;
