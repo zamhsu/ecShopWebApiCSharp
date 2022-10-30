@@ -1,4 +1,3 @@
-using Repository.Entities.Products;
 using Service.Dtos.Products;
 
 namespace Service.Interfaces.Products

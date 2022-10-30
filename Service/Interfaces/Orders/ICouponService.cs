@@ -1,5 +1,4 @@
 using Common.Helpers;
-using Repository.Entities.Orders;
 using Service.Dtos.Orders;
 
 namespace Service.Interfaces.Orders

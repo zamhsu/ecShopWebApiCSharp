@@ -1,4 +1,3 @@
-using Repository.Entities.Orders;
 using Service.Dtos.Payments;
 
 namespace Service.Interfaces.Payments

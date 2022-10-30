@@ -1,7 +1,6 @@
 using AutoMapper;
 using Common.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Repository.Entities.Orders;
 using Service.Dtos.Payments;
 using Service.Interfaces.Orders;
 using Service.Interfaces.Payments;

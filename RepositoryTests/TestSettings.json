@@ -1,0 +1,11 @@
+{
+  "Postgres": {
+    "ImageName": "postgres:13.8",
+    "User": "pg13",
+    "Password": "pg13",
+    "DatabaseName": "pg13",
+    "HostPort": "5433",
+    "ContainerPort": "5432"
+  },
+  "ConnectionString": "Server=localhost;Port={0};Database={1};user id={2};password={3}"
+}
