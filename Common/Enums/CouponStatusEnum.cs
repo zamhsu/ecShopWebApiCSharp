@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Common.Enums
+﻿namespace Common.Enums
 {
     /// <summary>
     /// 優惠券狀態參數

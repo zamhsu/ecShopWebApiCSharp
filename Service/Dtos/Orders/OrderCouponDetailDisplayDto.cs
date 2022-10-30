@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Service.Dtos.Orders
+﻿namespace Service.Dtos.Orders
 {
     /// <summary>
     /// 訂單優惠券詳細資料

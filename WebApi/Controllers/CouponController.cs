@@ -3,7 +3,6 @@ using Common.Dtos;
 using Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Repository.Entities.Orders;
 using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
 using WebApi.Infrastructures.Core;

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Dtos.Orders;
 using Service.Interfaces.Orders;
-using Service.Interfaces.Products;
 using WebApi.Infrastructures.Core;
 using WebApi.Infrastructures.Models.Dtos.Orders;
 using WebApi.Infrastructures.Models.Paramaters;

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Repository.Entities.Products
 {
     public class ProductUnitType
