@@ -4,21 +4,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Contexts;
-using Repository.Implements;
-using Repository.Interfaces;
-using Service.Implements.Members;
-using Service.Implements.Orders;
-using Service.Implements.Payments;
-using Service.Implements.Products;
-using Service.Implements.Security;
-using Service.Interfaces.Members;
-using Service.Interfaces.Orders;
-using Service.Interfaces.Payments;
-using Service.Interfaces.Products;
-using Service.Interfaces.Security;
 using Service.Mappings;
 using System.Text;
+using Microsoft.Data.Sqlite;
+using WebApi.Infrastructures.Core;
 using WebApi.Infrastructures.Helpers;
+using WebApi.Infrastructures.ServiceCollectionExtensions;
 using WebApi.Infrastructures.Mappings;
 
 var allowSpecificOrigins = "_allowSpecificOrigins";
@@ -44,8 +35,11 @@ builder.Services.AddCors(opt =>
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<EcShopContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
+
+var cnn = new SqliteConnection(builder.Configuration.GetConnectionString("SQLiteConnection"));
+cnn.Open();
+builder.Services.AddDbContext<EcShopContext>(o => o.UseSqlite(cnn));
+
 builder.Services.AddScoped<DbContext, EcShopContext>();
 
 builder.Services.AddAutoMapper(cfg =>
@@ -82,22 +76,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Unit of Work
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-
-// Services
-builder.Services.AddScoped<IAdminMemberService, AdminMemberService>();
-builder.Services.AddScoped<IAdminMemberAccountService, AdminMemberAccountService>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductCategoryTypeService, ProductCategoryTypeService>();
-builder.Services.AddScoped<IProductUnitTypeService, ProductUnitTypeService>();
-builder.Services.AddScoped<ICouponService, CouponService>();
-builder.Services.AddScoped<IOrderService, OrderSerivce>();
-builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
-builder.Services.AddScoped<IOrderAmountService, OrderAmountService>();
-builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+// 自定義的DI
+builder.Services.AddServiceDependency();
 
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
 builder.Services.AddSingleton<JwtHelper>();
@@ -107,6 +87,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+SystemInitialization.AddDefaultData(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
