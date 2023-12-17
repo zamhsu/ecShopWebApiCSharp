@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using Repository.Contexts;
 using Service.Mappings;
 using System.Text;
+using Microsoft.Data.Sqlite;
+using WebApi.Infrastructures.Core;
 using WebApi.Infrastructures.Helpers;
 using WebApi.Infrastructures.ServiceCollectionExtensions;
 using WebApi.Infrastructures.Mappings;
@@ -33,8 +35,11 @@ builder.Services.AddCors(opt =>
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<EcShopContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
+
+var cnn = new SqliteConnection(builder.Configuration.GetConnectionString("SQLiteConnection"));
+cnn.Open();
+builder.Services.AddDbContext<EcShopContext>(o => o.UseSqlite(cnn));
+
 builder.Services.AddScoped<DbContext, EcShopContext>();
 
 builder.Services.AddAutoMapper(cfg =>
@@ -82,6 +87,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+SystemInitialization.AddDefaultData(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
